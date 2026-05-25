@@ -63,8 +63,8 @@ function withAppGradle(config) {
       const pythonConfig = `
         // Chaquopy Python configuration
         python {
-            buildPython "/usr/bin/python3.11"
-            version "3.11"
+            buildPython "/usr/bin/python3"
+            version "3.14"
             pip {
                 install "ebooklib"
                 install "lxml"
