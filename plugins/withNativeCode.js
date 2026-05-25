@@ -1,4 +1,4 @@
-const { withDangerousMod, withMainApplication } = require('@expo/config-plugins');
+const { withDangerousMod, withMainApplication, withGradleProperties } = require('@expo/config-plugins');
 const fs = require('fs');
 const path = require('path');
 
@@ -60,8 +60,33 @@ function withEpubProcessorPackage(config) {
   });
 }
 
+/**
+ * Restricts reactNativeArchitectures to 64-bit ABIs only.
+ * Python 3.14 on Chaquopy only supports arm64-v8a and x86_64.
+ */
+function withArch64Only(config) {
+  return withGradleProperties(config, (config) => {
+    // Find and update the reactNativeArchitectures property
+    const props = config.modResults;
+    const archProp = props.find(
+      (p) => p.type === 'property' && p.key === 'reactNativeArchitectures'
+    );
+    if (archProp) {
+      archProp.value = 'arm64-v8a,x86_64';
+    } else {
+      props.push({
+        type: 'property',
+        key: 'reactNativeArchitectures',
+        value: 'arm64-v8a,x86_64',
+      });
+    }
+    return config;
+  });
+}
+
 module.exports = function withNativeCode(config) {
   config = withNativeFiles(config);
   config = withEpubProcessorPackage(config);
+  config = withArch64Only(config);
   return config;
 };
