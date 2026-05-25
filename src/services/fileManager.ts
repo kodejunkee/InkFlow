@@ -1,4 +1,5 @@
 import { File, Directory, Paths } from 'expo-file-system';
+import * as FileSystem from 'expo-file-system';
 
 // ─── Directory paths ─────────────────────────────────────────────────────────
 
@@ -45,10 +46,10 @@ export function ensureDirectories(): void {
  * @param fileName   Desired file name including `.epub` extension
  * @returns Absolute URI to the copied file
  */
-export function copyEpubToStorage(
+export async function copyEpubToStorage(
   sourceUri: string,
   fileName: string,
-): string {
+): Promise<string> {
   ensureDirectories();
 
   const sanitisedName = sanitiseFileName(fileName);
@@ -60,8 +61,12 @@ export function copyEpubToStorage(
     destFile = new File(bookDir, addTimestamp(sanitisedName));
   }
 
-  const sourceFile = new File(sourceUri);
-  sourceFile.copy(destFile);
+  // Use legacy FileSystem.copyAsync which handles content:// URIs from
+  // the document picker, unlike the new File API.
+  await FileSystem.copyAsync({
+    from: sourceUri,
+    to: destFile.uri,
+  });
 
   return destFile.uri;
 }

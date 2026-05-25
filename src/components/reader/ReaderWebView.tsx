@@ -7,7 +7,6 @@
 import React, { useCallback, useEffect, useRef } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { WebView, type WebViewMessageEvent } from 'react-native-webview';
-import { File } from 'expo-file-system';
 import type { Book } from '../../types/book';
 import type { WebViewMessage, ReaderCommand } from '../../types/bridge';
 import { serializeCommand, parseWebViewMessage } from '../../types/bridge';
@@ -73,47 +72,6 @@ export const ReaderWebView = React.forwardRef<WebView, ReaderWebViewProps>(
       [],
     );
 
-    // ─── Load book data as base64 ────────────────────────────────────
-
-    const loadBookData = useCallback(async () => {
-      const wv = webViewRef.current;
-      if (!wv) return;
-
-      try {
-        const epubFile = new File(book.filePath);
-        const base64 = epubFile.base64();
-
-        // Send base64 data to WebView — epub.js will decode and open it
-        const initialCfi = book.lastLocation ?? '';
-        wv.injectJavaScript(`
-          (function() {
-            try {
-              var base64 = "${base64}";
-              var raw = atob(base64);
-              var bytes = new Uint8Array(raw.length);
-              for (var i = 0; i < raw.length; i++) {
-                bytes[i] = raw.charCodeAt(i);
-              }
-              window._epubData = bytes.buffer;
-              window.handleReaderCommand({
-                type: 'loadBook',
-                uri: '__ARRAYBUFFER__',
-                initialCfi: '${initialCfi}'
-              });
-            } catch (e) {
-              window.ReactNativeWebView.postMessage(JSON.stringify({
-                type: 'error',
-                message: 'Base64 decode failed: ' + e.message
-              }));
-            }
-          })();
-        `);
-      } catch (e) {
-        console.error('[ReaderWebView] Failed to read EPUB file:', e);
-        onError?.('Failed to read EPUB file');
-      }
-    }, [book, onError]);
-
     // Expose ref for parent components
     React.useImperativeHandle(ref, () => {
       const wv = webViewRef.current;
@@ -133,10 +91,14 @@ export const ReaderWebView = React.forwardRef<WebView, ReaderWebViewProps>(
             break;
 
           case 'contentLoaded':
-            // Page loaded — read the EPUB as base64 and send to WebView
+            // Page loaded — send the book load command
             if (!hasLoadedBook.current) {
               hasLoadedBook.current = true;
-              loadBookData();
+              sendCommand({
+                type: 'loadBook',
+                uri: book.filePath,
+                initialCfi: book.lastLocation ?? undefined,
+              });
             }
             break;
 
@@ -205,7 +167,7 @@ export const ReaderWebView = React.forwardRef<WebView, ReaderWebViewProps>(
               (ref as React.MutableRefObject<WebView | null>).current = wv;
             }
           }}
-          source={{ html: readerHtml, baseUrl: '' }}
+          source={{ html: readerHtml, baseUrl: 'file:///' }}
           style={styles.webview}
           originWhitelist={['*']}
           javaScriptEnabled

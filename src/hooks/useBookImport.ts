@@ -93,7 +93,7 @@ export function useBookImport(
       setImportProgress(PROGRESS_COPYING);
       storeSetProgress(PROGRESS_COPYING);
 
-      const storedPath = copyEpubToStorage(asset.uri, originalName);
+      const storedPath = await copyEpubToStorage(asset.uri, originalName);
 
       // ── 3. Process EPUB metadata ─────────────────────────────────────
       setImportProgress(PROGRESS_PROCESSING);
