@@ -19,7 +19,7 @@ function withProjectGradle(config) {
     if (!buildGradle.includes('com.chaquo.python:gradle')) {
       buildGradle = buildGradle.replace(
         /dependencies\s*\{/,
-        'dependencies {\n        classpath("com.chaquo.python:gradle:16.0.0")'
+        'dependencies {\n        classpath("com.chaquo.python:gradle:17.0.0")'
       );
     }
 
