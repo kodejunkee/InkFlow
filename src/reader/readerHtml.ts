@@ -208,7 +208,12 @@ export function generateReaderHtml(options: Partial<GenerateOptions> = {}): stri
 
         document.getElementById('loading').classList.remove('hidden');
 
-        book = ePub(uri);
+        // If we received binary data via base64, use the ArrayBuffer
+        if (uri === '__ARRAYBUFFER__' && window._epubData) {
+          book = ePub(window._epubData);
+        } else {
+          book = ePub(uri);
+        }
 
         rendition = book.renderTo('reader', {
           flow: 'scrolled-doc',

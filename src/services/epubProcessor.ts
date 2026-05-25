@@ -61,11 +61,23 @@ interface NativeProcessResult {
  * cover art, then returns a JSON string which this function parses into a
  * typed `ProcessedEpub`.
  */
+/**
+ * Strip the file:// prefix from a URI to get a raw filesystem path.
+ * The Python processor needs a real path, not a URI.
+ */
+function toNativePath(uriOrPath: string): string {
+  if (uriOrPath.startsWith('file://')) {
+    return decodeURIComponent(uriOrPath.replace('file://', ''));
+  }
+  return uriOrPath;
+}
+
 export async function processEpub(filePath: string): Promise<ProcessedEpub> {
   const mod = getNativeModule();
+  const nativePath = toNativePath(filePath);
 
   try {
-    const jsonString = await mod.processEpub(filePath);
+    const jsonString = await mod.processEpub(nativePath);
     const raw: NativeProcessResult = JSON.parse(jsonString);
 
     return {
