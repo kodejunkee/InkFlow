@@ -84,7 +84,6 @@ export default function ReaderScreen() {
   } = useReader({ db, book });
 
   // Quote card state
-  const [isQuotePreviewVisible, setIsQuotePreviewVisible] = useState(false);
   const [quoteData, setQuoteData] = useState<import('../../src/components/reader/QuotePreviewModal').QuoteData | null>(null);
 
   // Share as quote card — generates an image and shows preview
