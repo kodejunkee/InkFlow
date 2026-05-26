@@ -289,13 +289,17 @@ export function generateReaderHtml(options: Partial<GenerateOptions> = {}): stri
           });
         });
 
-        // ── Chapter header injection ─────────────────────────────────
+        // ── Chapter header injection & Scroll Fixes ──────────────────
         // For books that don't have visible chapter titles in the HTML,
         // inject a styled heading at the top of each chapter.
         rendition.hooks.content.register(function(contents) {
           try {
             var doc = contents.document;
             if (!doc || !doc.body) return;
+
+            // Disable scroll anchoring to prevent infinite scroll loops in continuous mode
+            doc.documentElement.style.overflowAnchor = "none";
+            doc.body.style.overflowAnchor = "none";
 
             // Check if the chapter already has a visible heading
             var firstChild = doc.body.firstElementChild;
