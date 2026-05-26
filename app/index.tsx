@@ -28,6 +28,7 @@ import { deleteBookFiles } from '../src/services/fileManager';
 import { getTheme } from '../src/theme/themes';
 import { textStyles } from '../src/theme/typography';
 import { spacing } from '../src/theme/spacing';
+import { Ionicons } from '@expo/vector-icons';
 import { BookGrid } from '../src/components/library/BookGrid';
 import { ContinueReading } from '../src/components/library/ContinueReading';
 import { ImportButton } from '../src/components/library/ImportButton';
@@ -156,11 +157,7 @@ export default function LibraryScreen() {
             style={styles.settingsButton}
             hitSlop={12}
           >
-            <Text
-              style={[styles.settingsIcon, { color: theme.textSecondary }]}
-            >
-              ⚙️
-            </Text>
+            <Ionicons name="settings-outline" size={24} color={theme.textSecondary} />
           </Pressable>
         </View>
 
@@ -208,7 +205,7 @@ export default function LibraryScreen() {
           <View style={styles.emptyContainer}>
             {renderHeader()}
             <EmptyState
-              icon="📚"
+              icon="library-outline"
               title="Your library is empty"
               subtitle="Tap the + button to add your first web novel EPUB"
             />
@@ -252,9 +249,6 @@ const styles = StyleSheet.create({
   },
   settingsButton: {
     padding: spacing.sm,
-  },
-  settingsIcon: {
-    fontSize: 24,
   },
   sectionHeader: {
     flexDirection: 'row',

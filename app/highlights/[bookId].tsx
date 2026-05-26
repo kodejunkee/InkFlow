@@ -29,6 +29,7 @@ import { useSettingsStore } from '../../src/stores/settingsStore';
 import { getTheme } from '../../src/theme/themes';
 import { textStyles } from '../../src/theme/typography';
 import { spacing, borderRadius } from '../../src/theme/spacing';
+import { Ionicons } from '@expo/vector-icons';
 import {
   getBookById,
   getHighlightsByBookId,
@@ -202,9 +203,10 @@ export default function HighlightsScreen() {
             onPress={() => handleEditNote(item)}
             style={[styles.noteContainer, { backgroundColor: theme.primaryLight }]}
           >
-            <Text style={[textStyles.caption, { color: theme.textSecondary }]}>
-              📝 {item.note}
-            </Text>
+            <View style={styles.noteContainer}>
+              <Ionicons name="chatbubble-outline" size={16} color={theme.textSecondary} />
+              <Text style={[styles.noteText, { color: theme.textSecondary }]}>{item.note}</Text>
+            </View>
           </Pressable>
         ) : (
           <Pressable
@@ -224,11 +226,11 @@ export default function HighlightsScreen() {
             {item.chapterTitle || 'Unknown chapter'}
           </Text>
           <Pressable
+            style={styles.actionButton}
             onPress={() => handleShareAsQuote(item)}
-            hitSlop={8}
-            style={styles.shareChip}
           >
-            <Text style={[textStyles.caption, { color: theme.primary }]}>📤 Share</Text>
+            <Ionicons name="share-outline" size={18} color={theme.primary} />
+            <Text style={[textStyles.caption, { color: theme.primary, marginLeft: spacing.xs }]}>Share</Text>
           </Pressable>
           <Text style={[textStyles.caption, { color: theme.textTertiary }]}>
             {formatDate(item.createdAt)}
@@ -242,8 +244,12 @@ export default function HighlightsScreen() {
     <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
       {/* Header */}
       <View style={[styles.header, { borderBottomColor: theme.border }]}>
-        <Pressable onPress={() => router.back()} hitSlop={12}>
-          <Text style={[styles.backButton, { color: theme.primary }]}>← Back</Text>
+        <Pressable 
+          onPress={() => router.back()}
+          style={({ pressed }) => [styles.backButton, pressed && { opacity: 0.7 }]}
+        >
+          <Ionicons name="arrow-back" size={24} color={theme.primary} />
+          <Text style={[styles.backText, { color: theme.primary }]}>Back</Text>
         </Pressable>
         <View style={styles.headerCenter}>
           <Text style={[textStyles.title, { color: theme.textPrimary }]}>Highlights</Text>
@@ -282,13 +288,13 @@ export default function HighlightsScreen() {
       {/* List */}
       {filteredHighlights.length === 0 && !searchQuery ? (
         <EmptyState
-          icon="🖍️"
+          icon="brush-outline"
           title="No highlights yet"
           subtitle="Select text in the reader to create highlights"
         />
       ) : filteredHighlights.length === 0 && searchQuery ? (
         <EmptyState
-          icon="🔍"
+          icon="search-outline"
           title="No results"
           subtitle={`No highlights matching "${searchQuery}"`}
         />
@@ -391,8 +397,8 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.md,
+    paddingHorizontal: spacing.xl,
+    paddingVertical: spacing.lg,
     borderBottomWidth: 1,
   },
   headerCenter: {
@@ -400,9 +406,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   backButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginRight: spacing.lg,
+  },
+  backText: {
     fontSize: 16,
     fontWeight: '500',
-    width: 60,
+    marginLeft: spacing.xs,
   },
   searchContainer: {
     padding: spacing.md,

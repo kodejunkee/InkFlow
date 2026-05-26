@@ -20,6 +20,7 @@ import { useSettingsStore } from '../../stores/settingsStore';
 import { getTheme } from '../../theme/themes';
 import { textStyles } from '../../theme/typography';
 import { spacing, borderRadius } from '../../theme/spacing';
+import { Ionicons } from '@expo/vector-icons';
 
 type Tab = 'bookmarks' | 'quotes';
 
@@ -70,7 +71,10 @@ export function AnnotationsDrawer({
       style={[styles.annotationItem, { borderLeftColor: theme.primary }]}
     >
       <View style={styles.annotationHeader}>
-        <Text style={[textStyles.caption, { color: theme.primary }]}>🔖 Bookmark</Text>
+        <View style={styles.itemHeader}>
+          <Ionicons name="bookmark" size={14} color={theme.primary} style={styles.itemTypeIcon} />
+          <Text style={[textStyles.caption, { color: theme.primary }]}>Bookmark</Text>
+        </View>
         <Text style={[textStyles.caption, { color: theme.textSecondary, fontSize: 11 }]}>
           {formatDate(item.createdAt)}
         </Text>
@@ -104,9 +108,17 @@ export function AnnotationsDrawer({
         style={[styles.annotationItem, { borderLeftColor: colorHex }]}
       >
         <View style={styles.annotationHeader}>
-          <Text style={[textStyles.caption, { color: colorHex }]}>
-            {isQuote ? '💬 Quote' : '🖍️ Highlight'}
-          </Text>
+          <View style={styles.itemHeader}>
+            <Ionicons 
+              name={isQuote ? 'chatbubble-outline' : 'brush-outline'} 
+              size={14} 
+              color={colorHex} 
+              style={styles.itemTypeIcon} 
+            />
+            <Text style={[textStyles.caption, { color: colorHex }]}>
+              {isQuote ? 'Quote' : 'Highlight'}
+            </Text>
+          </View>
           <Text style={[textStyles.caption, { color: theme.textSecondary, fontSize: 11 }]}>
             {formatDate(item.createdAt)}
           </Text>
@@ -128,7 +140,10 @@ export function AnnotationsDrawer({
               style={[textStyles.caption, { color: theme.textSecondary }]}
               numberOfLines={2}
             >
-              📝 {item.note}
+            <View style={styles.noteContainer}>
+              <Ionicons name="chatbubble-outline" size={14} color={theme.textSecondary} />
+              <Text style={[styles.noteText, { color: theme.textSecondary }]}>{item.note}</Text>
+            </View>
             </Text>
           </View>
         ) : null}
@@ -158,7 +173,7 @@ export function AnnotationsDrawer({
             <View style={[styles.drawerHeader, { borderBottomColor: theme.border }]}>
               <Text style={[textStyles.title, { color: theme.textPrimary }]}>Annotations</Text>
               <Pressable onPress={onClose} hitSlop={12}>
-                <Text style={[styles.closeButton, { color: theme.textSecondary }]}>✕</Text>
+                <Ionicons name="close" size={24} color={theme.textSecondary} />
               </Pressable>
             </View>
 
@@ -171,17 +186,25 @@ export function AnnotationsDrawer({
                   activeTab === 'quotes' && { borderBottomColor: theme.primary },
                 ]}
               >
-                <Text
-                  style={[
-                    textStyles.bodySmall,
-                    {
-                      color: activeTab === 'quotes' ? theme.primary : theme.textSecondary,
-                      fontWeight: activeTab === 'quotes' ? '600' : '400',
-                    },
-                  ]}
-                >
-                  Quotes & Highlights ({highlights.length})
-                </Text>
+                <View style={styles.tabContent}>
+                  <Ionicons 
+                    name="brush-outline" 
+                    size={16} 
+                    color={activeTab === 'quotes' ? theme.primary : theme.textSecondary} 
+                    style={styles.tabIcon} 
+                  />
+                  <Text
+                    style={[
+                      textStyles.bodySmall,
+                      {
+                        color: activeTab === 'quotes' ? theme.primary : theme.textSecondary,
+                        fontWeight: activeTab === 'quotes' ? '600' : '400',
+                      },
+                    ]}
+                  >
+                    Quotes & Highlights ({highlights.length})
+                  </Text>
+                </View>
               </Pressable>
               <Pressable
                 onPress={() => setActiveTab('bookmarks')}
@@ -190,29 +213,40 @@ export function AnnotationsDrawer({
                   activeTab === 'bookmarks' && { borderBottomColor: theme.primary },
                 ]}
               >
-                <Text
-                  style={[
-                    textStyles.bodySmall,
-                    {
-                      color: activeTab === 'bookmarks' ? theme.primary : theme.textSecondary,
-                      fontWeight: activeTab === 'bookmarks' ? '600' : '400',
-                    },
-                  ]}
-                >
-                  Bookmarks ({bookmarks.length})
-                </Text>
+                <View style={styles.tabContent}>
+                  <Ionicons 
+                    name="bookmark-outline" 
+                    size={16} 
+                    color={activeTab === 'bookmarks' ? theme.primary : theme.textSecondary} 
+                    style={styles.tabIcon} 
+                  />
+                  <Text
+                    style={[
+                      textStyles.bodySmall,
+                      {
+                        color: activeTab === 'bookmarks' ? theme.primary : theme.textSecondary,
+                        fontWeight: activeTab === 'bookmarks' ? '600' : '400',
+                      },
+                    ]}
+                  >
+                    Bookmarks ({bookmarks.length})
+                  </Text>
+                </View>
               </Pressable>
             </View>
 
             {/* Content */}
             {isEmpty ? (
               <View style={styles.emptyState}>
-                <Text style={{ fontSize: 32, marginBottom: spacing.md }}>
-                  {activeTab === 'bookmarks' ? '🔖' : '💬'}
-                </Text>
+                <Ionicons 
+                  name={activeTab === 'bookmarks' ? 'bookmark-outline' : 'chatbubbles-outline'} 
+                  size={48} 
+                  color={theme.textTertiary} 
+                  style={{ marginBottom: spacing.md }} 
+                />
                 <Text style={[textStyles.body, { color: theme.textSecondary, textAlign: 'center' }]}>
                   {activeTab === 'bookmarks'
-                    ? 'No bookmarks yet.\nTap the 🔖 icon in the header to add one.'
+                    ? 'No bookmarks yet.\nTap the bookmark icon in the header to add one.'
                     : 'No quotes or highlights yet.\nSelect text and tap Quote or a color to add one.'}
                 </Text>
               </View>
@@ -283,20 +317,26 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.md,
     borderBottomWidth: 1,
   },
-  closeButton: {
-    fontSize: 20,
-    padding: 4,
+  closeButtonContainer: {
+    padding: spacing.sm,
   },
   tabRow: {
     flexDirection: 'row',
     borderBottomWidth: 1,
   },
-  tab: {
+  tabButton: {
     flex: 1,
     alignItems: 'center',
-    paddingVertical: spacing.sm + 2,
+    paddingVertical: spacing.md,
     borderBottomWidth: 2,
     borderBottomColor: 'transparent',
+  },
+  tabContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  tabIcon: {
+    marginRight: spacing.xs,
   },
   listContent: {
     paddingBottom: spacing.md,

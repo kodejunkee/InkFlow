@@ -20,6 +20,7 @@ import { useSettingsStore } from '../../src/stores/settingsStore';
 import { getTheme } from '../../src/theme/themes';
 import { textStyles } from '../../src/theme/typography';
 import { spacing, borderRadius } from '../../src/theme/spacing';
+import { Ionicons } from '@expo/vector-icons';
 import { getBookById, getBookmarksByBookId, deleteBookmark } from '../../src/database/queries';
 import { EmptyState } from '../../src/components/common/EmptyState';
 import type { Book, Bookmark } from '../../src/types/book';
@@ -98,7 +99,7 @@ export default function BookmarksScreen() {
       ]}
     >
       <View style={styles.bookmarkIcon}>
-        <Text style={styles.icon}>🔖</Text>
+        <Ionicons name="bookmark" size={24} color={theme.textTertiary} style={styles.icon} />
       </View>
       <View style={styles.bookmarkContent}>
         <Text
@@ -117,7 +118,7 @@ export default function BookmarksScreen() {
           {formatDate(item.createdAt)}
         </Text>
       </View>
-      <Text style={[styles.chevron, { color: theme.textTertiary }]}>›</Text>
+      <Ionicons name="chevron-forward" size={20} color={theme.textTertiary} style={styles.chevron} />
     </Pressable>
   );
 
@@ -125,8 +126,12 @@ export default function BookmarksScreen() {
     <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
       {/* Header */}
       <View style={[styles.header, { borderBottomColor: theme.border }]}>
-        <Pressable onPress={() => router.back()} hitSlop={12}>
-          <Text style={[styles.backButton, { color: theme.primary }]}>← Back</Text>
+        <Pressable 
+          onPress={() => router.back()}
+          style={({ pressed }) => [styles.backButton, pressed && { opacity: 0.7 }]}
+        >
+          <Ionicons name="arrow-back" size={24} color={theme.primary} />
+          <Text style={[styles.backText, { color: theme.primary }]}>Back</Text>
         </Pressable>
         <View style={styles.headerCenter}>
           <Text style={[textStyles.title, { color: theme.textPrimary }]}>Bookmarks</Text>
@@ -145,7 +150,7 @@ export default function BookmarksScreen() {
       {/* List */}
       {bookmarks.length === 0 ? (
         <EmptyState
-          icon="🔖"
+          icon="bookmark-outline"
           title="No bookmarks yet"
           subtitle="Tap the bookmark icon in the reader to save your place"
         />
@@ -169,8 +174,8 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.md,
+    paddingHorizontal: spacing.xl,
+    paddingVertical: spacing.lg,
     borderBottomWidth: 1,
   },
   headerCenter: {
@@ -178,9 +183,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   backButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginRight: spacing.lg,
+  },
+  backText: {
     fontSize: 16,
     fontWeight: '500',
-    width: 60,
+    marginLeft: spacing.xs,
   },
   listContent: {
     padding: spacing.lg,
@@ -202,14 +212,13 @@ const styles = StyleSheet.create({
     marginRight: spacing.md,
   },
   icon: {
-    fontSize: 22,
+    marginRight: spacing.sm,
   },
   bookmarkContent: {
     flex: 1,
     marginRight: spacing.sm,
   },
   chevron: {
-    fontSize: 24,
-    fontWeight: '300',
+    marginLeft: spacing.sm,
   },
 });

@@ -20,6 +20,7 @@ import { useSettingsStore } from '../src/stores/settingsStore';
 import { getTheme, type ThemeName } from '../src/theme/themes';
 import { textStyles } from '../src/theme/typography';
 import { spacing, borderRadius } from '../src/theme/spacing';
+import { Ionicons } from '@expo/vector-icons';
 
 export default function SettingsScreen() {
   const router = useRouter();
@@ -48,9 +49,13 @@ export default function SettingsScreen() {
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
       {/* Header */}
-      <View style={styles.header}>
-        <Pressable onPress={() => router.back()} hitSlop={12}>
-          <Text style={[styles.backButton, { color: theme.primary }]}>← Back</Text>
+      <View style={[styles.header, { borderColor: theme.border }]}>
+        <Pressable 
+          onPress={() => router.back()}
+          style={({ pressed }) => [styles.backButton, pressed && { opacity: 0.7 }]}
+        >
+          <Ionicons name="arrow-back" size={24} color={theme.primary} />
+          <Text style={[styles.backText, { color: theme.primary }]}>Back</Text>
         </Pressable>
         <Text style={[textStyles.title, { color: theme.textPrimary }]}>Settings</Text>
         <View style={styles.placeholder} />
@@ -223,15 +228,20 @@ const styles = StyleSheet.create({
   },
   header: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: spacing.lg,
-    paddingTop: spacing.xl,
-    paddingBottom: spacing.lg,
+    paddingHorizontal: spacing.xl,
+    paddingVertical: spacing.lg,
+    borderBottomWidth: 1,
   },
   backButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginRight: spacing.lg,
+  },
+  backText: {
     fontSize: 16,
     fontWeight: '500',
+    marginLeft: spacing.xs,
   },
   placeholder: {
     width: 60,

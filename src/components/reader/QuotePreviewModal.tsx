@@ -21,6 +21,7 @@ import { useSettingsStore } from '../../stores/settingsStore';
 import { getTheme } from '../../theme/themes';
 import { textStyles } from '../../theme/typography';
 import { spacing, borderRadius } from '../../theme/spacing';
+import { Ionicons } from '@expo/vector-icons';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 const CARD_WIDTH = SCREEN_WIDTH * 0.85;
@@ -93,7 +94,7 @@ export function QuotePreviewModal({
               Share Quote
             </Text>
             <Pressable onPress={onDismiss} hitSlop={12}>
-              <Text style={[styles.closeButton, { color: theme.textSecondary }]}>✕</Text>
+              <Ionicons name="close" size={24} color={theme.textSecondary} />
             </Pressable>
           </View>
 
@@ -175,7 +176,7 @@ export function QuotePreviewModal({
                 { backgroundColor: theme.primary },
               ]}
             >
-              <Text style={styles.shareIcon}>📤</Text>
+              <Ionicons name="share-outline" size={24} color="#FFFFFF" style={styles.shareIcon} />
               <Text style={[textStyles.body, { color: '#FFFFFF', fontWeight: '600' }]}>
                 Share Image
               </Text>
@@ -220,9 +221,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.md,
   },
-  closeButton: {
-    fontSize: 20,
-    padding: 4,
+  closeButtonContainer: {
+    padding: spacing.sm,
   },
   previewArea: {
     alignItems: 'center',

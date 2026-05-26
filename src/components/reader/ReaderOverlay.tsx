@@ -19,12 +19,14 @@ import { useReaderStore } from '../../stores/readerStore';
 import { getTheme } from '../../theme/themes';
 import { textStyles } from '../../theme/typography';
 import { spacing } from '../../theme/spacing';
+import { Ionicons } from '@expo/vector-icons';
 
 interface ReaderOverlayProps {
   visible: boolean;
   bookTitle: string;
   chapterTitle: string;
   progress: number;
+  isBookmarked: boolean;
   onBack: () => void;
   onChapters: () => void;
   onAnnotations: () => void;
@@ -37,6 +39,7 @@ export function ReaderOverlay({
   bookTitle,
   chapterTitle,
   progress,
+  isBookmarked,
   onBack,
   onChapters,
   onAnnotations,
@@ -89,7 +92,7 @@ export function ReaderOverlay({
           translucent
         />
         <Pressable onPress={onBack} hitSlop={12} style={styles.headerButton}>
-          <Text style={[styles.buttonText, { color: theme.primary }]}>←</Text>
+          <Ionicons name="arrow-back" size={24} color={theme.primary} />
         </Pressable>
 
         <View style={styles.headerCenter}>
@@ -110,7 +113,11 @@ export function ReaderOverlay({
         </View>
 
         <Pressable onPress={onBookmark} hitSlop={12} style={styles.headerButton}>
-          <Text style={[styles.buttonText, { color: theme.primary }]}>🔖</Text>
+          <Ionicons 
+            name={isBookmarked ? "bookmark" : "bookmark-outline"} 
+            size={24} 
+            color={theme.primary} 
+          />
         </Pressable>
       </Animated.View>
 
@@ -149,21 +156,21 @@ export function ReaderOverlay({
         {/* Action buttons */}
         <View style={styles.footerActions}>
           <Pressable onPress={onChapters} style={styles.footerButton}>
-            <Text style={[styles.footerIcon]}>📑</Text>
+            <Ionicons name="list-outline" size={24} color={theme.textSecondary} />
             <Text style={[textStyles.caption, { color: theme.textSecondary }]}>
               Chapters
             </Text>
           </Pressable>
 
           <Pressable onPress={onAnnotations} style={styles.footerButton}>
-            <Text style={[styles.footerIcon]}>💬</Text>
+            <Ionicons name="chatbubbles-outline" size={24} color={theme.textSecondary} />
             <Text style={[textStyles.caption, { color: theme.textSecondary }]}>
               Notes
             </Text>
           </Pressable>
 
           <Pressable onPress={onSettings} style={styles.footerButton}>
-            <Text style={[styles.footerIcon]}>⚙️</Text>
+            <Ionicons name="settings-outline" size={24} color={theme.textSecondary} />
             <Text style={[textStyles.caption, { color: theme.textSecondary }]}>
               Settings
             </Text>
@@ -199,7 +206,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.sm,
   },
   buttonText: {
-    fontSize: 22,
+    fontSize: 24,
   },
   footer: {
     position: 'absolute',

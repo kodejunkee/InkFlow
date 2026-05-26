@@ -5,18 +5,19 @@
 import React, { useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, Animated } from 'react-native';
 import { useSettingsStore } from '../../stores/settingsStore';
+import { Ionicons } from '@expo/vector-icons';
 import { getTheme } from '../../theme/themes';
 import { textStyles } from '../../theme/typography';
 import { spacing } from '../../theme/spacing';
 
 interface EmptyStateProps {
-  icon?: string;
+  icon?: keyof typeof Ionicons.glyphMap;
   title: string;
   subtitle?: string;
 }
 
 export function EmptyState({
-  icon = '📚',
+  icon = 'library-outline',
   title,
   subtitle,
 }: EmptyStateProps) {
@@ -50,8 +51,8 @@ export function EmptyState({
         },
       ]}
     >
-      <Text style={styles.icon}>{icon}</Text>
-      <Text style={[textStyles.title, styles.title, { color: theme.textPrimary }]}>
+      <Ionicons name={icon} size={64} color={theme.textTertiary} style={styles.icon} />
+      <Text style={[textStyles.h2, { color: theme.textPrimary, marginBottom: spacing.xs }]}>
         {title}
       </Text>
       {subtitle && (
@@ -73,8 +74,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing['3xl'],
   },
   icon: {
-    fontSize: 64,
-    marginBottom: spacing.xl,
+    marginBottom: spacing.md,
   },
   title: {
     textAlign: 'center',

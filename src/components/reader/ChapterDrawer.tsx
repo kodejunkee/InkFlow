@@ -17,6 +17,7 @@ import { useSettingsStore } from '../../stores/settingsStore';
 import { getTheme } from '../../theme/themes';
 import { textStyles } from '../../theme/typography';
 import { spacing, borderRadius } from '../../theme/spacing';
+import { Ionicons } from '@expo/vector-icons';
 
 interface ChapterDrawerProps {
   visible: boolean;
@@ -91,9 +92,7 @@ export function ChapterDrawer({
                 Chapters
               </Text>
               <Pressable onPress={onClose} hitSlop={12}>
-                <Text style={[styles.closeButton, { color: theme.textSecondary }]}>
-                  ✕
-                </Text>
+                <Ionicons name="close" size={24} color={theme.textSecondary} />
               </Pressable>
             </View>
 
@@ -146,9 +145,8 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.md,
     borderBottomWidth: 1,
   },
-  closeButton: {
-    fontSize: 20,
-    padding: 4,
+  closeButtonContainer: {
+    padding: spacing.sm,
   },
   listContent: {
     paddingBottom: spacing.xl,

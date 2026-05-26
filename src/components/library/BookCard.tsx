@@ -15,6 +15,7 @@ import {
   Pressable,
   Dimensions,
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { useSettingsStore } from '../../stores/settingsStore';
 import { getTheme } from '../../theme/themes';
 import { textStyles } from '../../theme/typography';
@@ -95,14 +96,8 @@ export function BookCard({
               resizeMode="cover"
             />
           ) : (
-            <View style={[styles.cover, styles.placeholderCover, { backgroundColor: theme.surfaceElevated }]}>
-              <Text style={styles.placeholderIcon}>📖</Text>
-              <Text
-                style={[textStyles.caption, { color: theme.textTertiary }]}
-                numberOfLines={2}
-              >
-                {title}
-              </Text>
+            <View style={[styles.cover, styles.placeholderCover, { backgroundColor: theme.surface }]}>
+              <Ionicons name="book-outline" size={32} color={theme.textTertiary} />
             </View>
           )}
 
@@ -173,10 +168,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: spacing.md,
-  },
-  placeholderIcon: {
-    fontSize: 32,
-    marginBottom: spacing.xs,
   },
   progressContainer: {
     position: 'absolute',

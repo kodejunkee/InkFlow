@@ -15,6 +15,7 @@ import {
   Pressable,
   Dimensions,
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { useSettingsStore } from '../../stores/settingsStore';
 import { getTheme } from '../../theme/themes';
 import { textStyles } from '../../theme/typography';
@@ -81,8 +82,8 @@ export function ContinueReading({ book, onPress }: ContinueReadingProps) {
                 resizeMode="cover"
               />
             ) : (
-              <View style={[styles.cover, styles.placeholder, { backgroundColor: theme.surfaceElevated }]}>
-                <Text style={styles.placeholderIcon}>📖</Text>
+              <View style={[styles.placeholderCover, { backgroundColor: theme.surface }]}>
+                <Ionicons name="book-outline" size={32} color={theme.textTertiary} />
               </View>
             )}
           </View>
@@ -132,7 +133,7 @@ export function ContinueReading({ book, onPress }: ContinueReadingProps) {
 
           {/* Continue arrow */}
           <View style={styles.arrowContainer}>
-            <Text style={[styles.arrow, { color: theme.primary }]}>›</Text>
+            <Ionicons name="chevron-forward" size={20} color={theme.primary} />
           </View>
         </Pressable>
       </Animated.View>
@@ -168,12 +169,11 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
   },
-  placeholder: {
+  placeholderCover: {
+    width: '100%',
+    height: '100%',
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  placeholderIcon: {
-    fontSize: 24,
   },
   info: {
     flex: 1,
@@ -203,8 +203,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingLeft: spacing.sm,
   },
-  arrow: {
-    fontSize: 28,
-    fontWeight: '300',
+  chapterTitle: {
+    flex: 1,
+    marginRight: spacing.sm,
   },
 });

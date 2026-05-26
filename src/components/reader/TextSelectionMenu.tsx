@@ -25,6 +25,7 @@ import { useSettingsStore } from '../../stores/settingsStore';
 import { getTheme } from '../../theme/themes';
 import { textStyles } from '../../theme/typography';
 import { spacing, borderRadius } from '../../theme/spacing';
+import { Ionicons } from '@expo/vector-icons';
 
 interface TextSelectionMenuProps {
   visible: boolean;
@@ -158,22 +159,22 @@ export function TextSelectionMenu({
       {!showNoteInput && (
         <View style={styles.actionRow}>
           <Pressable onPress={handleSaveQuote} style={styles.actionButton}>
-            <Text style={styles.actionIcon}>💬</Text>
+            <Ionicons name="chatbubble-outline" size={20} color={theme.textPrimary} />
             <Text style={[textStyles.caption, { color: theme.textSecondary }]}>Quote</Text>
           </Pressable>
 
           <Pressable onPress={onCopy} style={styles.actionButton}>
-            <Text style={styles.actionIcon}>📋</Text>
+            <Ionicons name="copy-outline" size={20} color={theme.textPrimary} />
             <Text style={[textStyles.caption, { color: theme.textSecondary }]}>Copy</Text>
           </Pressable>
 
           <Pressable onPress={onShare} style={styles.actionButton}>
-            <Text style={styles.actionIcon}>📤</Text>
+            <Ionicons name="share-outline" size={20} color={theme.textPrimary} />
             <Text style={[textStyles.caption, { color: theme.textSecondary }]}>Share</Text>
           </Pressable>
 
           <Pressable onPress={handleDismiss} style={styles.actionButton}>
-            <Text style={styles.actionIcon}>✕</Text>
+            <Ionicons name="close" size={20} color={theme.textPrimary} />
             <Text style={[textStyles.caption, { color: theme.textSecondary }]}>Close</Text>
           </Pressable>
         </View>
@@ -233,8 +234,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
   },
   actionIcon: {
-    fontSize: 20,
-    marginBottom: 2,
+    marginBottom: 4,
   },
   noteContainer: {
     marginBottom: spacing.md,
