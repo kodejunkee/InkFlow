@@ -9,7 +9,7 @@
  * - Long-press to delete books
  */
 
-import React, { useCallback, useEffect, useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import {
   View,
   Text,
@@ -18,7 +18,7 @@ import {
   Pressable,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useRouter } from 'expo-router';
+import { useRouter, useFocusEffect } from 'expo-router';
 import { useDB } from './_layout';
 import { useSettingsStore } from '../src/stores/settingsStore';
 import { useLibraryStore } from '../src/stores/libraryStore';
@@ -63,14 +63,19 @@ export default function LibraryScreen() {
     }
   }, [db, loadBooksAction, setLoading]);
 
-  useEffect(() => {
-    refreshBooks();
-  }, [refreshBooks]);
+  // Refresh books every time this screen gains focus (e.g. returning from reader)
+  useFocusEffect(
+    useCallback(() => {
+      refreshBooks();
+    }, [refreshBooks]),
+  );
 
-  // Find the most recently updated book with progress > 0
+  // Find the most recently read book (has progress > 0 OR has a saved location)
+  // We check lastLocation too because progress can be 0 if location generation
+  // hadn't completed before the user exited the reader.
   const continueBook = useMemo(() => {
     const inProgress = books
-      .filter((b) => b.progress > 0 && b.progress < 1)
+      .filter((b) => (b.progress > 0 && b.progress < 1) || b.lastLocation)
       .sort(
         (a, b) =>
           new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
