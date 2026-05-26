@@ -204,9 +204,9 @@ export function generateReaderHtml(options: Partial<GenerateOptions> = {}): stri
                 // to give the highlight some breathing room from the top edge.
                 setTimeout(function() {
                   if (rendition.manager && rendition.manager.container) {
-                    rendition.manager.container.scrollTop -= 60; // 60px breathing room
+                    rendition.manager.container.scrollTop -= 120; // 120px breathing room
                   }
-                }, 50);
+                }, 100);
               });
             }
             break;
