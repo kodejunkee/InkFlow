@@ -106,6 +106,10 @@ export function QuotePreviewModal({
             >
               {/* Card Background */}
               <View style={[styles.card, { backgroundColor: '#1E1E1E' }]}>
+                {/* App Branding */}
+                <Text style={styles.brandName}>InkFlow</Text>
+                <View style={styles.brandDivider} />
+
                 {/* Quote Text */}
                 <Text
                   style={[
@@ -241,6 +245,19 @@ const styles = StyleSheet.create({
     padding: spacing.xl,
     minHeight: CARD_WIDTH * 1.2,
     justifyContent: 'space-between',
+  },
+  brandName: {
+    color: '#AAAAAA',
+    fontSize: 13,
+    fontWeight: '600',
+    letterSpacing: 1.5,
+    textTransform: 'uppercase',
+    marginBottom: spacing.sm,
+  },
+  brandDivider: {
+    height: 1,
+    backgroundColor: '#333333',
+    marginBottom: spacing.lg,
   },
   quoteText: {
     lineHeight: 32,
