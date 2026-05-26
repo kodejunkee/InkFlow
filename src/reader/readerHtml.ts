@@ -296,22 +296,15 @@ export function generateReaderHtml(options: Partial<GenerateOptions> = {}): stri
           await rendition.display();
         }
 
-        // ── Generate locations for progress tracking ────────────────
-        try {
-          await book.locations.generate(1600);
-        } catch (e) {
-          console.warn('[Reader] Location generation failed:', e);
-        }
-
         // ── TOC ─────────────────────────────────────────────────────
-        const toc = flattenToc(book.navigation.toc);
+        var toc = flattenToc(book.navigation.toc);
         sendToRN({ type: 'tocLoaded', toc: toc });
 
         // ── Tap detection ───────────────────────────────────────────
         rendition.on('click', function(e) {
           // Normalise tap position
-          const x = e.clientX / window.innerWidth;
-          const y = e.clientY / window.innerHeight;
+          var x = e.clientX / window.innerWidth;
+          var y = e.clientY / window.innerHeight;
           sendToRN({ type: 'tap', x: x, y: y });
         });
 
@@ -319,6 +312,13 @@ export function generateReaderHtml(options: Partial<GenerateOptions> = {}): stri
         isReady = true;
         document.getElementById('loading').classList.add('hidden');
         sendToRN({ type: 'ready' });
+
+        // ── Generate locations in background (non-blocking) ─────────
+        // This runs AFTER the book is visible so large EPUBs open instantly.
+        // Progress will read 0% until generation completes.
+        book.locations.generate(1600).catch(function(e) {
+          console.warn('[Reader] Location generation failed:', e);
+        });
 
       } catch (e) {
         sendToRN({ type: 'error', message: e.message || 'Failed to load book', stack: e.stack });
