@@ -27,6 +27,7 @@ interface ReaderOverlayProps {
   progress: number;
   onBack: () => void;
   onChapters: () => void;
+  onAnnotations: () => void;
   onBookmark: () => void;
   onSettings: () => void;
 }
@@ -38,6 +39,7 @@ export function ReaderOverlay({
   progress,
   onBack,
   onChapters,
+  onAnnotations,
   onBookmark,
   onSettings,
 }: ReaderOverlayProps) {
@@ -150,6 +152,13 @@ export function ReaderOverlay({
             <Text style={[styles.footerIcon]}>📑</Text>
             <Text style={[textStyles.caption, { color: theme.textSecondary }]}>
               Chapters
+            </Text>
+          </Pressable>
+
+          <Pressable onPress={onAnnotations} style={styles.footerButton}>
+            <Text style={[styles.footerIcon]}>💬</Text>
+            <Text style={[textStyles.caption, { color: theme.textSecondary }]}>
+              Notes
             </Text>
           </Pressable>
 

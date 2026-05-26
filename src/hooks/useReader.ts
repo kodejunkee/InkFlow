@@ -18,8 +18,10 @@ import {
   updateBookLocation,
   getBookmarksByBookId,
   insertBookmark,
+  deleteBookmark,
   getHighlightsByBookId,
   insertHighlight,
+  deleteHighlight,
   startReadingSession,
   endReadingSession,
 } from '../database/queries';
@@ -62,6 +64,11 @@ export function useReader({ db, book }: UseReaderOptions) {
   const [selectedCfiRange, setSelectedCfiRange] = useState('');
   const [selectedChapterTitle, setSelectedChapterTitle] = useState('');
   const [isSelectionMenuVisible, setIsSelectionMenuVisible] = useState(false);
+
+  // Annotations drawer state
+  const [isAnnotationsDrawerOpen, setAnnotationsDrawerOpen] = useState(false);
+  const [bookmarks, setBookmarks] = useState<import('../types/book').Bookmark[]>([]);
+  const [highlights, setHighlights] = useState<import('../types/book').Highlight[]>([]);
 
   // ─── Initialize ────────────────────────────────────────────────────
 
@@ -194,6 +201,35 @@ export function useReader({ db, book }: UseReaderOptions) {
     [],
   );
 
+  const goToCfi = useCallback(
+    (cfi: string) => {
+      if (webViewRef.current) {
+        const cmd: ReaderCommand = { type: 'goToCfi', cfi };
+        webViewRef.current.injectJavaScript(serializeCommand(cmd));
+      }
+    },
+    [],
+  );
+
+  // ─── Load annotations from DB ──────────────────────────────────────
+
+  const refreshAnnotations = useCallback(() => {
+    if (!db || !book) return;
+    try {
+      setBookmarks(getBookmarksByBookId(db, book.id));
+      setHighlights(getHighlightsByBookId(db, book.id));
+    } catch (e) {
+      console.error('[useReader] Failed to load annotations:', e);
+    }
+  }, [db, book]);
+
+  const toggleAnnotationsDrawer = useCallback(() => {
+    setAnnotationsDrawerOpen((prev) => {
+      if (!prev) refreshAnnotations(); // refresh when opening
+      return !prev;
+    });
+  }, [refreshAnnotations]);
+
   const addHighlightAction = useCallback(
     (color: HighlightColor) => {
       if (!db || !book || !selectedCfiRange || !selectedText) return;
@@ -244,6 +280,42 @@ export function useReader({ db, book }: UseReaderOptions) {
       console.error('[useReader] Failed to add bookmark:', e);
     }
   }, [db, book, currentCfi, chapterTitle]);
+
+  const deleteBookmarkAction = useCallback(
+    (id: number) => {
+      if (!db) return;
+      try {
+        deleteBookmark(db, id);
+        setBookmarks((prev) => prev.filter((b) => b.id !== id));
+      } catch (e) {
+        console.error('[useReader] Failed to delete bookmark:', e);
+      }
+    },
+    [db],
+  );
+
+  const deleteHighlightAction = useCallback(
+    (id: number) => {
+      if (!db) return;
+      try {
+        // Remove from WebView
+        const hl = highlights.find((h) => h.id === id);
+        if (hl && webViewRef.current) {
+          const cmd: ReaderCommand = {
+            type: 'removeHighlight',
+            cfiRange: hl.cfiRange,
+            id: hl.id,
+          };
+          webViewRef.current.injectJavaScript(serializeCommand(cmd));
+        }
+        deleteHighlight(db, id);
+        setHighlights((prev) => prev.filter((h) => h.id !== id));
+      } catch (e) {
+        console.error('[useReader] Failed to delete highlight:', e);
+      }
+    },
+    [db, highlights],
+  );
 
   const saveQuoteAction = useCallback(
     (note: string) => {
@@ -359,14 +431,23 @@ export function useReader({ db, book }: UseReaderOptions) {
     handleError,
     // Actions
     goToChapter,
+    goToCfi,
     addHighlightAction,
     addBookmarkAction,
     saveQuoteAction,
+    deleteBookmarkAction,
+    deleteHighlightAction,
     copySelection,
     shareSelection,
     dismissSelection,
     toggleOverlay,
     toggleChapterDrawer,
     setChapterDrawerOpen,
+    // Annotations drawer
+    isAnnotationsDrawerOpen,
+    setAnnotationsDrawerOpen,
+    toggleAnnotationsDrawer,
+    bookmarks,
+    highlights,
   };
 }

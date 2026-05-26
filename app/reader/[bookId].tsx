@@ -23,6 +23,7 @@ import { useQuoteCard } from '../../src/hooks/useQuoteCard';
 import { ReaderWebView } from '../../src/components/reader/ReaderWebView';
 import { ReaderOverlay } from '../../src/components/reader/ReaderOverlay';
 import { ChapterDrawer } from '../../src/components/reader/ChapterDrawer';
+import { AnnotationsDrawer } from '../../src/components/reader/AnnotationsDrawer';
 import { TextSelectionMenu } from '../../src/components/reader/TextSelectionMenu';
 import { QuotePreviewModal } from '../../src/components/reader/QuotePreviewModal';
 import type { Book } from '../../src/types/book';
@@ -68,10 +69,18 @@ export default function ReaderScreen() {
     addHighlightAction,
     addBookmarkAction,
     saveQuoteAction,
+    deleteBookmarkAction,
+    deleteHighlightAction,
+    goToCfi,
     copySelection,
     dismissSelection,
     toggleChapterDrawer,
     setChapterDrawerOpen,
+    isAnnotationsDrawerOpen,
+    setAnnotationsDrawerOpen,
+    toggleAnnotationsDrawer,
+    bookmarks,
+    highlights,
   } = useReader({ db, book });
 
   // Quote card generation
@@ -137,6 +146,7 @@ export default function ReaderScreen() {
         progress={progress}
         onBack={() => router.back()}
         onChapters={() => toggleChapterDrawer()}
+        onAnnotations={toggleAnnotationsDrawer}
         onBookmark={addBookmarkAction}
         onSettings={() => router.push('/settings' as any)}
       />
@@ -148,6 +158,18 @@ export default function ReaderScreen() {
         currentChapterIndex={chapterIndex}
         onSelectChapter={goToChapter}
         onClose={() => setChapterDrawerOpen(false)}
+      />
+
+      {/* Annotations drawer (bookmarks, quotes, highlights) */}
+      <AnnotationsDrawer
+        visible={isAnnotationsDrawerOpen}
+        bookmarks={bookmarks}
+        highlights={highlights}
+        onGoToBookmark={(cfi) => { goToCfi(cfi); }}
+        onGoToHighlight={(cfiRange) => { goToCfi(cfiRange); }}
+        onDeleteBookmark={deleteBookmarkAction}
+        onDeleteHighlight={deleteHighlightAction}
+        onClose={() => setAnnotationsDrawerOpen(false)}
       />
 
       {/* Text selection context menu */}
