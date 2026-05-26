@@ -38,7 +38,6 @@ import {
 } from '../../src/database/queries';
 import { EmptyState } from '../../src/components/common/EmptyState';
 import { QuotePreviewModal } from '../../src/components/reader/QuotePreviewModal';
-import { useQuoteCard } from '../../src/hooks/useQuoteCard';
 import type { Book, Highlight } from '../../src/types/book';
 
 const COLOR_HEX: Record<string, string> = {
@@ -65,15 +64,8 @@ export default function HighlightsScreen() {
   const [noteText, setNoteText] = useState('');
   const [isQuotePreviewVisible, setIsQuotePreviewVisible] = useState(false);
 
-  // Quote card
-  const {
-    generate: generateQuote,
-    share: shareQuote,
-    isGenerating: isGeneratingQuote,
-    cardPath: quoteCardPath,
-    error: quoteError,
-    reset: resetQuote,
-  } = useQuoteCard();
+  // Quote card state
+  const [quoteData, setQuoteData] = useState<import('../../src/components/reader/QuotePreviewModal').QuoteData | null>(null);
 
   // Load data
   useEffect(() => {
@@ -146,24 +138,24 @@ export default function HighlightsScreen() {
   }, [db, editingHighlight, noteText]);
 
   const handleShareAsQuote = useCallback(
-    async (highlight: Highlight) => {
+    (highlight: Highlight) => {
       if (!book) return;
-      setIsQuotePreviewVisible(true);
-      await generateQuote({
-        coverPath: book.coverUri,
+      setQuoteData({
         quoteText: highlight.selectedText,
         author: book.author,
         title: book.title,
         chapterTitle: highlight.chapterTitle,
+        coverUri: book.coverUri,
       });
+      setIsQuotePreviewVisible(true);
     },
-    [book, generateQuote],
+    [book],
   );
 
   const handleDismissQuote = useCallback(() => {
     setIsQuotePreviewVisible(false);
-    resetQuote();
-  }, [resetQuote]);
+    setTimeout(() => setQuoteData(null), 300); // clear after animation
+  }, []);
 
   const formatDate = (dateStr: string) => {
     const date = new Date(dateStr);
@@ -385,10 +377,7 @@ export default function HighlightsScreen() {
       {/* Quote card preview */}
       <QuotePreviewModal
         visible={isQuotePreviewVisible}
-        cardPath={quoteCardPath}
-        isGenerating={isGeneratingQuote}
-        error={quoteError}
-        onShare={shareQuote}
+        quoteData={quoteData}
         onDismiss={handleDismissQuote}
       />
     </SafeAreaView>
