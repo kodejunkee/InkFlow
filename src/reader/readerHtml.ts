@@ -188,7 +188,18 @@ export function generateReaderHtml(options: Partial<GenerateOptions> = {}): stri
                   targetCfi = 'epubcfi(' + parts[0].trim() + parts[1].trim() + ')';
                 }
               }
-              rendition.display(targetCfi);
+              rendition.display(targetCfi).then(function() {
+                // Add a small top offset so the quote/bookmark isn't stuck to the very top edge
+                if (rendition.manager && rendition.manager.container) {
+                  setTimeout(function() {
+                    // Reduce scroll position by ~80px to pull the content down into view
+                    var currentScroll = rendition.manager.container.scrollTop;
+                    if (currentScroll > 0) {
+                      rendition.manager.container.scrollTop = Math.max(0, currentScroll - 80);
+                    }
+                  }, 10);
+                }
+              });
             }
             break;
           case 'goToChapter':
