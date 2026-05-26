@@ -82,6 +82,18 @@ export function generateReaderHtml(options: Partial<GenerateOptions> = {}): stri
     #reader iframe {
       border: none !important;
     }
+    
+    /* Fix continuous scroll jump loops */
+    #reader {
+      overflow-anchor: none !important;
+    }
+    .epub-container {
+      overflow-anchor: none !important;
+    }
+    .epub-view {
+      overflow-anchor: none !important;
+      min-height: 100vh;
+    }
 
     /* ─── Selection styling ──────────────────────────────────────────── */
     ::selection {
