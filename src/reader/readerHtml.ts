@@ -451,25 +451,25 @@ export function generateReaderHtml(options: Partial<GenerateOptions> = {}): stri
 
     // ─── Bookmark context ────────────────────────────────────────────
 
-    function getBookmarkContext() {
-      if (!rendition) return;
+    async function getBookmarkContext() {
+      if (!rendition || !book) return;
       var loc = rendition.currentLocation();
       if (!loc || !loc.start) return;
 
-      // Grab visible text for the bookmark label
       var contextText = '';
       try {
-        var contents = rendition.getContents();
-        if (contents && contents.length > 0) {
-          var doc = contents[0].document;
-          if (doc && doc.body) {
-            // Get the first ~80 chars of visible text
-            var rawText = doc.body.innerText || doc.body.textContent || '';
-            contextText = rawText.replace(/\s+/g, ' ').trim().substring(0, 80);
+        var range = await book.getRange(loc.start.cfi);
+        if (range && range.startContainer) {
+          var node = range.startContainer;
+          // If it's a text node, get its parent element (like a <p>)
+          if (node.nodeType === 3) {
+            node = node.parentNode;
           }
+          var rawText = node.textContent || node.innerText || '';
+          contextText = rawText.replace(/\s+/g, ' ').trim().substring(0, 100);
         }
       } catch (e) {
-        // Fallback: no context text
+        // Fallback
       }
 
       sendToRN({
