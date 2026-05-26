@@ -360,7 +360,7 @@ export function generateReaderHtml(options: Partial<GenerateOptions> = {}): stri
                 '  content: attr(data-inkflow-chapter); ' +
                 '  display: block; ' +
                 '  text-align: center; ' +
-                '  margin: 1.5em 0 1em 0; ' +
+                '  margin: 1.5em 0 0.25em 0; ' +
                 '  padding-bottom: 0.5em; ' +
                 '  border-bottom: 1px solid rgba(128,128,128,0.25); ' +
                 '  font-size: 1.3em; ' +
@@ -457,8 +457,8 @@ export function generateReaderHtml(options: Partial<GenerateOptions> = {}): stri
         'p, div, span, li': {
           'font-size': 'inherit !important',
           'line-height': 'inherit !important',
-          'margin-top': '0.4em !important',
-          'margin-bottom': '0.4em !important',
+          'margin-top': '0.25em !important',
+          'margin-bottom': '0.25em !important',
         },
         'img': {
           'max-width': '100% !important',
@@ -484,8 +484,8 @@ export function generateReaderHtml(options: Partial<GenerateOptions> = {}): stri
         'p, div, span, li': {
           'font-size': 'inherit !important',
           'line-height': 'inherit !important',
-          'margin-top': '0.4em !important',
-          'margin-bottom': '0.4em !important',
+          'margin-top': '0.25em !important',
+          'margin-bottom': '0.25em !important',
         },
         'img': {
           'max-width': '100% !important',
