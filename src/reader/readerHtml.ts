@@ -204,7 +204,8 @@ export function generateReaderHtml(options: Partial<GenerateOptions> = {}): stri
                 // to give the highlight some breathing room from the top edge.
                 setTimeout(function() {
                   if (rendition.manager && rendition.manager.container) {
-                    rendition.manager.container.scrollTop -= 120; // 120px breathing room
+                    var newScrollTop = rendition.manager.container.scrollTop - 120;
+                    rendition.manager.container.scrollTop = Math.max(0, newScrollTop);
                   }
                 }, 100);
               });
@@ -657,11 +658,16 @@ export function generateReaderHtml(options: Partial<GenerateOptions> = {}): stri
     // ─── Error handling ──────────────────────────────────────────────
 
     window.onerror = function(msg, src, line, col, err) {
+      if (msg && msg.indexOf('getClientRects') !== -1) {
+        console.warn('[Reader] Suppressed epub.js getClientRects error:', msg);
+        return true; // Stop propagation
+      }
       sendToRN({
         type: 'error',
         message: msg + ' (' + src + ':' + line + ')',
         stack: err ? err.stack : '',
       });
+      return false;
     };
 
     // Notify RN that the page is loaded and ready for commands
