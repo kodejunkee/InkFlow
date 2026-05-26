@@ -1,11 +1,11 @@
 /**
  * QuotePreviewModal — Shows generated quote card with share/dismiss actions
  *
- * Displays the generated quote card image in a modal overlay.
- * User can share via the OS share sheet or dismiss.
+ * Displays a beautiful quote card using React Native primitives.
+ * Captures the view to an image using react-native-view-shot and shares it.
  */
 
-import React from 'react';
+import React, { useRef } from 'react';
 import {
   View,
   Text,
@@ -13,9 +13,10 @@ import {
   Pressable,
   Modal,
   StyleSheet,
-  ActivityIndicator,
   Dimensions,
 } from 'react-native';
+import ViewShot from 'react-native-view-shot';
+import * as Sharing from 'expo-sharing';
 import { useSettingsStore } from '../../stores/settingsStore';
 import { getTheme } from '../../theme/themes';
 import { textStyles } from '../../theme/typography';
@@ -23,28 +24,50 @@ import { spacing, borderRadius } from '../../theme/spacing';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 const CARD_WIDTH = SCREEN_WIDTH * 0.85;
-const CARD_HEIGHT = CARD_WIDTH * (1920 / 1080); // Match quote card aspect ratio
-const MAX_CARD_HEIGHT = SCREEN_HEIGHT * 0.6;
+
+export interface QuoteData {
+  quoteText: string;
+  author: string;
+  title: string;
+  chapterTitle?: string;
+  coverUri?: string | null;
+}
 
 interface QuotePreviewModalProps {
   visible: boolean;
-  cardPath: string | null;
-  isGenerating: boolean;
-  error: string | null;
-  onShare: () => void;
+  quoteData: QuoteData | null;
   onDismiss: () => void;
 }
 
 export function QuotePreviewModal({
   visible,
-  cardPath,
-  isGenerating,
-  error,
-  onShare,
+  quoteData,
   onDismiss,
 }: QuotePreviewModalProps) {
   const themeName = useSettingsStore((s) => s.theme);
   const theme = getTheme(themeName);
+  const viewShotRef = useRef<ViewShot>(null);
+
+  const handleShare = async () => {
+    if (viewShotRef.current && quoteData) {
+      try {
+        const uri = await viewShotRef.current.capture?.();
+        if (uri) {
+          const canShare = await Sharing.isAvailableAsync();
+          if (canShare) {
+            await Sharing.shareAsync(uri, {
+              mimeType: 'image/jpeg',
+              dialogTitle: 'Share Quote',
+            });
+          }
+        }
+      } catch (e) {
+        console.error('Failed to capture or share quote card:', e);
+      }
+    }
+  };
+
+  if (!visible || !quoteData) return null;
 
   return (
     <Modal
@@ -67,81 +90,93 @@ export function QuotePreviewModal({
           {/* Header */}
           <View style={styles.header}>
             <Text style={[textStyles.title, { color: theme.textPrimary }]}>
-              Quote Card
+              Share Quote
             </Text>
             <Pressable onPress={onDismiss} hitSlop={12}>
               <Text style={[styles.closeButton, { color: theme.textSecondary }]}>✕</Text>
             </Pressable>
           </View>
 
-          {/* Preview area */}
+          {/* Preview area - The actual card that gets captured */}
           <View style={styles.previewArea}>
-            {isGenerating ? (
-              <View style={styles.loadingContainer}>
-                <ActivityIndicator size="large" color={theme.primary} />
+            <ViewShot
+              ref={viewShotRef}
+              options={{ format: 'jpg', quality: 0.95 }}
+              style={styles.cardContainer}
+            >
+              {/* Card Background */}
+              <View style={[styles.card, { backgroundColor: '#1E1E1E' }]}>
+                {/* Quote Text */}
                 <Text
                   style={[
-                    textStyles.body,
-                    { color: theme.textSecondary, marginTop: spacing.md },
+                    textStyles.h2,
+                    styles.quoteText,
+                    { color: '#FFFFFF', fontStyle: 'italic' },
                   ]}
+                  numberOfLines={10}
                 >
-                  Generating quote card...
+                  "{quoteData.quoteText}"
                 </Text>
+
+                {/* Footer with Book Info */}
+                <View style={styles.cardFooter}>
+                  {quoteData.coverUri ? (
+                    <Image
+                      source={{ uri: quoteData.coverUri }}
+                      style={styles.coverImage}
+                    />
+                  ) : (
+                    <View style={styles.coverPlaceholder}>
+                      <Text style={{ color: '#888', fontSize: 10 }}>No Cover</Text>
+                    </View>
+                  )}
+                  
+                  <View style={styles.bookInfo}>
+                    <Text style={[textStyles.body, { color: '#FFFFFF', fontWeight: 'bold' }]} numberOfLines={1}>
+                      {quoteData.title}
+                    </Text>
+                    <Text style={[textStyles.caption, { color: '#BBBBBB' }]} numberOfLines={1}>
+                      {quoteData.author}
+                    </Text>
+                    {quoteData.chapterTitle && (
+                      <Text style={[textStyles.caption, { color: '#888888', fontSize: 10 }]} numberOfLines={1}>
+                        {quoteData.chapterTitle}
+                      </Text>
+                    )}
+                  </View>
+                </View>
               </View>
-            ) : error ? (
-              <View style={styles.errorContainer}>
-                <Text style={styles.errorIcon}>⚠️</Text>
-                <Text
-                  style={[
-                    textStyles.body,
-                    { color: theme.textSecondary, textAlign: 'center' },
-                  ]}
-                >
-                  {error}
-                </Text>
-              </View>
-            ) : cardPath ? (
-              <Image
-                source={{ uri: cardPath }}
-                style={[
-                  styles.cardImage,
-                  { height: Math.min(CARD_HEIGHT, MAX_CARD_HEIGHT) },
-                ]}
-                resizeMode="contain"
-              />
-            ) : null}
+            </ViewShot>
           </View>
 
           {/* Actions */}
-          {cardPath && !isGenerating && (
-            <View style={styles.actions}>
-              <Pressable
-                onPress={onDismiss}
-                style={[
-                  styles.actionButton,
-                  { backgroundColor: theme.surfaceElevated },
-                ]}
-              >
-                <Text style={[textStyles.body, { color: theme.textSecondary }]}>
-                  Dismiss
-                </Text>
-              </Pressable>
+          <View style={styles.actions}>
+            <Pressable
+              onPress={onDismiss}
+              style={[
+                styles.actionButton,
+                { backgroundColor: theme.surfaceElevated },
+              ]}
+            >
+              <Text style={[textStyles.body, { color: theme.textSecondary }]}>
+                Cancel
+              </Text>
+            </Pressable>
 
-              <Pressable
-                onPress={onShare}
-                style={[
-                  styles.actionButton,
-                  styles.shareButton,
-                  { backgroundColor: theme.primary },
-                ]}
-              >
-                <Text style={styles.shareIcon}>📤</Text>
-                <Text style={[textStyles.body, { color: '#FFFFFF', fontWeight: '600' }]}>
-                  Share
-                </Text>
-              </Pressable>
-            </View>
-          )}
+            <Pressable
+              onPress={handleShare}
+              style={[
+                styles.actionButton,
+                styles.shareButton,
+                { backgroundColor: theme.primary },
+              ]}
+            >
+              <Text style={styles.shareIcon}>📤</Text>
+              <Text style={[textStyles.body, { color: '#FFFFFF', fontWeight: '600' }]}>
+                Share Image
+              </Text>
+            </Pressable>
+          </View>
         </View>
       </View>
     </Modal>
@@ -164,7 +199,7 @@ const styles = StyleSheet.create({
   },
   container: {
     width: CARD_WIDTH + 32,
-    maxHeight: SCREEN_HEIGHT * 0.85,
+    maxHeight: SCREEN_HEIGHT * 0.9,
     borderRadius: borderRadius.xl,
     borderWidth: 1,
     overflow: 'hidden',
@@ -187,26 +222,55 @@ const styles = StyleSheet.create({
   },
   previewArea: {
     alignItems: 'center',
-    paddingHorizontal: spacing.lg,
-    minHeight: 200,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.md,
     justifyContent: 'center',
   },
-  loadingContainer: {
-    alignItems: 'center',
-    paddingVertical: spacing['3xl'],
-  },
-  errorContainer: {
-    alignItems: 'center',
-    paddingVertical: spacing['3xl'],
-    paddingHorizontal: spacing.xl,
-  },
-  errorIcon: {
-    fontSize: 32,
-    marginBottom: spacing.md,
-  },
-  cardImage: {
+  cardContainer: {
     width: CARD_WIDTH,
+    backgroundColor: '#1E1E1E', // Match card bg to avoid white edges during capture
     borderRadius: borderRadius.lg,
+    overflow: 'hidden',
+    elevation: 5,
+    shadowColor: '#000',
+    shadowOpacity: 0.3,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 4 },
+  },
+  card: {
+    padding: spacing.xl,
+    minHeight: CARD_WIDTH * 1.2,
+    justifyContent: 'space-between',
+  },
+  quoteText: {
+    lineHeight: 32,
+    marginBottom: spacing.xl,
+  },
+  cardFooter: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderTopWidth: 1,
+    borderTopColor: '#333333',
+    paddingTop: spacing.lg,
+  },
+  coverImage: {
+    width: 40,
+    height: 60,
+    borderRadius: borderRadius.sm,
+    backgroundColor: '#333',
+  },
+  coverPlaceholder: {
+    width: 40,
+    height: 60,
+    borderRadius: borderRadius.sm,
+    backgroundColor: '#333',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  bookInfo: {
+    flex: 1,
+    marginLeft: spacing.md,
+    justifyContent: 'center',
   },
   actions: {
     flexDirection: 'row',

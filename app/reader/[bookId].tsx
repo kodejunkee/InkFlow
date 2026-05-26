@@ -19,7 +19,6 @@ import { getBookById } from '../../src/database/queries';
 import { useSettingsStore } from '../../src/stores/settingsStore';
 import { getTheme } from '../../src/theme/themes';
 import { useReader } from '../../src/hooks/useReader';
-import { useQuoteCard } from '../../src/hooks/useQuoteCard';
 import { ReaderWebView } from '../../src/components/reader/ReaderWebView';
 import { ReaderOverlay } from '../../src/components/reader/ReaderOverlay';
 import { ChapterDrawer } from '../../src/components/reader/ChapterDrawer';
@@ -84,36 +83,29 @@ export default function ReaderScreen() {
     highlights,
   } = useReader({ db, book });
 
-  // Quote card generation
-  const {
-    generate: generateQuote,
-    share: shareQuote,
-    isGenerating: isGeneratingQuote,
-    cardPath: quoteCardPath,
-    error: quoteError,
-    reset: resetQuote,
-  } = useQuoteCard();
+  // Quote card state
+  const [isQuotePreviewVisible, setIsQuotePreviewVisible] = useState(false);
+  const [quoteData, setQuoteData] = useState<import('../../src/components/reader/QuotePreviewModal').QuoteData | null>(null);
 
   // Share as quote card — generates an image and shows preview
-  const handleShareAsQuote = useCallback(async () => {
+  const handleShareAsQuote = useCallback(() => {
     if (!book || !selectedText) return;
 
-    setIsQuotePreviewVisible(true);
-    dismissSelection();
-
-    await generateQuote({
-      coverPath: book.coverUri,
+    setQuoteData({
       quoteText: selectedText,
       author: book.author,
       title: book.title,
       chapterTitle: chapterTitle,
+      coverUri: book.coverUri,
     });
-  }, [book, selectedText, chapterTitle, generateQuote, dismissSelection]);
+    setIsQuotePreviewVisible(true);
+    dismissSelection();
+  }, [book, selectedText, chapterTitle, dismissSelection]);
 
   const handleDismissQuote = useCallback(() => {
     setIsQuotePreviewVisible(false);
-    resetQuote();
-  }, [resetQuote]);
+    setTimeout(() => setQuoteData(null), 300); // clear after animation
+  }, []);
 
   if (!book) {
     return <View style={[styles.container, { backgroundColor: theme.reader.background }]} />;
@@ -188,10 +180,7 @@ export default function ReaderScreen() {
       {/* Quote card preview */}
       <QuotePreviewModal
         visible={isQuotePreviewVisible}
-        cardPath={quoteCardPath}
-        isGenerating={isGeneratingQuote}
-        error={quoteError}
-        onShare={shareQuote}
+        quoteData={quoteData}
         onDismiss={handleDismissQuote}
       />
     </View>
