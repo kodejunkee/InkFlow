@@ -17,6 +17,8 @@ import {
   StyleSheet,
   Animated,
   Keyboard,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
 import type { HighlightColor } from '../../types/book';
 import { useSettingsStore } from '../../stores/settingsStore';
@@ -61,20 +63,13 @@ export function TextSelectionMenu({
 
   const handleSaveQuote = () => {
     if (showNoteInput) {
-      // User has typed (or skipped) a note — save it
+      // User has typed a note — save it
       onSaveQuote(noteText.trim());
-      setShowNoteInput(false);
-      setNoteText('');
+      handleDismiss();
     } else {
       // Show the note input
       setShowNoteInput(true);
     }
-  };
-
-  const handleSkipNote = () => {
-    onSaveQuote('');
-    setShowNoteInput(false);
-    setNoteText('');
   };
 
   const handleDismiss = () => {
@@ -84,7 +79,10 @@ export function TextSelectionMenu({
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.surface, borderColor: theme.border }]}>
+    <KeyboardAvoidingView 
+      style={[styles.container, { backgroundColor: theme.surface, borderColor: theme.border }]}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+    >
       {/* Preview of selected text */}
       <Text
         style={[textStyles.caption, { color: theme.textSecondary, marginBottom: spacing.sm }]}
@@ -114,14 +112,11 @@ export function TextSelectionMenu({
             autoFocus
           />
           <View style={styles.noteActions}>
-            <Pressable onPress={handleSkipNote} style={styles.noteButton}>
-              <Text style={[textStyles.caption, { color: theme.textSecondary }]}>Skip</Text>
-            </Pressable>
             <Pressable
               onPress={handleSaveQuote}
-              style={[styles.noteButton, { backgroundColor: theme.primary + '20' }]}
+              style={[styles.noteButton, { backgroundColor: theme.primary + '20', flex: 1 }]}
             >
-              <Text style={[textStyles.caption, { color: theme.primary, fontWeight: '600' }]}>
+              <Text style={[textStyles.caption, { color: theme.primary, fontWeight: '600', textAlign: 'center' }]}>
                 Save Quote
               </Text>
             </Pressable>
@@ -168,7 +163,7 @@ export function TextSelectionMenu({
           </Pressable>
         </View>
       )}
-    </View>
+    </KeyboardAvoidingView>
   );
 }
 
