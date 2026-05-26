@@ -1,5 +1,5 @@
 import { File, Directory, Paths } from 'expo-file-system';
-import * as FileSystem from 'expo-file-system';
+import * as FileSystem from 'expo-file-system/legacy';
 
 // ─── Directory paths ─────────────────────────────────────────────────────────
 
@@ -78,25 +78,34 @@ export async function copyEpubToStorage(
  * @param bookId      Book ID used to name the cover file
  * @returns The new file URI, or `null` if the source doesn't exist
  */
-export function copyCoverToStorage(
+export async function copyCoverToStorage(
   sourcePath: string,
   bookId: number,
-): string | null {
+): Promise<string | null> {
   ensureDirectories();
 
-  const sourceFile = new File(sourcePath);
-  if (!sourceFile.exists) {
-    return null;
-  }
+  // The Python processor returns raw filesystem paths (e.g. /data/data/...).
+  // Expo's File API needs file:// URIs.
+  const sourceUri = sourcePath.startsWith('file://')
+    ? sourcePath
+    : `file://${sourcePath}`;
 
-  // Preserve the original extension.
-  const ext = sourceFile.extension || '.jpg';
   const coverDir = getCoverDirectory();
+  // Determine extension from source path
+  const extMatch = sourcePath.match(/\.(jpg|jpeg|png|gif|webp)$/i);
+  const ext = extMatch ? extMatch[0] : '.jpg';
   const destFile = new File(coverDir, `cover_${bookId}${ext}`);
 
-  sourceFile.copy(destFile);
-
-  return destFile.uri;
+  try {
+    await FileSystem.copyAsync({
+      from: sourceUri,
+      to: destFile.uri,
+    });
+    return destFile.uri;
+  } catch (e) {
+    console.warn('[fileManager] Cover copy failed:', e);
+    return null;
+  }
 }
 
 /**

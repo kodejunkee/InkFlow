@@ -127,13 +127,17 @@ export function useBookImport(
       // ── 5. Copy cover image (if available) ───────────────────────────
       let finalBook = inserted;
       if (epub.coverPath) {
-        const coverUri = copyCoverToStorage(epub.coverPath, inserted.id);
-        if (coverUri) {
-          db.runSync(
-            `UPDATE books SET cover_uri = ?, updated_at = datetime('now') WHERE id = ?`,
-            [coverUri, inserted.id],
-          );
-          finalBook = { ...inserted, coverUri };
+        try {
+          const coverUri = await copyCoverToStorage(epub.coverPath, inserted.id);
+          if (coverUri) {
+            db.runSync(
+              `UPDATE books SET cover_uri = ?, updated_at = datetime('now') WHERE id = ?`,
+              [coverUri, inserted.id],
+            );
+            finalBook = { ...inserted, coverUri };
+          }
+        } catch (coverErr) {
+          console.warn('[useBookImport] Cover copy failed (non-fatal):', coverErr);
         }
       }
 
