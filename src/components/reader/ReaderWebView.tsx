@@ -2,11 +2,16 @@
  * ReaderWebView — epub.js WebView wrapper
  *
  * Manages the WebView lifecycle, bridge communication, and location persistence.
+ *
+ * The HTML is written to a temporary file so the WebView loads from a file:// URL.
+ * This gives the WebView proper file:// origin, allowing epub.js to fetch
+ * EPUB files from the local filesystem via XMLHttpRequest.
  */
 
-import React, { useCallback, useEffect, useRef } from 'react';
-import { StyleSheet, View } from 'react-native';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { StyleSheet, View, ActivityIndicator } from 'react-native';
 import { WebView, type WebViewMessageEvent } from 'react-native-webview';
+import * as LegacyFS from 'expo-file-system/legacy';
 import type { Book } from '../../types/book';
 import type { WebViewMessage, ReaderCommand } from '../../types/bridge';
 import { serializeCommand, parseWebViewMessage } from '../../types/bridge';
@@ -41,6 +46,9 @@ export const ReaderWebView = React.forwardRef<WebView, ReaderWebViewProps>(
     const webViewRef = useRef<WebView | null>(null);
     const hasLoadedBook = useRef(false);
 
+    // Reader HTML file URI — null until written
+    const [htmlFileUri, setHtmlFileUri] = useState<string | null>(null);
+
     const themeName = useSettingsStore((s) => s.theme);
     const fontSize = useSettingsStore((s) => s.fontSize);
     const lineHeight = useSettingsStore((s) => s.lineHeight);
@@ -59,6 +67,27 @@ export const ReaderWebView = React.forwardRef<WebView, ReaderWebViewProps>(
         selectionBg: theme.reader.selectionBackground,
       },
     });
+
+    // ─── Write HTML to a temp file so WebView gets file:// origin ────
+
+    useEffect(() => {
+      let cancelled = false;
+      const filePath = (LegacyFS.cacheDirectory ?? '') + 'inkflow_reader.html';
+
+      LegacyFS.writeAsStringAsync(filePath, readerHtml)
+        .then(() => {
+          if (!cancelled) {
+            setHtmlFileUri(filePath);
+          }
+        })
+        .catch((err) => {
+          console.error('[ReaderWebView] Failed to write reader HTML:', err);
+        });
+
+      return () => {
+        cancelled = true;
+      };
+    }, []); // Only write once on mount — theme changes go via sendCommand
 
     // ─── Send command to WebView ─────────────────────────────────────
 
@@ -156,6 +185,15 @@ export const ReaderWebView = React.forwardRef<WebView, ReaderWebViewProps>(
     // Attach sendCommand to the component instance via a data attribute
     (ReaderWebView as any).sendCommand = sendCommand;
 
+    // Show a minimal loading state while the HTML file is being written
+    if (!htmlFileUri) {
+      return (
+        <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
+          <ActivityIndicator size="small" color={theme.reader.link} />
+        </View>
+      );
+    }
+
     return (
       <View style={styles.container}>
         <WebView
@@ -167,7 +205,7 @@ export const ReaderWebView = React.forwardRef<WebView, ReaderWebViewProps>(
               (ref as React.MutableRefObject<WebView | null>).current = wv;
             }
           }}
-          source={{ html: readerHtml, baseUrl: 'file:///' }}
+          source={{ uri: htmlFileUri }}
           style={styles.webview}
           originWhitelist={['*']}
           javaScriptEnabled
