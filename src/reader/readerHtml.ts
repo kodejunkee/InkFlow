@@ -180,7 +180,7 @@ export function generateReaderHtml(options: Partial<GenerateOptions> = {}): stri
             }
             break;
           case 'goToChapter':
-            if (rendition) rendition.display(cmd.href);
+            if (rendition) goToChapter(cmd.href);
             break;
           case 'nextPage':
             if (rendition) rendition.next();
@@ -594,6 +594,29 @@ export function generateReaderHtml(options: Partial<GenerateOptions> = {}): stri
         }
       }
       return 0;
+    }
+
+    // Fuzzy chapter navigation — tries exact href, then filename-only, then spine match
+    function goToChapter(href) {
+      if (!rendition || !book) return;
+
+      // 1. Try exact href
+      rendition.display(href).catch(function() {
+        // 2. Try without fragment
+        var hrefNoFrag = href.split('#')[0];
+        rendition.display(hrefNoFrag).catch(function() {
+          // 3. Try matching by filename against spine
+          var fileName = hrefNoFrag.split('/').pop();
+          var items = book.spine.items || book.spine.spineItems || [];
+          for (var i = 0; i < items.length; i++) {
+            var spineFile = (items[i].href || '').split('/').pop();
+            if (spineFile === fileName) {
+              rendition.display(items[i].href);
+              return;
+            }
+          }
+        });
+      });
     }
 
     // ─── Error handling ──────────────────────────────────────────────
