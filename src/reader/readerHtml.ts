@@ -314,6 +314,34 @@ export function generateReaderHtml(options: Partial<GenerateOptions> = {}): stri
             doc.documentElement.style.overflowAnchor = "none";
             doc.body.style.overflowAnchor = "none";
 
+            // ── Spacing normalization ────────────────────────────────
+            // Some web novel EPUBs (e.g. Shadow Slave) use multiple empty <p>
+            // or stacked <br> tags between paragraphs, causing huge gaps.
+            // These rules collapse excessive whitespace without affecting
+            // books that use normal single-paragraph spacing.
+            if (!doc.getElementById('inkflow-normalize-style')) {
+              var normStyle = doc.createElement('style');
+              normStyle.id = 'inkflow-normalize-style';
+              normStyle.textContent =
+                // Empty paragraphs (contain only whitespace, &nbsp;, or a lone <br>)
+                'p:empty, p:has(> br:only-child) { ' +
+                '  margin: 0 !important; ' +
+                '  padding: 0 !important; ' +
+                '  line-height: 0.5 !important; ' +
+                '  font-size: 0 !important; ' +
+                '} ' +
+                // Cap top/bottom margins on all paragraphs to prevent bloat
+                'p { ' +
+                '  margin-top: max(0px, min(0.8em, initial)) !important; ' +
+                '  margin-bottom: max(0px, min(0.8em, initial)) !important; ' +
+                '} ' +
+                // Standalone <br> elements between block elements
+                'br + br { ' +
+                '  display: none !important; ' +
+                '} ';
+              doc.head.appendChild(normStyle);
+            }
+
             // Check if the chapter already has a visible heading
             var firstChild = doc.body.firstElementChild;
             var hasHeading = false;
