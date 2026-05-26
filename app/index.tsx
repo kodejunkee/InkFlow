@@ -15,9 +15,9 @@ import {
   Text,
   StyleSheet,
   Alert,
-  SafeAreaView,
   Pressable,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useDB } from './_layout';
 import { useSettingsStore } from '../src/stores/settingsStore';

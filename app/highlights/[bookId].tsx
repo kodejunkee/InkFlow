@@ -17,12 +17,12 @@ import {
   Pressable,
   TextInput,
   StyleSheet,
-  SafeAreaView,
   Alert,
   Modal,
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useDB } from '../_layout';
 import { useSettingsStore } from '../../src/stores/settingsStore';
