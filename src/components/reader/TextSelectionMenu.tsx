@@ -72,6 +72,11 @@ export function TextSelectionMenu({
     }
   };
 
+  const handleCancelNote = () => {
+    setShowNoteInput(false);
+    setNoteText('');
+  };
+
   const handleDismiss = () => {
     setShowNoteInput(false);
     setNoteText('');
@@ -80,10 +85,12 @@ export function TextSelectionMenu({
 
   return (
     <KeyboardAvoidingView 
-      style={[styles.container, { backgroundColor: theme.surface, borderColor: theme.border }]}
+      style={styles.keyboardWrapper}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      pointerEvents="box-none"
     >
-      {/* Preview of selected text */}
+      <View style={[styles.container, { backgroundColor: theme.surface, borderColor: theme.border }]}>
+        {/* Preview of selected text */}
       <Text
         style={[textStyles.caption, { color: theme.textSecondary, marginBottom: spacing.sm }]}
         numberOfLines={2}
@@ -112,6 +119,14 @@ export function TextSelectionMenu({
             autoFocus
           />
           <View style={styles.noteActions}>
+            <Pressable
+              onPress={handleCancelNote}
+              style={[styles.noteButton, { backgroundColor: theme.surfaceElevated, flex: 1 }]}
+            >
+              <Text style={[textStyles.caption, { color: theme.textSecondary, textAlign: 'center' }]}>
+                Cancel
+              </Text>
+            </Pressable>
             <Pressable
               onPress={handleSaveQuote}
               style={[styles.noteButton, { backgroundColor: theme.primary + '20', flex: 1 }]}
@@ -162,23 +177,28 @@ export function TextSelectionMenu({
             <Text style={[textStyles.caption, { color: theme.textSecondary }]}>Close</Text>
           </Pressable>
         </View>
-      )}
+        )}
+      </View>
     </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  keyboardWrapper: {
     position: 'absolute',
+    top: 0,
     bottom: 0,
     left: 0,
     right: 0,
+    justifyContent: 'flex-end',
+    zIndex: 20,
+    elevation: 10,
+  },
+  container: {
     padding: spacing.lg,
     borderTopWidth: 1,
     borderTopLeftRadius: borderRadius.xl,
     borderTopRightRadius: borderRadius.xl,
-    zIndex: 20,
-    elevation: 10,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: -4 },
     shadowOpacity: 0.2,
