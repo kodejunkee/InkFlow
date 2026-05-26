@@ -1,11 +1,23 @@
 /**
- * Text Selection Menu — Context menu for highlights and bookmarks
+ * Text Selection Menu — Context menu for highlights, quotes, and actions
  *
  * Appears when user selects text in the reader.
+ * - Color dots: highlight the selected text
+ * - Save Quote: save the text with an optional note (navigable later)
+ * - Copy: copy text to clipboard
+ * - Share: generate a quote card image (Phase 3)
  */
 
-import React from 'react';
-import { View, Text, Pressable, StyleSheet } from 'react-native';
+import React, { useState } from 'react';
+import {
+  View,
+  Text,
+  Pressable,
+  TextInput,
+  StyleSheet,
+  Animated,
+  Keyboard,
+} from 'react-native';
 import type { HighlightColor } from '../../types/book';
 import { useSettingsStore } from '../../stores/settingsStore';
 import { getTheme } from '../../theme/themes';
@@ -16,7 +28,7 @@ interface TextSelectionMenuProps {
   visible: boolean;
   selectedText: string;
   onHighlight: (color: HighlightColor) => void;
-  onBookmark: () => void;
+  onSaveQuote: (note: string) => void;
   onCopy: () => void;
   onShare: () => void;
   onDismiss: () => void;
@@ -34,7 +46,7 @@ export function TextSelectionMenu({
   visible,
   selectedText,
   onHighlight,
-  onBookmark,
+  onSaveQuote,
   onCopy,
   onShare,
   onDismiss,
@@ -42,7 +54,34 @@ export function TextSelectionMenu({
   const themeName = useSettingsStore((s) => s.theme);
   const theme = getTheme(themeName);
 
+  const [showNoteInput, setShowNoteInput] = useState(false);
+  const [noteText, setNoteText] = useState('');
+
   if (!visible || !selectedText) return null;
+
+  const handleSaveQuote = () => {
+    if (showNoteInput) {
+      // User has typed (or skipped) a note — save it
+      onSaveQuote(noteText.trim());
+      setShowNoteInput(false);
+      setNoteText('');
+    } else {
+      // Show the note input
+      setShowNoteInput(true);
+    }
+  };
+
+  const handleSkipNote = () => {
+    onSaveQuote('');
+    setShowNoteInput(false);
+    setNoteText('');
+  };
+
+  const handleDismiss = () => {
+    setShowNoteInput(false);
+    setNoteText('');
+    onDismiss();
+  };
 
   return (
     <View style={[styles.container, { backgroundColor: theme.surface, borderColor: theme.border }]}>
@@ -54,41 +93,81 @@ export function TextSelectionMenu({
         "{selectedText.substring(0, 100)}{selectedText.length > 100 ? '...' : ''}"
       </Text>
 
+      {/* Note input (shown when Save Quote is tapped) */}
+      {showNoteInput && (
+        <View style={styles.noteContainer}>
+          <TextInput
+            style={[
+              styles.noteInput,
+              {
+                color: theme.textPrimary,
+                borderColor: theme.border,
+                backgroundColor: theme.background + '80',
+              },
+            ]}
+            placeholder="Add a note (optional)..."
+            placeholderTextColor={theme.textSecondary + '80'}
+            value={noteText}
+            onChangeText={setNoteText}
+            multiline
+            maxLength={500}
+            autoFocus
+          />
+          <View style={styles.noteActions}>
+            <Pressable onPress={handleSkipNote} style={styles.noteButton}>
+              <Text style={[textStyles.caption, { color: theme.textSecondary }]}>Skip</Text>
+            </Pressable>
+            <Pressable
+              onPress={handleSaveQuote}
+              style={[styles.noteButton, { backgroundColor: theme.primary + '20' }]}
+            >
+              <Text style={[textStyles.caption, { color: theme.primary, fontWeight: '600' }]}>
+                Save Quote
+              </Text>
+            </Pressable>
+          </View>
+        </View>
+      )}
+
       {/* Highlight color buttons */}
-      <View style={styles.colorRow}>
-        {HIGHLIGHT_COLORS.map((item) => (
-          <Pressable
-            key={item.color}
-            onPress={() => onHighlight(item.color)}
-            style={[styles.colorButton, { backgroundColor: item.hex + '40' }]}
-          >
-            <View style={[styles.colorDot, { backgroundColor: item.hex }]} />
-          </Pressable>
-        ))}
-      </View>
+      {!showNoteInput && (
+        <View style={styles.colorRow}>
+          {HIGHLIGHT_COLORS.map((item) => (
+            <Pressable
+              key={item.color}
+              onPress={() => onHighlight(item.color)}
+              style={[styles.colorButton, { backgroundColor: item.hex + '40' }]}
+            >
+              <View style={[styles.colorDot, { backgroundColor: item.hex }]} />
+            </Pressable>
+          ))}
+        </View>
+      )}
 
       {/* Action buttons */}
-      <View style={styles.actionRow}>
-        <Pressable onPress={onBookmark} style={styles.actionButton}>
-          <Text style={styles.actionIcon}>🔖</Text>
-          <Text style={[textStyles.caption, { color: theme.textSecondary }]}>Bookmark</Text>
-        </Pressable>
+      {!showNoteInput && (
+        <View style={styles.actionRow}>
+          <Pressable onPress={handleSaveQuote} style={styles.actionButton}>
+            <Text style={styles.actionIcon}>💬</Text>
+            <Text style={[textStyles.caption, { color: theme.textSecondary }]}>Quote</Text>
+          </Pressable>
 
-        <Pressable onPress={onCopy} style={styles.actionButton}>
-          <Text style={styles.actionIcon}>📋</Text>
-          <Text style={[textStyles.caption, { color: theme.textSecondary }]}>Copy</Text>
-        </Pressable>
+          <Pressable onPress={onCopy} style={styles.actionButton}>
+            <Text style={styles.actionIcon}>📋</Text>
+            <Text style={[textStyles.caption, { color: theme.textSecondary }]}>Copy</Text>
+          </Pressable>
 
-        <Pressable onPress={onShare} style={styles.actionButton}>
-          <Text style={styles.actionIcon}>📤</Text>
-          <Text style={[textStyles.caption, { color: theme.textSecondary }]}>Share</Text>
-        </Pressable>
+          <Pressable onPress={onShare} style={styles.actionButton}>
+            <Text style={styles.actionIcon}>📤</Text>
+            <Text style={[textStyles.caption, { color: theme.textSecondary }]}>Share</Text>
+          </Pressable>
 
-        <Pressable onPress={onDismiss} style={styles.actionButton}>
-          <Text style={styles.actionIcon}>✕</Text>
-          <Text style={[textStyles.caption, { color: theme.textSecondary }]}>Close</Text>
-        </Pressable>
-      </View>
+          <Pressable onPress={handleDismiss} style={styles.actionButton}>
+            <Text style={styles.actionIcon}>✕</Text>
+            <Text style={[textStyles.caption, { color: theme.textSecondary }]}>Close</Text>
+          </Pressable>
+        </View>
+      )}
     </View>
   );
 }
@@ -141,5 +220,28 @@ const styles = StyleSheet.create({
   actionIcon: {
     fontSize: 20,
     marginBottom: 2,
+  },
+  noteContainer: {
+    marginBottom: spacing.md,
+  },
+  noteInput: {
+    borderWidth: 1,
+    borderRadius: borderRadius.md,
+    padding: spacing.sm,
+    minHeight: 60,
+    maxHeight: 120,
+    fontSize: 14,
+    textAlignVertical: 'top',
+  },
+  noteActions: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    gap: spacing.sm,
+    marginTop: spacing.sm,
+  },
+  noteButton: {
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: borderRadius.sm,
   },
 });

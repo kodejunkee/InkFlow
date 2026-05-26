@@ -67,6 +67,7 @@ export default function ReaderScreen() {
     goToChapter,
     addHighlightAction,
     addBookmarkAction,
+    saveQuoteAction,
     copySelection,
     dismissSelection,
     toggleChapterDrawer,
@@ -154,7 +155,7 @@ export default function ReaderScreen() {
         visible={isSelectionMenuVisible}
         selectedText={selectedText}
         onHighlight={addHighlightAction}
-        onBookmark={addBookmarkAction}
+        onSaveQuote={saveQuoteAction}
         onCopy={copySelection}
         onShare={handleShareAsQuote}
         onDismiss={dismissSelection}

@@ -5,7 +5,7 @@
  */
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Clipboard } from 'react-native';
+import { Clipboard, ToastAndroid, Platform, Alert } from 'react-native';
 import * as Sharing from 'expo-sharing';
 import type * as SQLite from 'expo-sqlite';
 import type WebView from 'react-native-webview';
@@ -229,32 +229,61 @@ export function useReader({ db, book }: UseReaderOptions) {
   );
 
   const addBookmarkAction = useCallback(() => {
-    if (!db || !book) return;
+    if (!db || !book || !currentCfi) return;
 
-    // If there's a selection, bookmark at the selection point
-    // Otherwise, request bookmark context from WebView
-    if (selectedCfiRange) {
+    try {
+      insertBookmark(db, book.id, currentCfi, chapterTitle, chapterTitle || 'Bookmark');
+
+      // Visual feedback
+      if (Platform.OS === 'android') {
+        ToastAndroid.show('Bookmark added', ToastAndroid.SHORT);
+      } else {
+        Alert.alert('Bookmark added');
+      }
+    } catch (e) {
+      console.error('[useReader] Failed to add bookmark:', e);
+    }
+  }, [db, book, currentCfi, chapterTitle]);
+
+  const saveQuoteAction = useCallback(
+    (note: string) => {
+      if (!db || !book || !selectedCfiRange || !selectedText) return;
+
       try {
-        insertBookmark(
+        // Save as a highlight with the note
+        const highlight = insertHighlight(
           db,
           book.id,
           selectedCfiRange,
-          selectedChapterTitle || chapterTitle,
-          selectedText.substring(0, 50) || chapterTitle || 'Bookmark',
+          selectedText,
+          selectedChapterTitle,
+          'yellow',
+          note || null,
         );
+
+        // Add visual highlight in WebView
+        if (webViewRef.current) {
+          const cmd: ReaderCommand = {
+            type: 'addHighlight',
+            cfiRange: selectedCfiRange,
+            color: 'yellow',
+            id: highlight.id,
+          };
+          webViewRef.current.injectJavaScript(serializeCommand(cmd));
+        }
+
         setIsSelectionMenuVisible(false);
         clearSelection();
+
+        if (Platform.OS === 'android') {
+          ToastAndroid.show('Quote saved', ToastAndroid.SHORT);
+        }
       } catch (e) {
-        console.error('[useReader] Failed to add bookmark:', e);
+        console.error('[useReader] Failed to save quote:', e);
       }
-    } else if (currentCfi) {
-      try {
-        insertBookmark(db, book.id, currentCfi, chapterTitle, chapterTitle || 'Bookmark');
-      } catch (e) {
-        console.error('[useReader] Failed to add bookmark:', e);
-      }
-    }
-  }, [db, book, selectedCfiRange, selectedChapterTitle, selectedText, currentCfi, chapterTitle]);
+    },
+    [db, book, selectedCfiRange, selectedText, selectedChapterTitle],
+  );
 
   const copySelection = useCallback(() => {
     if (selectedText) {
@@ -332,6 +361,7 @@ export function useReader({ db, book }: UseReaderOptions) {
     goToChapter,
     addHighlightAction,
     addBookmarkAction,
+    saveQuoteAction,
     copySelection,
     shareSelection,
     dismissSelection,
