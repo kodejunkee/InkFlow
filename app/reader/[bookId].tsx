@@ -73,7 +73,6 @@ export default function ReaderScreen() {
     saveQuoteAction,
     deleteBookmarkAction,
     deleteHighlightAction,
-    goToCfi,
     copySelection,
     dismissSelection,
     toggleChapterDrawer,
