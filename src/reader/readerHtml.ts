@@ -174,8 +174,12 @@ export function generateReaderHtml(options: Partial<GenerateOptions> = {}): stri
             break;
           case 'goToCfi':
             if (rendition) {
+              // CFI ranges (from highlights) look like epubcfi(base,startOffset,endOffset)
+              // Extract just the start CFI so we navigate to the beginning of the range
               var targetCfi = cmd.cfi;
               if (targetCfi && targetCfi.indexOf(',') !== -1) {
+                // Range CFI: epubcfi(/6/4[id]!/4/2, /1:0, /3:50)
+                // Start = base + startOffset = epubcfi(/6/4[id]!/4/2/1:0)
                 var raw = targetCfi;
                 if (raw.indexOf('epubcfi(') === 0) raw = raw.substring(8);
                 if (raw.charAt(raw.length - 1) === ')') raw = raw.substring(0, raw.length - 1);
@@ -184,31 +188,11 @@ export function generateReaderHtml(options: Partial<GenerateOptions> = {}): stri
                   targetCfi = 'epubcfi(' + parts[0].trim() + parts[1].trim() + ')';
                 }
               }
-              rendition.display(targetCfi);
-            }
-            break;
-          case 'goToHighlight':
-            if (rendition) {
-              var targetCfi = cmd.cfiRange;
-              if (targetCfi && targetCfi.indexOf(',') !== -1) {
-                var raw = targetCfi;
-                if (raw.indexOf('epubcfi(') === 0) raw = raw.substring(8);
-                if (raw.charAt(raw.length - 1) === ')') raw = raw.substring(0, raw.length - 1);
-                var parts = raw.split(',');
-                if (parts.length >= 2) {
-                  targetCfi = 'epubcfi(' + parts[0].trim() + parts[1].trim() + ')';
-                }
+              try {
+                rendition.display(targetCfi);
+              } catch (e) {
+                console.warn('[Reader] Failed to navigate to CFI:', targetCfi, e);
               }
-              rendition.display(targetCfi).then(function() {
-                // Add a small delay to let the continuous manager settle, then scroll up slightly
-                // to give the highlight some breathing room from the top edge.
-                setTimeout(function() {
-                  if (rendition.manager && rendition.manager.container) {
-                    var newScrollTop = rendition.manager.container.scrollTop - 120;
-                    rendition.manager.container.scrollTop = Math.max(0, newScrollTop);
-                  }
-                }, 100);
-              });
             }
             break;
           case 'goToChapter':
@@ -517,24 +501,27 @@ export function generateReaderHtml(options: Partial<GenerateOptions> = {}): stri
       };
       const bgColor = colorMap[color] || colorMap.yellow;
 
-      rendition.annotations.highlight(
-        cfiRange,
-        { id: id },
-        function(e) {
-          // Highlight clicked — notify RN
-          sendToRN({
-            type: 'textSelected',
-            cfiRange: cfiRange,
-            selectedText: '',
-            chapterTitle: '',
-            rect: { x: e.clientX, y: e.clientY, width: 0, height: 0 },
-          });
-        },
-        'hl-' + id,
-        { 'fill': bgColor, 'fill-opacity': '1', 'mix-blend-mode': 'multiply' }
-      );
-
-      highlightMap.set(id, cfiRange);
+      try {
+        rendition.annotations.highlight(
+          cfiRange,
+          { id: id },
+          function(e) {
+            // Highlight clicked — notify RN
+            sendToRN({
+              type: 'textSelected',
+              cfiRange: cfiRange,
+              selectedText: '',
+              chapterTitle: '',
+              rect: { x: e.clientX, y: e.clientY, width: 0, height: 0 },
+            });
+          },
+          'hl-' + id,
+          { 'fill': bgColor, 'fill-opacity': '1', 'mix-blend-mode': 'multiply' }
+        );
+        highlightMap.set(id, cfiRange);
+      } catch (e) {
+        console.warn('[Reader] Failed to add highlight for CFI:', cfiRange, e);
+      }
     }
 
     function removeHighlight(cfiRange, id) {
@@ -658,16 +645,11 @@ export function generateReaderHtml(options: Partial<GenerateOptions> = {}): stri
     // ─── Error handling ──────────────────────────────────────────────
 
     window.onerror = function(msg, src, line, col, err) {
-      if (msg && msg.indexOf('getClientRects') !== -1) {
-        console.warn('[Reader] Suppressed epub.js getClientRects error:', msg);
-        return true; // Stop propagation
-      }
       sendToRN({
         type: 'error',
         message: msg + ' (' + src + ':' + line + ')',
         stack: err ? err.stack : '',
       });
-      return false;
     };
 
     // Notify RN that the page is loaded and ready for commands

@@ -66,13 +66,12 @@ export default function ReaderScreen() {
     handleTap,
     handleError,
     goToChapter,
-    goToCfi,
-    goToHighlight,
     addHighlightAction,
     addBookmarkAction,
     saveQuoteAction,
     deleteBookmarkAction,
     deleteHighlightAction,
+    goToCfi,
     copySelection,
     dismissSelection,
     toggleChapterDrawer,
@@ -160,7 +159,7 @@ export default function ReaderScreen() {
         bookmarks={bookmarks}
         highlights={highlights}
         onGoToBookmark={(cfi) => { goToCfi(cfi); }}
-        onGoToHighlight={(cfiRange) => { goToHighlight(cfiRange); }}
+        onGoToHighlight={(cfiRange) => { goToCfi(cfiRange); }}
         onDeleteBookmark={deleteBookmarkAction}
         onDeleteHighlight={deleteHighlightAction}
         onClose={() => setAnnotationsDrawerOpen(false)}

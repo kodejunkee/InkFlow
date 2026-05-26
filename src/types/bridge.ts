@@ -89,11 +89,6 @@ export interface RNGoToCfiCommand {
   cfi: string;
 }
 
-export interface RNGoToHighlightCommand {
-  type: 'goToHighlight';
-  cfiRange: string;
-}
-
 export interface RNGoToChapterCommand {
   type: 'goToChapter';
   href: string;
@@ -152,7 +147,6 @@ export type ReaderCommand =
   | RNRemoveHighlightCommand
   | RNClearSelectionCommand
   | RNGetBookmarkContextCommand
-  | RNGoToHighlightCommand
   | RNRestoreHighlightsCommand;
 
 // ═══════════════════════════════════════════════════════════════════════════════
