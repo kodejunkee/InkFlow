@@ -203,22 +203,22 @@ export function useReader({ db, book }: UseReaderOptions) {
 
   const goToCfi = useCallback(
     (cfi: string) => {
-      if (cfi) {
+      if (cfi && webViewRef.current) {
         const cmd: ReaderCommand = { type: 'goToCfi', cfi };
-        sendCommand(cmd);
+        webViewRef.current.injectJavaScript(serializeCommand(cmd));
       }
     },
-    [sendCommand]
+    []
   );
 
   const goToHighlight = useCallback(
     (cfiRange: string) => {
-      if (cfiRange) {
+      if (cfiRange && webViewRef.current) {
         const cmd: ReaderCommand = { type: 'goToHighlight', cfiRange };
-        sendCommand(cmd);
+        webViewRef.current.injectJavaScript(serializeCommand(cmd));
       }
     },
-    [sendCommand]
+    []
   );
 
   // ─── Load annotations from DB ──────────────────────────────────────
