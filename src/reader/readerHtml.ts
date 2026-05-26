@@ -168,7 +168,10 @@ export function generateReaderHtml(options: Partial<GenerateOptions> = {}): stri
               if (targetCfi && targetCfi.indexOf(',') !== -1) {
                 // Range CFI: epubcfi(/6/4[id]!/4/2, /1:0, /3:50)
                 // Start = base + startOffset = epubcfi(/6/4[id]!/4/2/1:0)
-                var parts = targetCfi.replace('epubcfi(', '').replace(/\)$/, '').split(',');
+                var raw = targetCfi;
+                if (raw.indexOf('epubcfi(') === 0) raw = raw.substring(8);
+                if (raw.charAt(raw.length - 1) === ')') raw = raw.substring(0, raw.length - 1);
+                var parts = raw.split(',');
                 if (parts.length >= 2) {
                   targetCfi = 'epubcfi(' + parts[0].trim() + parts[1].trim() + ')';
                 }
