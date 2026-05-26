@@ -35,6 +35,7 @@ export interface WVBookmarkContextMessage {
   type: 'bookmarkContext';
   cfi: string;
   chapterTitle: string;
+  contextText: string;
 }
 
 export interface WVTapMessage {

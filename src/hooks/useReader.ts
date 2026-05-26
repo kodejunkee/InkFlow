@@ -265,21 +265,35 @@ export function useReader({ db, book }: UseReaderOptions) {
   );
 
   const addBookmarkAction = useCallback(() => {
-    if (!db || !book || !currentCfi) return;
-
-    try {
-      insertBookmark(db, book.id, currentCfi, chapterTitle, chapterTitle || 'Bookmark');
-
-      // Visual feedback
-      if (Platform.OS === 'android') {
-        ToastAndroid.show('Bookmark added', ToastAndroid.SHORT);
-      } else {
-        Alert.alert('Bookmark added');
-      }
-    } catch (e) {
-      console.error('[useReader] Failed to add bookmark:', e);
+    if (!db || !book) return;
+    // Ask WebView for context text at the current position
+    if (webViewRef.current) {
+      const cmd: ReaderCommand = { type: 'getBookmarkContext' };
+      webViewRef.current.injectJavaScript(serializeCommand(cmd));
     }
-  }, [db, book, currentCfi, chapterTitle]);
+  }, [db, book]);
+
+  const handleBookmarkContext = useCallback(
+    (cfi: string, chapTitle: string, contextText: string) => {
+      if (!db || !book) return;
+      try {
+        const label = contextText
+          ? contextText.substring(0, 80)
+          : chapTitle || 'Bookmark';
+
+        insertBookmark(db, book.id, cfi, chapTitle, label);
+
+        if (Platform.OS === 'android') {
+          ToastAndroid.show('Bookmark added', ToastAndroid.SHORT);
+        } else {
+          Alert.alert('Bookmark added');
+        }
+      } catch (e) {
+        console.error('[useReader] Failed to add bookmark:', e);
+      }
+    },
+    [db, book],
+  );
 
   const deleteBookmarkAction = useCallback(
     (id: number) => {
@@ -427,6 +441,7 @@ export function useReader({ db, book }: UseReaderOptions) {
     handleLocationChanged,
     handleTocLoaded,
     handleTextSelected,
+    handleBookmarkContext,
     handleTap,
     handleError,
     // Actions

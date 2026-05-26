@@ -63,6 +63,7 @@ export default function ReaderScreen() {
     handleLocationChanged,
     handleTocLoaded,
     handleTextSelected,
+    handleBookmarkContext,
     handleTap,
     handleError,
     goToChapter,
@@ -134,6 +135,7 @@ export default function ReaderScreen() {
         onLocationChanged={handleLocationChanged}
         onTocLoaded={handleTocLoaded}
         onTextSelected={handleTextSelected}
+        onBookmarkContext={handleBookmarkContext}
         onTap={handleTap}
         onError={handleError}
       />

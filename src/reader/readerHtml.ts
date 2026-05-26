@@ -161,7 +161,20 @@ export function generateReaderHtml(options: Partial<GenerateOptions> = {}): stri
             loadBook(cmd.uri, cmd.initialCfi);
             break;
           case 'goToCfi':
-            if (rendition) rendition.display(cmd.cfi);
+            if (rendition) {
+              // CFI ranges (from highlights) look like epubcfi(base,startOffset,endOffset)
+              // Extract just the start CFI so we navigate to the beginning of the range
+              var targetCfi = cmd.cfi;
+              if (targetCfi && targetCfi.indexOf(',') !== -1) {
+                // Range CFI: epubcfi(/6/4[id]!/4/2, /1:0, /3:50)
+                // Start = base + startOffset = epubcfi(/6/4[id]!/4/2/1:0)
+                var parts = targetCfi.replace('epubcfi(', '').replace(/\)$/, '').split(',');
+                if (parts.length >= 2) {
+                  targetCfi = 'epubcfi(' + parts[0].trim() + parts[1].trim() + ')';
+                }
+              }
+              rendition.display(targetCfi);
+            }
             break;
           case 'goToChapter':
             if (rendition) rendition.display(cmd.href);
@@ -437,13 +450,30 @@ export function generateReaderHtml(options: Partial<GenerateOptions> = {}): stri
 
     function getBookmarkContext() {
       if (!rendition) return;
-      const loc = rendition.currentLocation();
+      var loc = rendition.currentLocation();
       if (!loc || !loc.start) return;
+
+      // Grab visible text for the bookmark label
+      var contextText = '';
+      try {
+        var contents = rendition.getContents();
+        if (contents && contents.length > 0) {
+          var doc = contents[0].document;
+          if (doc && doc.body) {
+            // Get the first ~80 chars of visible text
+            var rawText = doc.body.innerText || doc.body.textContent || '';
+            contextText = rawText.replace(/\s+/g, ' ').trim().substring(0, 80);
+          }
+        }
+      } catch (e) {
+        // Fallback: no context text
+      }
 
       sendToRN({
         type: 'bookmarkContext',
         cfi: loc.start.cfi,
         chapterTitle: getChapterTitle(loc.start.href),
+        contextText: contextText,
       });
     }
 

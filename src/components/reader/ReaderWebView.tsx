@@ -26,6 +26,7 @@ interface ReaderWebViewProps {
   onLocationChanged?: (cfi: string, progress: number, chapterIndex: number, chapterTitle: string) => void;
   onTocLoaded?: (toc: any[]) => void;
   onTextSelected?: (cfiRange: string, selectedText: string, chapterTitle: string, rect: any) => void;
+  onBookmarkContext?: (cfi: string, chapterTitle: string, contextText: string) => void;
   onTap?: (x: number, y: number) => void;
   onError?: (message: string) => void;
 }
@@ -38,6 +39,7 @@ export const ReaderWebView = React.forwardRef<WebView, ReaderWebViewProps>(
       onLocationChanged,
       onTocLoaded,
       onTextSelected,
+      onBookmarkContext,
       onTap,
       onError,
     },
@@ -157,13 +159,21 @@ export const ReaderWebView = React.forwardRef<WebView, ReaderWebViewProps>(
             onTap?.(message.x, message.y);
             break;
 
+          case 'bookmarkContext':
+            onBookmarkContext?.(
+              message.cfi,
+              message.chapterTitle,
+              (message as any).contextText || '',
+            );
+            break;
+
           case 'error':
             console.error('[ReaderWebView] Error:', message.message);
             onError?.(message.message);
             break;
         }
       },
-      [book, sendCommand, onReady, onLocationChanged, onTocLoaded, onTextSelected, onTap, onError],
+      [book, sendCommand, onReady, onLocationChanged, onTocLoaded, onTextSelected, onBookmarkContext, onTap, onError],
     );
 
     // ─── Apply theme changes ─────────────────────────────────────────
