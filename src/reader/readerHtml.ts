@@ -317,30 +317,35 @@ export function generateReaderHtml(options: Partial<GenerateOptions> = {}): stri
             // ── Spacing normalization ────────────────────────────────
             // Some web novel EPUBs (e.g. Shadow Slave) use multiple empty <p>
             // or stacked <br> tags between paragraphs, causing huge gaps.
-            // These rules collapse excessive whitespace without affecting
-            // books that use normal single-paragraph spacing.
-            if (!doc.getElementById('inkflow-normalize-style')) {
-              var normStyle = doc.createElement('style');
-              normStyle.id = 'inkflow-normalize-style';
-              normStyle.textContent =
-                // Empty paragraphs (contain only whitespace, &nbsp;, or a lone <br>)
-                'p:empty, p:has(> br:only-child) { ' +
-                '  margin: 0 !important; ' +
-                '  padding: 0 !important; ' +
-                '  line-height: 0.5 !important; ' +
-                '  font-size: 0 !important; ' +
-                '} ' +
-                // Cap top/bottom margins on all paragraphs to prevent bloat
-                'p { ' +
-                '  margin-top: max(0px, min(0.8em, initial)) !important; ' +
-                '  margin-bottom: max(0px, min(0.8em, initial)) !important; ' +
-                '} ' +
-                // Standalone <br> elements between block elements
-                'br + br { ' +
-                '  display: none !important; ' +
-                '} ';
-              doc.head.appendChild(normStyle);
-            }
+            // We collapse them via inline styles (CFI-safe: no DOM insertion/removal).
+            (function normalizeSpacing() {
+              var allP = doc.querySelectorAll('p, div');
+              for (var pi = 0; pi < allP.length; pi++) {
+                var el = allP[pi];
+                // Check if the element is "empty" — only whitespace, &nbsp;, or <br>
+                var text = el.textContent || '';
+                var stripped = text.replace(/[\s\u00A0]/g, ''); // strip spaces and &nbsp;
+                if (stripped === '') {
+                  // It's empty text-wise. Check if it only has <br> children or nothing.
+                  var hasRealChild = false;
+                  for (var ci = 0; ci < el.childNodes.length; ci++) {
+                    var child = el.childNodes[ci];
+                    if (child.nodeType === 1 && child.tagName !== 'BR') {
+                      hasRealChild = true;
+                      break;
+                    }
+                  }
+                  if (!hasRealChild) {
+                    el.style.margin = '0';
+                    el.style.padding = '0';
+                    el.style.lineHeight = '0';
+                    el.style.fontSize = '0';
+                    el.style.height = '0';
+                    el.style.overflow = 'hidden';
+                  }
+                }
+              }
+            })();
 
             // Check if the chapter already has a visible heading
             var firstChild = doc.body.firstElementChild;
