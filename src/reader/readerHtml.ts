@@ -121,6 +121,20 @@ export function generateReaderHtml(options: Partial<GenerateOptions> = {}): stri
     }
     @keyframes spin { to { transform: rotate(360deg); } }
 
+    /* ─── Chapter header injection (CSS-only to avoid CFI corruption) ── */
+    body[data-inkflow-chapter]::before {
+      content: attr(data-inkflow-chapter);
+      display: block;
+      text-align: center;
+      margin: 1.5em 0 1em 0;
+      padding-bottom: 0.5em;
+      border-bottom: 1px solid rgba(128,128,128,0.25);
+      font-size: 1.3em;
+      font-weight: 600;
+      opacity: 0.85;
+      letter-spacing: 0.02em;
+    }
+
     /* ─── Chapter separator ──────────────────────────────────────────── */
     .chapter-separator {
       text-align: center;
@@ -354,21 +368,9 @@ export function generateReaderHtml(options: Partial<GenerateOptions> = {}): stri
             var chTitle = sectionHref ? getChapterTitle(sectionHref) : '';
             if (!chTitle) return;
 
-            // Inject a styled heading
-            var heading = doc.createElement('h2');
-            heading.textContent = chTitle;
-            heading.setAttribute('style',
-              'text-align: center; ' +
-              'margin: 1.5em 0 1em 0; ' +
-              'padding-bottom: 0.5em; ' +
-              'border-bottom: 1px solid rgba(128,128,128,0.25); ' +
-              'font-size: 1.3em; ' +
-              'font-weight: 600; ' +
-              'opacity: 0.85; ' +
-              'letter-spacing: 0.02em;'
-            );
-            heading.setAttribute('data-inkflow-injected', 'true');
-            doc.body.insertBefore(heading, doc.body.firstChild);
+            // Use CSS ::before to inject the heading visually without mutating DOM elements!
+            // Mutating the DOM (e.g. insertBefore) shifts the element indices and permanently corrupts CFIs.
+            doc.body.setAttribute('data-inkflow-chapter', chTitle);
           } catch (e) {
             // Non-fatal — skip header injection
           }
