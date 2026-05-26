@@ -250,13 +250,15 @@ const styles = StyleSheet.create({
   },
   noteActions: {
     flexDirection: 'row',
-    justifyContent: 'flex-end',
-    gap: spacing.sm,
-    marginTop: spacing.sm,
+    justifyContent: 'space-between',
+    gap: spacing.md,
+    marginTop: spacing.md,
   },
   noteButton: {
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-    borderRadius: borderRadius.sm,
+    flex: 1,
+    alignItems: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: borderRadius.md,
   },
 });

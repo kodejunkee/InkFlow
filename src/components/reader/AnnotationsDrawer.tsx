@@ -195,7 +195,7 @@ export function AnnotationsDrawer({
                   />
                   <Text
                     style={[
-                      textStyles.bodySmall,
+                      textStyles.body,
                       {
                         color: activeTab === 'quotes' ? theme.primary : theme.textSecondary,
                         fontWeight: activeTab === 'quotes' ? '600' : '400',
@@ -222,7 +222,7 @@ export function AnnotationsDrawer({
                   />
                   <Text
                     style={[
-                      textStyles.bodySmall,
+                      textStyles.body,
                       {
                         color: activeTab === 'bookmarks' ? theme.primary : theme.textSecondary,
                         fontWeight: activeTab === 'bookmarks' ? '600' : '400',
@@ -324,10 +324,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     borderBottomWidth: 1,
   },
-  tabButton: {
+  tab: {
     flex: 1,
     alignItems: 'center',
-    paddingVertical: spacing.md,
+    paddingVertical: spacing.lg,
     borderBottomWidth: 2,
     borderBottomColor: 'transparent',
   },
