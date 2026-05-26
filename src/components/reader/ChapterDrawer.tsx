@@ -10,8 +10,8 @@ import {
   Pressable,
   StyleSheet,
   Modal,
-  SafeAreaView,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import type { TocItem } from '../../types/reader';
 import { useSettingsStore } from '../../stores/settingsStore';
 import { getTheme } from '../../theme/themes';

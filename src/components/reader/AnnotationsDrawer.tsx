@@ -13,8 +13,8 @@ import {
   Pressable,
   StyleSheet,
   Modal,
-  SafeAreaView,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import type { Bookmark, Highlight } from '../../types/book';
 import { useSettingsStore } from '../../stores/settingsStore';
 import { getTheme } from '../../theme/themes';
