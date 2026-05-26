@@ -13,6 +13,7 @@
  * - Supports text selection for highlights/bookmarks
  */
 
+import { JSZIP_SOURCE } from './jszipBundle';
 import { EPUBJS_SOURCE } from './epubjsBundle';
 
 interface ReaderThemeConfig {
@@ -122,6 +123,9 @@ export function generateReaderHtml(options: Partial<GenerateOptions> = {}): stri
 <body>
   <div id="loading"><div class="spinner"></div></div>
   <div id="reader"></div>
+
+  <!-- JSZip required by epub.js for EPUB decompression -->
+  <script>${JSZIP_SOURCE}</script>
 
   <!-- epub.js inlined for offline operation -->
   <script>${EPUBJS_SOURCE}</script>
