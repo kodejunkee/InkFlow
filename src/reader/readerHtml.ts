@@ -180,7 +180,7 @@ export function generateReaderHtml(options: Partial<GenerateOptions> = {}): stri
             }
             break;
           case 'goToChapter':
-            if (rendition) rendition.display(cmd.href);
+            if (rendition) goToChapter(cmd.href);
             break;
           case 'nextPage':
             if (rendition) rendition.next();
@@ -287,6 +287,71 @@ export function generateReaderHtml(options: Partial<GenerateOptions> = {}): stri
               height: rect.height,
             },
           });
+        });
+
+        // ── Chapter header injection ─────────────────────────────────
+        // For books that don't have visible chapter titles in the HTML,
+        // inject a styled heading at the top of each chapter.
+        rendition.hooks.content.register(function(contents) {
+          try {
+            var doc = contents.document;
+            if (!doc || !doc.body) return;
+
+            // Check if the chapter already has a visible heading
+            var firstChild = doc.body.firstElementChild;
+            var hasHeading = false;
+            if (firstChild) {
+              var tag = firstChild.tagName;
+              if (tag === 'H1' || tag === 'H2' || tag === 'H3') {
+                hasHeading = true;
+              }
+              // Also check if first child contains a heading as its first child
+              if (!hasHeading && firstChild.firstElementChild) {
+                tag = firstChild.firstElementChild.tagName;
+                if (tag === 'H1' || tag === 'H2' || tag === 'H3') {
+                  hasHeading = true;
+                }
+              }
+            }
+
+            if (hasHeading) return;
+
+            // Look up this chapter's title from the TOC
+            var sectionHref = contents.sectionIndex !== undefined
+              ? (book.spine.get(contents.sectionIndex) || {}).href
+              : '';
+            if (!sectionHref && contents.cfiBase) {
+              // Fallback: try to find href from spine items
+              var items = book.spine.items || book.spine.spineItems || [];
+              for (var si = 0; si < items.length; si++) {
+                if (items[si].cfiBase === contents.cfiBase) {
+                  sectionHref = items[si].href;
+                  break;
+                }
+              }
+            }
+
+            var chTitle = sectionHref ? getChapterTitle(sectionHref) : '';
+            if (!chTitle) return;
+
+            // Inject a styled heading
+            var heading = doc.createElement('h2');
+            heading.textContent = chTitle;
+            heading.setAttribute('style',
+              'text-align: center; ' +
+              'margin: 1.5em 0 1em 0; ' +
+              'padding-bottom: 0.5em; ' +
+              'border-bottom: 1px solid rgba(128,128,128,0.25); ' +
+              'font-size: 1.3em; ' +
+              'font-weight: 600; ' +
+              'opacity: 0.85; ' +
+              'letter-spacing: 0.02em;'
+            );
+            heading.setAttribute('data-inkflow-injected', 'true');
+            doc.body.insertBefore(heading, doc.body.firstChild);
+          } catch (e) {
+            // Non-fatal — skip header injection
+          }
         });
 
         // ── Display ─────────────────────────────────────────────────
@@ -502,9 +567,19 @@ export function generateReaderHtml(options: Partial<GenerateOptions> = {}): stri
     function getChapterTitle(href) {
       if (!book || !book.navigation || !href) return '';
       var toc = book.navigation.toc;
+      var hrefBase = href.split('#')[0];
+      // Exact match first
       for (var i = 0; i < toc.length; i++) {
-        if (toc[i].href && href.indexOf(toc[i].href.split('#')[0]) !== -1) {
+        if (toc[i].href && hrefBase.indexOf(toc[i].href.split('#')[0]) !== -1) {
           return (toc[i].label || '').trim();
+        }
+      }
+      // Fuzzy: match by filename only
+      var hrefFile = hrefBase.split('/').pop();
+      for (var j = 0; j < toc.length; j++) {
+        var tocFile = (toc[j].href || '').split('#')[0].split('/').pop();
+        if (tocFile && tocFile === hrefFile) {
+          return (toc[j].label || '').trim();
         }
       }
       return '';
@@ -519,6 +594,29 @@ export function generateReaderHtml(options: Partial<GenerateOptions> = {}): stri
         }
       }
       return 0;
+    }
+
+    // Fuzzy chapter navigation — tries exact href, then filename-only, then spine match
+    function goToChapter(href) {
+      if (!rendition || !book) return;
+
+      // 1. Try exact href
+      rendition.display(href).catch(function() {
+        // 2. Try without fragment
+        var hrefNoFrag = href.split('#')[0];
+        rendition.display(hrefNoFrag).catch(function() {
+          // 3. Try matching by filename against spine
+          var fileName = hrefNoFrag.split('/').pop();
+          var items = book.spine.items || book.spine.spineItems || [];
+          for (var i = 0; i < items.length; i++) {
+            var spineFile = (items[i].href || '').split('/').pop();
+            if (spineFile === fileName) {
+              rendition.display(items[i].href);
+              return;
+            }
+          }
+        });
+      });
     }
 
     // ─── Error handling ──────────────────────────────────────────────
