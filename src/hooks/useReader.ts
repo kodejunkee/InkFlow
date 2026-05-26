@@ -203,12 +203,22 @@ export function useReader({ db, book }: UseReaderOptions) {
 
   const goToCfi = useCallback(
     (cfi: string) => {
-      if (webViewRef.current) {
+      if (cfi) {
         const cmd: ReaderCommand = { type: 'goToCfi', cfi };
-        webViewRef.current.injectJavaScript(serializeCommand(cmd));
+        sendCommand(cmd);
       }
     },
-    [],
+    [sendCommand]
+  );
+
+  const goToHighlight = useCallback(
+    (cfiRange: string) => {
+      if (cfiRange) {
+        const cmd: ReaderCommand = { type: 'goToHighlight', cfiRange };
+        sendCommand(cmd);
+      }
+    },
+    [sendCommand]
   );
 
   // ─── Load annotations from DB ──────────────────────────────────────
@@ -447,6 +457,7 @@ export function useReader({ db, book }: UseReaderOptions) {
     // Actions
     goToChapter,
     goToCfi,
+    goToHighlight,
     addHighlightAction,
     addBookmarkAction,
     saveQuoteAction,

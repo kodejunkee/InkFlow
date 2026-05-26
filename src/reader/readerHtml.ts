@@ -174,12 +174,23 @@ export function generateReaderHtml(options: Partial<GenerateOptions> = {}): stri
             break;
           case 'goToCfi':
             if (rendition) {
-              // CFI ranges (from highlights) look like epubcfi(base,startOffset,endOffset)
-              // Extract just the start CFI so we navigate to the beginning of the range
               var targetCfi = cmd.cfi;
               if (targetCfi && targetCfi.indexOf(',') !== -1) {
-                // Range CFI: epubcfi(/6/4[id]!/4/2, /1:0, /3:50)
-                // Start = base + startOffset = epubcfi(/6/4[id]!/4/2/1:0)
+                var raw = targetCfi;
+                if (raw.indexOf('epubcfi(') === 0) raw = raw.substring(8);
+                if (raw.charAt(raw.length - 1) === ')') raw = raw.substring(0, raw.length - 1);
+                var parts = raw.split(',');
+                if (parts.length >= 2) {
+                  targetCfi = 'epubcfi(' + parts[0].trim() + parts[1].trim() + ')';
+                }
+              }
+              rendition.display(targetCfi);
+            }
+            break;
+          case 'goToHighlight':
+            if (rendition) {
+              var targetCfi = cmd.cfiRange;
+              if (targetCfi && targetCfi.indexOf(',') !== -1) {
                 var raw = targetCfi;
                 if (raw.indexOf('epubcfi(') === 0) raw = raw.substring(8);
                 if (raw.charAt(raw.length - 1) === ')') raw = raw.substring(0, raw.length - 1);
@@ -189,16 +200,13 @@ export function generateReaderHtml(options: Partial<GenerateOptions> = {}): stri
                 }
               }
               rendition.display(targetCfi).then(function() {
-                // Add a small top offset so the quote/bookmark isn't stuck to the very top edge
-                if (rendition.manager && rendition.manager.container) {
-                  setTimeout(function() {
-                    // Reduce scroll position by ~80px to pull the content down into view
-                    var currentScroll = rendition.manager.container.scrollTop;
-                    if (currentScroll > 0) {
-                      rendition.manager.container.scrollTop = Math.max(0, currentScroll - 80);
-                    }
-                  }, 10);
-                }
+                // Add a small delay to let the continuous manager settle, then scroll up slightly
+                // to give the highlight some breathing room from the top edge.
+                setTimeout(function() {
+                  if (rendition.manager && rendition.manager.container) {
+                    rendition.manager.container.scrollTop -= 60; // 60px breathing room
+                  }
+                }, 50);
               });
             }
             break;
