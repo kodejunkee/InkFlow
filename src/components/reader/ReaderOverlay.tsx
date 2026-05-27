@@ -91,7 +91,11 @@ export function ReaderOverlay({
           barStyle={theme.isDark ? 'light-content' : 'dark-content'}
           translucent
         />
-        <Pressable onPress={onBack} hitSlop={12} style={styles.headerButton}>
+        <Pressable 
+          onPress={onBack} 
+          hitSlop={12} 
+          style={({ pressed }) => [styles.headerButton, pressed && { opacity: 0.5 }]}
+        >
           <Ionicons name="chevron-back" size={28} color={theme.primary} />
         </Pressable>
 
@@ -112,7 +116,11 @@ export function ReaderOverlay({
           ) : null}
         </View>
 
-        <Pressable onPress={onBookmark} hitSlop={12} style={styles.headerButton}>
+        <Pressable 
+          onPress={onBookmark} 
+          hitSlop={12} 
+          style={({ pressed }) => [styles.headerButton, pressed && { opacity: 0.5 }]}
+        >
           <Ionicons 
             name={isBookmarked ? "bookmark" : "bookmark-outline"} 
             size={24} 
@@ -155,21 +163,30 @@ export function ReaderOverlay({
 
         {/* Action buttons */}
         <View style={styles.footerActions}>
-          <Pressable onPress={onChapters} style={styles.footerButton}>
+          <Pressable 
+            onPress={onChapters} 
+            style={({ pressed }) => [styles.footerButton, pressed && { opacity: 0.5 }]}
+          >
             <Ionicons name="list-outline" size={24} color={theme.textSecondary} />
             <Text style={[textStyles.caption, { color: theme.textSecondary }]}>
               Chapters
             </Text>
           </Pressable>
 
-          <Pressable onPress={onAnnotations} style={styles.footerButton}>
+          <Pressable 
+            onPress={onAnnotations} 
+            style={({ pressed }) => [styles.footerButton, pressed && { opacity: 0.5 }]}
+          >
             <Ionicons name="chatbubbles-outline" size={24} color={theme.textSecondary} />
             <Text style={[textStyles.caption, { color: theme.textSecondary }]}>
               Notes
             </Text>
           </Pressable>
 
-          <Pressable onPress={onSettings} style={styles.footerButton}>
+          <Pressable 
+            onPress={onSettings} 
+            style={({ pressed }) => [styles.footerButton, pressed && { opacity: 0.5 }]}
+          >
             <Ionicons name="settings-outline" size={24} color={theme.textSecondary} />
             <Text style={[textStyles.caption, { color: theme.textSecondary }]}>
               Settings

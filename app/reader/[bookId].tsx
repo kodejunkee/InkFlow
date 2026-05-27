@@ -37,7 +37,6 @@ export default function ReaderScreen() {
 
   const [book, setBook] = useState<Book | null>(null);
   const [isQuotePreviewVisible, setIsQuotePreviewVisible] = useState(false);
-  const [isAnnotationsDrawerOpen, setAnnotationsDrawerOpen] = useState(false);
   const [isSettingsModalOpen, setSettingsModalOpen] = useState(false);
 
   // Load book from database
@@ -80,6 +79,7 @@ export default function ReaderScreen() {
     dismissSelection,
     toggleChapterDrawer,
     setChapterDrawerOpen,
+    isAnnotationsDrawerOpen,
     toggleAnnotationsDrawer,
     bookmarks,
     highlights,
@@ -167,7 +167,7 @@ export default function ReaderScreen() {
         onGoToHighlight={(cfiRange) => { goToCfi(cfiRange); }}
         onDeleteBookmark={deleteBookmarkAction}
         onDeleteHighlight={deleteHighlightAction}
-        onClose={() => setAnnotationsDrawerOpen(false)}
+        onClose={toggleAnnotationsDrawer}
       />
 
       {/* Reader Settings Modal */}
