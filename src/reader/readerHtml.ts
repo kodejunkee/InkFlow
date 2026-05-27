@@ -689,22 +689,11 @@ export function generateReaderHtml(options: Partial<GenerateOptions> = {}): stri
         var firstVisibleIndex = 0;
         var foundVisible = false;
 
-        var scrollTop = 0;
-        var containerHeight = 1000; // fallback
-        if (rendition && rendition.manager && rendition.manager.container) {
-            scrollTop = rendition.manager.container.scrollTop || 0;
-            containerHeight = rendition.manager.container.clientHeight || 1000;
-        }
-
         for (var c = 0; c < contents.length; c++) {
           var doc = contents[c].document;
           var win = contents[c].window;
           var cfiBase = contents[c].cfiBase;
           if (!doc || !doc.body) continue;
-
-          // If iframe window is scrolling, use its scrollY. Otherwise fallback to container scrollTop
-          var activeScrollTop = (win.scrollY > 0) ? win.scrollY : scrollTop;
-          var activeHeight = win.innerHeight || containerHeight;
 
           // Remove any broken spans left from previous versions
           var oldSpans = doc.querySelectorAll('.tts-sentence');
@@ -745,21 +734,10 @@ export function generateReaderHtml(options: Partial<GenerateOptions> = {}): stri
                   // Safe CFI generation without mutating DOM
                   var cfi = new ePub.CFI(range, cfiBase).toString();
                   
-                  // Check visibility heuristically
-                  if (!foundVisible) {
-                    var rect = range.getBoundingClientRect();
-                    // absolute Y is rect.top plus any iframe scroll
-                    var absoluteY = rect.top + (win.scrollY || 0);
-                    // Check if it's within the active scroll viewport (with 20px padding)
-                    if (absoluteY >= (activeScrollTop - 20) && absoluteY < (activeScrollTop + activeHeight)) {
-                       firstVisibleIndex = allSentences.length;
-                       foundVisible = true;
-                    }
-                  }
-
-                  allSentences.push({ text: trimmed, cfi: cfi });
+                  var rect = range.getBoundingClientRect();
+                  allSentences.push({ text: trimmed, cfi: cfi, top: rect.top });
                 } catch(e) {
-                   allSentences.push({ text: trimmed, cfi: null });
+                   allSentences.push({ text: trimmed, cfi: null, top: 0 });
                 }
               }
             }
@@ -767,6 +745,27 @@ export function generateReaderHtml(options: Partial<GenerateOptions> = {}): stri
         }
 
         window.ttsSentences = allSentences;
+
+        var loc = rendition.currentLocation();
+        var currentCfi = loc && loc.start ? loc.start.cfi : null;
+        var firstVisibleIndex = 0;
+
+        // Use precise CFI comparison to find the first sentence in the current viewport
+        if (currentCfi && allSentences.length > 0) {
+           try {
+              var baseCfi = new ePub.CFI(currentCfi);
+              for (var i = 0; i < allSentences.length; i++) {
+                 if (allSentences[i].cfi) {
+                    var cmp = baseCfi.compare(allSentences[i].cfi);
+                    // If baseCfi <= sentence CFI, the sentence is at or after the viewport start
+                    if (cmp <= 0) {
+                       firstVisibleIndex = i;
+                       break;
+                    }
+                 }
+              }
+           } catch(e) {}
+        }
 
         // Find starting index if startText is provided
         var startIndex = firstVisibleIndex;
@@ -829,21 +828,11 @@ export function generateReaderHtml(options: Partial<GenerateOptions> = {}): stri
 
     function scrollToTtsSentence(index) {
        if (window.ttsSentences && index >= 0 && index < window.ttsSentences.length) {
-          var cfi = window.ttsSentences[index].cfi;
-          if (cfi && rendition && book) {
-             // Instead of using rendition.display(cfi) which causes chapter jumps,
-             // we resolve the CFI back to a DOM range and scroll it into view.
-             book.getRange(cfi).then(function(range) {
-                 if (range && range.startContainer) {
-                     var node = range.startContainer;
-                     if (node.nodeType === 3) node = node.parentNode; // Get parent element of text node
-                     if (node && node.scrollIntoView) {
-                         node.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                     }
-                 }
-             }).catch(function(e) {
-                 console.warn('[TTS] Failed to scroll to CFI:', e);
-             });
+          var item = window.ttsSentences[index];
+          if (item && item.top !== undefined && rendition.manager) {
+             // Smoothly scroll the container to the sentence instead of reloading the chapter!
+             var offset = Math.max(0, item.top - 80);
+             rendition.manager.scrollTo(0, offset);
           }
        }
     }
