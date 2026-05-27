@@ -19,21 +19,21 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useFocusEffect } from 'expo-router';
-import { useDB } from './_layout';
-import { useSettingsStore } from '../src/stores/settingsStore';
-import { useLibraryStore } from '../src/stores/libraryStore';
-import { useBookImport } from '../src/hooks/useBookImport';
-import { getBooks, deleteBook } from '../src/database/queries';
-import { deleteBookFiles } from '../src/services/fileManager';
-import { getTheme } from '../src/theme/themes';
-import { textStyles } from '../src/theme/typography';
-import { spacing } from '../src/theme/spacing';
+import { useDB } from '../_layout';
+import { useSettingsStore } from '../../src/stores/settingsStore';
+import { useLibraryStore } from '../../src/stores/libraryStore';
+import { useBookImport } from '../../src/hooks/useBookImport';
+import { getBooks, deleteBook } from '../../src/database/queries';
+import { deleteBookFiles } from '../../src/services/fileManager';
+import { getTheme } from '../../src/theme/themes';
+import { textStyles } from '../../src/theme/typography';
+import { spacing } from '../../src/theme/spacing';
 import { Ionicons } from '@expo/vector-icons';
-import { BookGrid } from '../src/components/library/BookGrid';
-import { ContinueReading } from '../src/components/library/ContinueReading';
-import { ImportButton } from '../src/components/library/ImportButton';
-import { EmptyState } from '../src/components/common/EmptyState';
-import { ErrorBoundary } from '../src/components/common/ErrorBoundary';
+import { BookGrid } from '../../src/components/library/BookGrid';
+import { ContinueReading } from '../../src/components/library/ContinueReading';
+import { ImportButton } from '../../src/components/library/ImportButton';
+import { EmptyState } from '../../src/components/common/EmptyState';
+import { ErrorBoundary } from '../../src/components/common/ErrorBoundary';
 
 export default function LibraryScreen() {
   const router = useRouter();

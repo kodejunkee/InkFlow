@@ -6,7 +6,7 @@
 
 import React from 'react';
 import { FlatList, StyleSheet, View } from 'react-native';
-import { BookCard, NUM_COLUMNS, CARD_MARGIN, GRID_PADDING } from './BookCard';
+import { BookCard, NUM_COLUMNS, CARD_MARGIN, GRID_PADDING, CARD_WIDTH } from './BookCard';
 import { type Book } from '../../types/book';
 import { spacing } from '../../theme/spacing';
 

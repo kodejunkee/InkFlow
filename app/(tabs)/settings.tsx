@@ -16,10 +16,10 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
-import { useSettingsStore } from '../src/stores/settingsStore';
-import { getTheme, type ThemeName } from '../src/theme/themes';
-import { textStyles } from '../src/theme/typography';
-import { spacing, borderRadius } from '../src/theme/spacing';
+import { useSettingsStore } from '../../src/stores/settingsStore';
+import { getTheme, type ThemeName } from '../../src/theme/themes';
+import { textStyles } from '../../src/theme/typography';
+import { spacing, borderRadius } from '../../src/theme/spacing';
 import { Ionicons } from '@expo/vector-icons';
 
 export default function SettingsScreen() {
