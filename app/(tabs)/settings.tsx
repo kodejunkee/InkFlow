@@ -53,9 +53,9 @@ export default function SettingsScreen() {
         <Pressable 
           onPress={() => router.back()}
           style={({ pressed }) => [styles.backButton, pressed && { opacity: 0.7 }]}
+          hitSlop={12}
         >
-          <Ionicons name="arrow-back" size={24} color={theme.primary} />
-          <Text style={[styles.backText, { color: theme.primary }]}>Back</Text>
+          <Ionicons name="chevron-back" size={28} color={theme.primary} />
         </Pressable>
         <Text style={[textStyles.title, { color: theme.textPrimary }]}>Settings</Text>
         <View style={styles.placeholder} />
@@ -212,9 +212,6 @@ export default function SettingsScreen() {
         <View style={styles.footer}>
           <Text style={[textStyles.caption, { color: theme.textTertiary, textAlign: 'center' }]}>
             InkFlow v1.0.0
-          </Text>
-          <Text style={[textStyles.caption, { color: theme.textTertiary, textAlign: 'center', marginTop: 4 }]}>
-            A web novel reader built with care
           </Text>
         </View>
       </ScrollView>

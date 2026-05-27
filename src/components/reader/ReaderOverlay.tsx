@@ -92,7 +92,7 @@ export function ReaderOverlay({
           translucent
         />
         <Pressable onPress={onBack} hitSlop={12} style={styles.headerButton}>
-          <Ionicons name="arrow-back" size={24} color={theme.primary} />
+          <Ionicons name="chevron-back" size={28} color={theme.primary} />
         </Pressable>
 
         <View style={styles.headerCenter}>

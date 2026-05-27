@@ -129,9 +129,9 @@ export default function BookmarksScreen() {
         <Pressable 
           onPress={() => router.back()}
           style={({ pressed }) => [styles.backButton, pressed && { opacity: 0.7 }]}
+          hitSlop={12}
         >
-          <Ionicons name="arrow-back" size={24} color={theme.primary} />
-          <Text style={[styles.backText, { color: theme.primary }]}>Back</Text>
+          <Ionicons name="chevron-back" size={28} color={theme.primary} />
         </Pressable>
         <View style={styles.headerCenter}>
           <Text style={[textStyles.title, { color: theme.textPrimary }]}>Bookmarks</Text>
