@@ -22,6 +22,7 @@ import { getTheme } from '../../theme/themes';
 
 interface ReaderWebViewProps {
   book: Book;
+  initialCfi?: string;
   onReady?: () => void;
   onLocationChanged?: (cfi: string, progress: number, chapterIndex: number, chapterTitle: string) => void;
   onTocLoaded?: (toc: any[]) => void;
@@ -35,6 +36,7 @@ export const ReaderWebView = React.forwardRef<WebView, ReaderWebViewProps>(
   function ReaderWebView(
     {
       book,
+      initialCfi,
       onReady,
       onLocationChanged,
       onTocLoaded,
@@ -129,7 +131,7 @@ export const ReaderWebView = React.forwardRef<WebView, ReaderWebViewProps>(
               sendCommand({
                 type: 'loadBook',
                 uri: book.filePath,
-                initialCfi: book.lastLocation ?? undefined,
+                initialCfi: initialCfi ?? book.lastLocation ?? undefined,
               });
             }
             break;

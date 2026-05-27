@@ -1,5 +1,5 @@
 import type * as SQLite from 'expo-sqlite';
-import type { Book, Bookmark, Highlight, HighlightColor, NewBook } from '../types/book';
+import type { Book, Bookmark, Highlight, HighlightColor, GlobalSearchResult, NewBook } from '../types/book';
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // Row ↔ Model mappers
@@ -306,6 +306,41 @@ export function searchHighlights(
     [pattern, pattern],
   );
   return rows.map(rowToHighlight);
+}
+
+/**
+ * Global search across both highlights and bookmarks for all books.
+ */
+export function searchGlobalAnnotations(
+  db: SQLite.SQLiteDatabase,
+  query: string,
+): GlobalSearchResult[] {
+  const pattern = `%${query}%`;
+  
+  const sql = `
+    SELECT
+      h.id, h.book_id as bookId, b.title as bookTitle,
+      h.cfi_range as cfi, h.chapter_title as chapterTitle, h.selected_text as text, h.note, h.color, h.created_at as createdAt,
+      'highlight' as type
+    FROM highlights h
+    JOIN books b ON h.book_id = b.id
+    WHERE h.selected_text LIKE ? OR h.note LIKE ?
+
+    UNION ALL
+
+    SELECT
+      bm.id, bm.book_id as bookId, b.title as bookTitle,
+      bm.cfi as cfi, bm.chapter_title as chapterTitle, bm.label as text, NULL as note, 'yellow' as color, bm.created_at as createdAt,
+      'bookmark' as type
+    FROM bookmarks bm
+    JOIN books b ON bm.book_id = b.id
+    WHERE bm.label LIKE ?
+
+    ORDER BY createdAt DESC
+  `;
+
+  // Note: we can map column names to camelCase using 'as' in SQLite to match our TypeScript interface.
+  return db.getAllSync<GlobalSearchResult>(sql, [pattern, pattern, pattern]);
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════

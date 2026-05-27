@@ -29,7 +29,7 @@ import { QuotePreviewModal } from '../../src/components/reader/QuotePreviewModal
 import type { Book } from '../../src/types/book';
 
 export default function ReaderScreen() {
-  const { bookId } = useLocalSearchParams<{ bookId: string }>();
+  const { bookId, cfi } = useLocalSearchParams<{ bookId: string; cfi?: string }>();
   const router = useRouter();
   const db = useDB();
   const themeName = useSettingsStore((s) => s.theme);
@@ -124,6 +124,7 @@ export default function ReaderScreen() {
       <ReaderWebView
         ref={webViewRef}
         book={book}
+        initialCfi={cfi}
         onReady={handleReady}
         onLocationChanged={handleLocationChanged}
         onTocLoaded={handleTocLoaded}
