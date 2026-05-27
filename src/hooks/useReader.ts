@@ -435,6 +435,7 @@ export function useReader({ db, book }: UseReaderOptions) {
     chapterTitle,
     chapterIndex,
     selectedText,
+    selectedCfiRange,
     isSelectionMenuVisible,
     // WebView handlers
     handleReady,

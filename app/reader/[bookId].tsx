@@ -61,6 +61,7 @@ export default function ReaderScreen() {
     chapterTitle,
     chapterIndex,
     selectedText,
+    selectedCfiRange,
     isSelectionMenuVisible,
     handleReady,
     handleLocationChanged,
