@@ -454,6 +454,9 @@ export function generateReaderHtml(options: Partial<GenerateOptions> = {}): stri
       // Update outer container
       document.body.style.background = bg;
       document.getElementById('reader').style.padding = '0 ' + cmd.margins + 'px';
+      
+      // Force epub.js to recalculate column layouts for the new container width
+      rendition.resize();
 
       // Build a single CSS string for injection into epub iframes
       var css = 'body { background: ' + bg + ' !important; color: ' + text + ' !important; '
