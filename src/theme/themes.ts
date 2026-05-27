@@ -8,7 +8,7 @@
 import { palette } from './colors';
 
 export interface AppTheme {
-  name: 'light' | 'dark' | 'sepia';
+  name: 'light' | 'dark' | 'sepia' | 'ocean';
   isDark: boolean;
 
   // Backgrounds
@@ -193,10 +193,55 @@ export const sepiaTheme: AppTheme = {
   tabBarInactive: '#A09080',
 };
 
+export const oceanTheme: AppTheme = {
+  name: 'ocean',
+  isDark: true,
+
+  background: palette.ocean.bg,
+  surface: palette.ocean.surface,
+  surfaceElevated: '#1D2A38',
+
+  textPrimary: palette.ocean.text,
+  textSecondary: palette.ocean.textSecondary,
+  textTertiary: '#768A9B',
+  textInverse: palette.white,
+
+  primary: palette.ocean.accent,
+  primaryLight: 'rgba(94, 147, 197, 0.1)',
+  accent: '#4A79A5',
+
+  border: palette.ocean.border,
+  divider: '#213040',
+
+  statusBarStyle: 'light-content',
+
+  cardBackground: palette.ocean.surface,
+  cardBorder: palette.ocean.border,
+
+  overlayBackground: 'rgba(20, 30, 40, 0.7)',
+  overlayText: palette.white,
+
+  progressTrack: palette.ocean.border,
+  progressFill: palette.ocean.accent,
+
+  reader: {
+    background: palette.ocean.bg,
+    text: palette.ocean.text,
+    link: palette.ocean.accent,
+    selectionBackground: 'rgba(94, 147, 197, 0.25)',
+  },
+
+  tabBarBackground: palette.ocean.surface,
+  tabBarBorder: palette.ocean.border,
+  tabBarActive: palette.ocean.accent,
+  tabBarInactive: '#768A9B',
+};
+
 export const themes = {
   light: lightTheme,
   dark: darkTheme,
   sepia: sepiaTheme,
+  ocean: oceanTheme,
 } as const;
 
 export type ThemeName = keyof typeof themes;

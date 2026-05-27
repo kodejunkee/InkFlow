@@ -45,6 +45,16 @@ export const palette = {
     border: '#D4C4A8',
   },
 
+  // Ocean / Slate tones ("Sepia Blue")
+  ocean: {
+    bg: '#141E28',
+    surface: '#1A2633',
+    text: '#D1E0E8',
+    textSecondary: '#9AABB8',
+    accent: '#5E93C5',
+    border: '#2A3C4D',
+  },
+
   // Semantic colors
   success: '#4CAF50',
   warning: '#FF9800',

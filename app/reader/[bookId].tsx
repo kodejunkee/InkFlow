@@ -23,6 +23,7 @@ import { ReaderWebView } from '../../src/components/reader/ReaderWebView';
 import { ReaderOverlay } from '../../src/components/reader/ReaderOverlay';
 import { ChapterDrawer } from '../../src/components/reader/ChapterDrawer';
 import { AnnotationsDrawer } from '../../src/components/reader/AnnotationsDrawer';
+import { ReaderSettingsModal } from '../../src/components/reader/ReaderSettingsModal';
 import { TextSelectionMenu } from '../../src/components/reader/TextSelectionMenu';
 import { QuotePreviewModal } from '../../src/components/reader/QuotePreviewModal';
 import type { Book } from '../../src/types/book';
@@ -36,6 +37,8 @@ export default function ReaderScreen() {
 
   const [book, setBook] = useState<Book | null>(null);
   const [isQuotePreviewVisible, setIsQuotePreviewVisible] = useState(false);
+  const [isAnnotationsDrawerOpen, setAnnotationsDrawerOpen] = useState(false);
+  const [isSettingsModalOpen, setSettingsModalOpen] = useState(false);
 
   // Load book from database
   useEffect(() => {
@@ -64,6 +67,7 @@ export default function ReaderScreen() {
     handleTextSelected,
     handleBookmarkContext,
     handleTap,
+    toggleOverlay,
     handleError,
     goToChapter,
     addHighlightAction,
@@ -76,8 +80,6 @@ export default function ReaderScreen() {
     dismissSelection,
     toggleChapterDrawer,
     setChapterDrawerOpen,
-    isAnnotationsDrawerOpen,
-    setAnnotationsDrawerOpen,
     toggleAnnotationsDrawer,
     bookmarks,
     highlights,
@@ -111,7 +113,7 @@ export default function ReaderScreen() {
   }
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.reader.background }]}>
+    <SafeAreaView style={[styles.container, { backgroundColor: theme.reader.background }]}>
       <StatusBar
         translucent
         backgroundColor="transparent"
@@ -141,7 +143,10 @@ export default function ReaderScreen() {
         onChapters={() => toggleChapterDrawer()}
         onAnnotations={toggleAnnotationsDrawer}
         onBookmark={addBookmarkAction}
-        onSettings={() => router.push('/settings' as any)}
+        onSettings={() => {
+          toggleOverlay(); // Hide overlay
+          setSettingsModalOpen(true);
+        }}
       />
 
       {/* Chapter drawer */}
@@ -163,6 +168,12 @@ export default function ReaderScreen() {
         onDeleteBookmark={deleteBookmarkAction}
         onDeleteHighlight={deleteHighlightAction}
         onClose={() => setAnnotationsDrawerOpen(false)}
+      />
+
+      {/* Reader Settings Modal */}
+      <ReaderSettingsModal
+        visible={isSettingsModalOpen}
+        onClose={() => setSettingsModalOpen(false)}
       />
 
       {/* Text selection context menu */}
