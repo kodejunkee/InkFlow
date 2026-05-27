@@ -61,12 +61,10 @@ export function ReaderSettingsModal({ visible, onClose }: ReaderSettingsModalPro
       visible={visible}
       transparent
       animationType="slide"
-      onRequestClose={onClose}
     >
-      <TouchableWithoutFeedback onPress={onClose}>
-        <View style={styles.overlay}>
-          <TouchableWithoutFeedback>
-            <View style={[styles.sheet, { backgroundColor: theme.surfaceElevated }]}>
+      <View style={styles.overlay}>
+        <Pressable style={StyleSheet.absoluteFill} onPress={onClose} />
+        <View style={[styles.sheet, { backgroundColor: theme.surfaceElevated }]}>
               {/* Drag Indicator */}
               <View style={styles.dragIndicatorContainer}>
                 <View style={[styles.dragIndicator, { backgroundColor: theme.border }]} />
@@ -201,9 +199,7 @@ export function ReaderSettingsModal({ visible, onClose }: ReaderSettingsModalPro
                 <View style={styles.bottomPadding} />
               </ScrollView>
             </View>
-          </TouchableWithoutFeedback>
         </View>
-      </TouchableWithoutFeedback>
     </Modal>
   );
 }

@@ -98,12 +98,10 @@ export function TtsPlayerSheet({
       visible={visible}
       transparent
       animationType="slide"
-      onRequestClose={onClose}
     >
-      <TouchableWithoutFeedback onPress={onClose}>
-        <View style={styles.overlay}>
-          <TouchableWithoutFeedback>
-            <View style={[styles.sheet, { backgroundColor: theme.surfaceElevated }]}>
+      <View style={styles.overlay}>
+        <Pressable style={StyleSheet.absoluteFill} onPress={onClose} />
+        <View style={[styles.sheet, { backgroundColor: theme.surfaceElevated }]}>
               {/* Drag Indicator */}
               <View style={styles.dragIndicatorContainer}>
                 <View style={[styles.dragIndicator, { backgroundColor: theme.border }]} />
@@ -259,9 +257,7 @@ export function TtsPlayerSheet({
                 </View>
               )}
             </View>
-          </TouchableWithoutFeedback>
         </View>
-      </TouchableWithoutFeedback>
     </Modal>
   );
 }
