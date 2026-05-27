@@ -59,6 +59,7 @@ export const ReaderWebView = React.forwardRef<WebView, ReaderWebViewProps>(
 
     // Generate HTML with current settings
     const readerHtml = generateReaderHtml({
+      themeName,
       fontSize,
       lineHeight,
       margins,

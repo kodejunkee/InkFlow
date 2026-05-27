@@ -23,7 +23,8 @@ interface ReaderThemeConfig {
   selectionBg: string;
 }
 
-interface GenerateOptions {
+export interface GenerateOptions {
+  themeName: string;
   fontSize: number;
   lineHeight: number;
   margins: number;
@@ -31,6 +32,7 @@ interface GenerateOptions {
 }
 
 const DEFAULT_OPTIONS: GenerateOptions = {
+  themeName: 'dark',
   fontSize: 18,
   lineHeight: 1.8,
   margins: 16,
@@ -44,7 +46,7 @@ const DEFAULT_OPTIONS: GenerateOptions = {
 
 export function generateReaderHtml(options: Partial<GenerateOptions> = {}): string {
   const opts = { ...DEFAULT_OPTIONS, ...options };
-  const { fontSize, lineHeight, margins, theme } = opts;
+  const { themeName, fontSize, lineHeight, margins, theme } = opts;
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -314,6 +316,11 @@ export function generateReaderHtml(options: Partial<GenerateOptions> = {}): stri
             doc.documentElement.style.overflowAnchor = "none";
             doc.body.style.overflowAnchor = "none";
 
+            // Inject the current theme into the new iframe immediately
+            if (currentThemeCSS) {
+              injectThemeStyle(doc, currentThemeCSS);
+            }
+
             // Check if the chapter already has a visible heading
             var firstChild = doc.body.firstElementChild;
             var hasHeading = false;
@@ -418,85 +425,69 @@ export function generateReaderHtml(options: Partial<GenerateOptions> = {}): stri
 
     // ─── Theme application ───────────────────────────────────────────
 
-    const THEME_STYLES = {
-      light: {
-        body: { background: '#FFFFFF', color: '#1A1A1A' },
-        'a, a:link, a:visited': { color: '#3D5AFE' },
-      },
-      dark: {
-        body: { background: '#121212', color: '#CCCCCC' },
-        'a, a:link, a:visited': { color: '#809FFF' },
-      },
-      sepia: {
-        body: { background: '#F4ECD8', color: '#5B4636' },
-        'a, a:link, a:visited': { color: '#8B6914' },
-      },
-      ocean: {
-        body: { background: '#141E28', color: '#D1E0E8' },
-        'a, a:link, a:visited': { color: '#5E93C5' },
-      },
-    };
+    var currentThemeCSS = '';
+
+    function injectThemeStyle(doc, css) {
+      if (!doc) return;
+      var existing = doc.getElementById('inkflow-theme');
+      if (existing) {
+        existing.textContent = css;
+      } else {
+        var style = doc.createElement('style');
+        style.id = 'inkflow-theme';
+        style.textContent = css;
+        doc.head.appendChild(style);
+      }
+    }
 
     function applyTheme(cmd) {
       if (!rendition) return;
 
-      // Update CSS variables
       var bgColors = { light: '#FFFFFF', dark: '#121212', sepia: '#F4ECD8', ocean: '#141E28' };
-      document.body.style.background = bgColors[cmd.theme] || '#121212';
+      var textColors = { light: '#1A1A1A', dark: '#CCCCCC', sepia: '#5B4636', ocean: '#D1E0E8' };
+      var linkColors = { light: '#3D5AFE', dark: '#809FFF', sepia: '#8B6914', ocean: '#5E93C5' };
+
+      var bg = bgColors[cmd.theme] || '#121212';
+      var text = textColors[cmd.theme] || '#CCCCCC';
+      var link = linkColors[cmd.theme] || '#809FFF';
+
+      // Update outer container
+      document.body.style.background = bg;
       document.getElementById('reader').style.padding = '0 ' + cmd.margins + 'px';
 
-      // Register and apply the theme to epub.js rendition
-      const themeKey = cmd.theme || 'dark';
-      const themeStyle = THEME_STYLES[themeKey] || THEME_STYLES.dark;
+      // Build a single CSS string for injection into epub iframes
+      var css = 'body { background: ' + bg + ' !important; color: ' + text + ' !important; '
+        + 'font-size: ' + cmd.fontSize + 'px !important; '
+        + 'line-height: ' + cmd.lineHeight + ' !important; '
+        + 'padding: 0 !important; margin: 0 !important; }'
+        + ' a, a:link, a:visited { color: ' + link + ' !important; }'
+        + ' p, div, span, li { font-size: inherit !important; line-height: inherit !important; '
+        + 'margin-top: 0.25em !important; margin-bottom: 0.25em !important; }'
+        + ' img { max-width: 100% !important; height: auto !important; }';
 
-      rendition.themes.register(themeKey, {
-        ...themeStyle,
-        body: {
-          ...themeStyle.body,
-          'font-size': cmd.fontSize + 'px !important',
-          'line-height': cmd.lineHeight + ' !important',
-          'padding': '0 !important',
-          'margin': '0 !important',
-        },
-        'p, div, span, li': {
-          'font-size': 'inherit !important',
-          'line-height': 'inherit !important',
-          'margin-top': '0.25em !important',
-          'margin-bottom': '0.25em !important',
-        },
-        'img': {
-          'max-width': '100% !important',
-          'height': 'auto !important',
-        },
-      });
-      rendition.themes.select(themeKey);
+      // Store for newly rendered sections
+      currentThemeCSS = css;
+
+      // Inject/update a single style tag in every currently rendered iframe
+      try {
+        rendition.getContents().forEach(function(contents) {
+          injectThemeStyle(contents.document, css);
+        });
+      } catch(e) {
+        console.warn('applyTheme getContents error:', e);
+      }
     }
 
     function applyRenditionTheme() {
-      if (!rendition) return;
-      // Apply default dark theme on initial load
-      rendition.themes.register('default', {
-        body: {
-          background: '${theme.background}',
-          color: '${theme.text}',
-          'font-size': '${fontSize}px !important',
-          'line-height': '${lineHeight} !important',
-          'padding': '0 !important',
-          'margin': '0 !important',
-        },
-        'a, a:link, a:visited': { color: '${theme.link}' },
-        'p, div, span, li': {
-          'font-size': 'inherit !important',
-          'line-height': 'inherit !important',
-          'margin-top': '0.25em !important',
-          'margin-bottom': '0.25em !important',
-        },
-        'img': {
-          'max-width': '100% !important',
-          'height': 'auto !important',
-        },
+      // We no longer register default stylesheets here because epub.js leaks them.
+      // Instead, we just invoke applyTheme with our initial values so it sets currentThemeCSS
+      // and injects it manually.
+      applyTheme({
+        theme: '${themeName}',
+        fontSize: ${fontSize},
+        lineHeight: ${lineHeight},
+        margins: ${margins}
       });
-      rendition.themes.select('default');
     }
 
     // ─── Highlights ──────────────────────────────────────────────────
