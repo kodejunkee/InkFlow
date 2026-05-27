@@ -176,8 +176,8 @@ const styles = StyleSheet.create({
   themeRow: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
     paddingVertical: spacing.md,
-    gap: spacing.lg,
   },
   themeSwatch: {
     width: 48,
