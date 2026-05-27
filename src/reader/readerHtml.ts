@@ -456,7 +456,10 @@ export function generateReaderHtml(options: Partial<GenerateOptions> = {}): stri
       document.getElementById('reader').style.padding = '0 ' + cmd.margins + 'px';
       
       // Force epub.js to recalculate column layouts for the new container width
-      rendition.resize();
+      // Only do this if manager exists (i.e. after initial display)
+      if (rendition.manager) {
+        rendition.resize();
+      }
 
       // Build a single CSS string for injection into epub iframes
       var css = 'body { background: ' + bg + ' !important; color: ' + text + ' !important; '
