@@ -689,11 +689,22 @@ export function generateReaderHtml(options: Partial<GenerateOptions> = {}): stri
         var firstVisibleIndex = 0;
         var foundVisible = false;
 
+        var scrollTop = 0;
+        var containerHeight = 1000; // fallback
+        if (rendition && rendition.manager && rendition.manager.container) {
+            scrollTop = rendition.manager.container.scrollTop || 0;
+            containerHeight = rendition.manager.container.clientHeight || 1000;
+        }
+
         for (var c = 0; c < contents.length; c++) {
           var doc = contents[c].document;
           var win = contents[c].window;
           var cfiBase = contents[c].cfiBase;
           if (!doc || !doc.body) continue;
+
+          // If iframe window is scrolling, use its scrollY. Otherwise fallback to container scrollTop
+          var activeScrollTop = (win.scrollY > 0) ? win.scrollY : scrollTop;
+          var activeHeight = win.innerHeight || containerHeight;
 
           // Remove any broken spans left from previous versions
           var oldSpans = doc.querySelectorAll('.tts-sentence');
@@ -737,8 +748,10 @@ export function generateReaderHtml(options: Partial<GenerateOptions> = {}): stri
                   // Check visibility heuristically
                   if (!foundVisible) {
                     var rect = range.getBoundingClientRect();
-                    // Bottom > 0 and top inside viewport means it's on screen
-                    if (rect.bottom > 0 && rect.top < win.innerHeight) {
+                    // absolute Y is rect.top plus any iframe scroll
+                    var absoluteY = rect.top + (win.scrollY || 0);
+                    // Check if it's within the active scroll viewport (with 20px padding)
+                    if (absoluteY >= (activeScrollTop - 20) && absoluteY < (activeScrollTop + activeHeight)) {
                        firstVisibleIndex = allSentences.length;
                        foundVisible = true;
                     }
@@ -817,8 +830,20 @@ export function generateReaderHtml(options: Partial<GenerateOptions> = {}): stri
     function scrollToTtsSentence(index) {
        if (window.ttsSentences && index >= 0 && index < window.ttsSentences.length) {
           var cfi = window.ttsSentences[index].cfi;
-          if (cfi) {
-             rendition.display(cfi);
+          if (cfi && rendition && book) {
+             // Instead of using rendition.display(cfi) which causes chapter jumps,
+             // we resolve the CFI back to a DOM range and scroll it into view.
+             book.getRange(cfi).then(function(range) {
+                 if (range && range.startContainer) {
+                     var node = range.startContainer;
+                     if (node.nodeType === 3) node = node.parentNode; // Get parent element of text node
+                     if (node && node.scrollIntoView) {
+                         node.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                     }
+                 }
+             }).catch(function(e) {
+                 console.warn('[TTS] Failed to scroll to CFI:', e);
+             });
           }
        }
     }
