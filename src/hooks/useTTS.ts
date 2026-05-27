@@ -111,10 +111,11 @@ export function useTTS({ webViewRef }: UseTTSOptions): UseTTSReturn {
 
   const handleChapterText = useCallback((data: {
     sentences: string[];
+    startIndex?: number;
     chapterTitle: string;
     chapterIndex: number;
   }) => {
-    const { sentences, chapterTitle } = data;
+    const { sentences, chapterTitle, startIndex = 0 } = data;
 
     if (sentences.length === 0) {
       // Empty chapter — try advancing
@@ -142,8 +143,8 @@ export function useTTS({ webViewRef }: UseTTSOptions): UseTTSReturn {
         speakSentence(0);
       }
     } else {
-      // Start from first sentence
-      speakSentence(0);
+      // Start from calculated sentence index
+      speakSentence(startIndex);
     }
   }, [ttsAutoChapters, sendCommand, speakSentence]);
 
@@ -222,14 +223,14 @@ export function useTTS({ webViewRef }: UseTTSOptions): UseTTSReturn {
 
   // ─── Public API ───────────────────────────────────────────────
 
-  const startFromCurrentPosition = useCallback(() => {
+  const startFromCurrentPosition = useCallback((startText?: string) => {
     isPlayingSelectedTextRef.current = false;
     waitingForChapterRef.current = false;
     setTtsStatus('loading');
     statusRef.current = 'loading';
 
     // Request text extraction from WebView
-    sendCommand({ type: 'extractChapterText' });
+    sendCommand({ type: 'extractChapterText', startText });
   }, [sendCommand]);
 
   const startFromText = useCallback((text: string) => {

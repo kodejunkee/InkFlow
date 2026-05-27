@@ -229,7 +229,7 @@ export function generateReaderHtml(options: Partial<GenerateOptions> = {}): stri
             restoreHighlights(cmd.highlights);
             break;
           case 'extractChapterText':
-            extractChapterText();
+            extractChapterText(cmd.startText);
             break;
           case 'highlightSentence':
             highlightTtsSentence(cmd.index);
@@ -676,22 +676,26 @@ export function generateReaderHtml(options: Partial<GenerateOptions> = {}): stri
 
     var ttsSentenceEls = [];
 
-    function extractChapterText() {
+    function extractChapterText(startText) {
       if (!rendition) return;
       try {
         var contents = rendition.getContents();
         if (!contents || contents.length === 0) {
-          sendToRN({ type: 'chapterText', sentences: [], chapterTitle: '', chapterIndex: 0 });
+          sendToRN({ type: 'chapterText', sentences: [], chapterTitle: '', chapterIndex: 0, startIndex: 0 });
           return;
         }
 
         var allSentences = [];
-        // Process each content iframe (usually 1 in scrolled-doc mode)
+        var firstVisibleIndex = 0;
+        var foundVisible = false;
+
         for (var c = 0; c < contents.length; c++) {
           var doc = contents[c].document;
+          var win = contents[c].window;
+          var cfiBase = contents[c].cfiBase;
           if (!doc || !doc.body) continue;
 
-          // Clear previous TTS spans
+          // Remove any broken spans left from previous versions
           var oldSpans = doc.querySelectorAll('.tts-sentence');
           for (var os = 0; os < oldSpans.length; os++) {
             var parent = oldSpans[os].parentNode;
@@ -701,62 +705,68 @@ export function generateReaderHtml(options: Partial<GenerateOptions> = {}): stri
             parent.removeChild(oldSpans[os]);
           }
 
-          // Walk all text nodes and wrap sentences
           var walker = doc.createTreeWalker(doc.body, NodeFilter.SHOW_TEXT, null, false);
-          var textNodes = [];
+          
           while (walker.nextNode()) {
-            var text = walker.currentNode.nodeValue.trim();
-            if (text.length > 0) textNodes.push(walker.currentNode);
-          }
-
-          for (var t = 0; t < textNodes.length; t++) {
-            var node = textNodes[t];
+            var node = walker.currentNode;
             var raw = node.nodeValue;
             if (!raw || raw.trim().length === 0) continue;
 
-            // Split into sentences: split on .!? followed by space or end
+            // Split into sentences
             var sentenceParts = raw.match(/[^.!?]*[.!?]+[\\s]?|[^.!?]+$/g);
-            if (!sentenceParts || sentenceParts.length <= 1) {
-              // Whole text node is a single sentence fragment
-              var trimmed = raw.trim();
-              if (trimmed.length === 0) continue;
-              var span = doc.createElement('span');
-              span.className = 'tts-sentence';
-              span.setAttribute('data-tts-idx', allSentences.length);
-              node.parentNode.insertBefore(span, node);
-              span.appendChild(node);
-              allSentences.push(trimmed);
-            } else {
-              // Multiple sentences in one text node — wrap each
-              var frag = doc.createDocumentFragment();
-              for (var s = 0; s < sentenceParts.length; s++) {
-                var part = sentenceParts[s];
-                if (part.trim().length === 0) continue;
-                var sSpan = doc.createElement('span');
-                sSpan.className = 'tts-sentence';
-                sSpan.setAttribute('data-tts-idx', allSentences.length);
-                sSpan.textContent = part;
-                frag.appendChild(sSpan);
-                allSentences.push(part.trim());
+            if (!sentenceParts) continue;
+
+            var currentOffset = 0;
+            for (var s = 0; s < sentenceParts.length; s++) {
+              var part = sentenceParts[s];
+              var trimmed = part.trim();
+              if (trimmed.length > 0) {
+                var startOffset = raw.indexOf(trimmed, currentOffset);
+                if (startOffset === -1) startOffset = currentOffset;
+                var endOffset = startOffset + trimmed.length;
+                currentOffset = endOffset;
+
+                try {
+                  var range = doc.createRange();
+                  range.setStart(node, startOffset);
+                  range.setEnd(node, endOffset);
+                  
+                  // Safe CFI generation without mutating DOM
+                  var cfi = new ePub.CFI(range, cfiBase).toString();
+                  
+                  // Check visibility heuristically
+                  if (!foundVisible) {
+                    var rect = range.getBoundingClientRect();
+                    // Bottom > 0 and top inside viewport means it's on screen
+                    if (rect.bottom > 0 && rect.top < win.innerHeight) {
+                       firstVisibleIndex = allSentences.length;
+                       foundVisible = true;
+                    }
+                  }
+
+                  allSentences.push({ text: trimmed, cfi: cfi });
+                } catch(e) {
+                   allSentences.push({ text: trimmed, cfi: null });
+                }
               }
-              node.parentNode.replaceChild(frag, node);
             }
           }
         }
 
-        ttsSentenceEls = [];
-        // Re-collect all tts-sentence spans in order
-        for (var c2 = 0; c2 < contents.length; c2++) {
-          var doc2 = contents[c2].document;
-          if (!doc2) continue;
-          var spans = doc2.querySelectorAll('.tts-sentence');
-          for (var i = 0; i < spans.length; i++) {
-            spans[i].setAttribute('data-tts-idx', ttsSentenceEls.length);
-            ttsSentenceEls.push(spans[i]);
-          }
+        window.ttsSentences = allSentences;
+
+        // Find starting index if startText is provided
+        var startIndex = firstVisibleIndex;
+        if (startText && startText.trim().length > 0) {
+           var target = startText.trim();
+           for (var i = 0; i < allSentences.length; i++) {
+              if (allSentences[i].text.indexOf(target) !== -1 || target.indexOf(allSentences[i].text) !== -1) {
+                 startIndex = i;
+                 break;
+              }
+           }
         }
 
-        // Get chapter info from current location
         var loc = rendition.currentLocation();
         var chapTitle = '';
         var chapIdx = 0;
@@ -767,7 +777,8 @@ export function generateReaderHtml(options: Partial<GenerateOptions> = {}): stri
 
         sendToRN({
           type: 'chapterText',
-          sentences: allSentences,
+          sentences: allSentences.map(function(s) { return s.text; }),
+          startIndex: startIndex,
           chapterTitle: chapTitle,
           chapterIndex: chapIdx,
         });
@@ -776,28 +787,40 @@ export function generateReaderHtml(options: Partial<GenerateOptions> = {}): stri
       }
     }
 
+    var currentTtsCfi = null;
     function highlightTtsSentence(index) {
-      // Remove previous highlight
-      for (var i = 0; i < ttsSentenceEls.length; i++) {
-        ttsSentenceEls[i].classList.remove('tts-active');
+      if (currentTtsCfi) {
+         rendition.annotations.remove(currentTtsCfi, 'highlight');
+         currentTtsCfi = null;
       }
-      // Apply new highlight
-      if (index >= 0 && index < ttsSentenceEls.length) {
-        ttsSentenceEls[index].classList.add('tts-active');
+      if (window.ttsSentences && index >= 0 && index < window.ttsSentences.length) {
+         var cfi = window.ttsSentences[index].cfi;
+         if (cfi) {
+            currentTtsCfi = cfi;
+            // Draw a subtle overlay without breaking CFIs
+            rendition.annotations.highlight(cfi, {}, null, 'tts-active', {
+              "fill": "rgba(100, 149, 237, 0.4)",
+              "fill-opacity": "0.4",
+              "mix-blend-mode": "multiply"
+            });
+         }
       }
     }
 
     function clearTtsHighlights() {
-      for (var i = 0; i < ttsSentenceEls.length; i++) {
-        ttsSentenceEls[i].classList.remove('tts-active');
+      if (currentTtsCfi) {
+         rendition.annotations.remove(currentTtsCfi, 'highlight');
+         currentTtsCfi = null;
       }
-      ttsSentenceEls = [];
     }
 
     function scrollToTtsSentence(index) {
-      if (index >= 0 && index < ttsSentenceEls.length) {
-        ttsSentenceEls[index].scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }
+       if (window.ttsSentences && index >= 0 && index < window.ttsSentences.length) {
+          var cfi = window.ttsSentences[index].cfi;
+          if (cfi) {
+             rendition.display(cfi);
+          }
+       }
     }
 
     // ─── Error handling ──────────────────────────────────────────────

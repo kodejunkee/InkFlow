@@ -225,8 +225,7 @@ export default function ReaderScreen() {
           dismissSelection();
         }}
         onStartHere={() => {
-          goToCfi(selectedCfiRange || '');
-          startFromCurrentPosition();
+          startFromCurrentPosition(selectedText);
           dismissSelection();
         }}
         onShare={handleShareAsQuote}
