@@ -32,7 +32,8 @@ interface TextSelectionMenuProps {
   selectedText: string;
   onHighlight: (color: HighlightColor) => void;
   onSaveQuote: (note: string) => void;
-  onCopy: () => void;
+  onListenSelected: () => void;
+  onStartHere: () => void;
   onShare: () => void;
   onDismiss: () => void;
 }
@@ -50,7 +51,8 @@ export function TextSelectionMenu({
   selectedText,
   onHighlight,
   onSaveQuote,
-  onCopy,
+  onListenSelected,
+  onStartHere,
   onShare,
   onDismiss,
 }: TextSelectionMenuProps) {
@@ -163,9 +165,14 @@ export function TextSelectionMenu({
             <Text style={[textStyles.caption, { color: theme.textSecondary }]}>Quote</Text>
           </Pressable>
 
-          <Pressable onPress={onCopy} style={styles.actionButton}>
-            <Ionicons name="copy-outline" size={20} color={theme.textPrimary} />
-            <Text style={[textStyles.caption, { color: theme.textSecondary }]}>Copy</Text>
+          <Pressable onPress={onListenSelected} style={styles.actionButton}>
+            <Ionicons name="volume-medium-outline" size={20} color={theme.textPrimary} />
+            <Text style={[textStyles.caption, { color: theme.textSecondary }]}>Listen</Text>
+          </Pressable>
+
+          <Pressable onPress={onStartHere} style={styles.actionButton}>
+            <Ionicons name="play-forward-outline" size={20} color={theme.textPrimary} />
+            <Text style={[textStyles.caption, { color: theme.textSecondary }]}>Start Here</Text>
           </Pressable>
 
           <Pressable onPress={onShare} style={styles.actionButton}>

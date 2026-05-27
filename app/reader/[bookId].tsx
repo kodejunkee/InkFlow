@@ -26,6 +26,8 @@ import { AnnotationsDrawer } from '../../src/components/reader/AnnotationsDrawer
 import { ReaderSettingsModal } from '../../src/components/reader/ReaderSettingsModal';
 import { TextSelectionMenu } from '../../src/components/reader/TextSelectionMenu';
 import { QuotePreviewModal } from '../../src/components/reader/QuotePreviewModal';
+import { TtsPlayerSheet } from '../../src/components/reader/TtsPlayerSheet';
+import { useTTS } from '../../src/hooks/useTTS';
 import type { Book } from '../../src/types/book';
 
 export default function ReaderScreen() {
@@ -85,6 +87,34 @@ export default function ReaderScreen() {
     highlights,
   } = useReader({ db, book });
 
+  // TTS orchestration
+  const {
+    ttsStatus,
+    currentSentenceIndex,
+    totalSentences,
+    currentChapterTitle: ttsChapterTitle,
+    sleepTimerRemaining,
+    startFromCurrentPosition,
+    startFromText,
+    play,
+    pause,
+    stop,
+    nextSentence,
+    prevSentence,
+    setSleepTimerActive,
+    handleChapterText,
+    handleLocationChangedForTts,
+  } = useTTS({ webViewRef });
+
+  // Override handleLocationChanged to notify TTS
+  const onLocationChanged = useCallback(
+    (cfi: string, prog: number, chapIdx: number, chapTitle: string) => {
+      handleLocationChanged(cfi, prog, chapIdx, chapTitle);
+      handleLocationChangedForTts();
+    },
+    [handleLocationChanged, handleLocationChangedForTts]
+  );
+
   // Quote card state
   const [quoteData, setQuoteData] = useState<import('../../src/components/reader/QuotePreviewModal').QuoteData | null>(null);
 
@@ -126,9 +156,10 @@ export default function ReaderScreen() {
         book={book}
         initialCfi={cfi}
         onReady={handleReady}
-        onLocationChanged={handleLocationChanged}
+        onLocationChanged={onLocationChanged}
         onTocLoaded={handleTocLoaded}
         onTextSelected={handleTextSelected}
+        onChapterText={handleChapterText}
         onBookmarkContext={handleBookmarkContext}
         onTap={handleTap}
         onError={handleError}
@@ -140,10 +171,15 @@ export default function ReaderScreen() {
         bookTitle={book.title}
         chapterTitle={chapterTitle}
         progress={progress}
+        isBookmarked={bookmarks.some((b) => b.chapterTitle === chapterTitle)}
         onBack={() => router.back()}
         onChapters={() => toggleChapterDrawer()}
         onAnnotations={toggleAnnotationsDrawer}
         onBookmark={addBookmarkAction}
+        onListen={() => {
+          toggleOverlay(); // Hide overlay
+          startFromCurrentPosition();
+        }}
         onSettings={() => {
           toggleOverlay(); // Hide overlay
           setSettingsModalOpen(true);
@@ -183,7 +219,15 @@ export default function ReaderScreen() {
         selectedText={selectedText}
         onHighlight={addHighlightAction}
         onSaveQuote={saveQuoteAction}
-        onCopy={copySelection}
+        onListenSelected={() => {
+          startFromText(selectedText);
+          dismissSelection();
+        }}
+        onStartHere={() => {
+          goToCfi(selectedCfiRange || '');
+          startFromCurrentPosition();
+          dismissSelection();
+        }}
         onShare={handleShareAsQuote}
         onDismiss={dismissSelection}
       />
@@ -193,6 +237,23 @@ export default function ReaderScreen() {
         visible={isQuotePreviewVisible}
         quoteData={quoteData}
         onDismiss={handleDismissQuote}
+      />
+
+      {/* TTS Player Sheet */}
+      <TtsPlayerSheet
+        visible={ttsStatus !== 'idle'}
+        ttsStatus={ttsStatus}
+        currentSentenceIndex={currentSentenceIndex}
+        totalSentences={totalSentences}
+        currentChapterTitle={ttsChapterTitle || chapterTitle}
+        sleepTimerRemaining={sleepTimerRemaining}
+        onPlay={play}
+        onPause={pause}
+        onStop={stop}
+        onNextSentence={nextSentence}
+        onPrevSentence={prevSentence}
+        onSetSleepTimer={setSleepTimerActive}
+        onClose={stop}
       />
     </View>
   );

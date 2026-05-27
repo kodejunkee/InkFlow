@@ -7,6 +7,7 @@ import {
   Pressable,
   TouchableWithoutFeedback,
   ScrollView,
+  Switch,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useSettingsStore } from '../../stores/settingsStore';
@@ -30,6 +31,8 @@ const THEME_OPTIONS: { name: ThemeName; color: string }[] = [
 const FONT_SIZE_OPTIONS = [14, 16, 18, 20, 22, 24];
 const LINE_HEIGHT_OPTIONS = [1.4, 1.6, 1.8, 2.0, 2.2];
 const MARGIN_OPTIONS = [8, 16, 24, 32];
+const TTS_RATE_OPTIONS = [0.75, 1.0, 1.25, 1.5, 1.75, 2.0];
+const TTS_PITCH_OPTIONS = [0.5, 0.75, 1.0, 1.25, 1.5];
 
 export function ReaderSettingsModal({ visible, onClose }: ReaderSettingsModalProps) {
   const {
@@ -41,6 +44,14 @@ export function ReaderSettingsModal({ visible, onClose }: ReaderSettingsModalPro
     setFontSize,
     setLineHeight,
     setMargins,
+    ttsRate,
+    ttsPitch,
+    ttsAutoChapters,
+    ttsSentenceHighlight,
+    setTtsRate,
+    setTtsPitch,
+    setTtsAutoChapters,
+    setTtsSentenceHighlight,
   } = useSettingsStore();
 
   const theme = getTheme(themeName);
@@ -133,6 +144,60 @@ export function ReaderSettingsModal({ visible, onClose }: ReaderSettingsModalPro
                   rightIcon={<Ionicons name="code-working-outline" size={24} color={theme.textPrimary} />}
                 />
 
+                {/* ─── Text-to-Speech Settings ─── */}
+                <View style={styles.divider} />
+                <Text style={[textStyles.h3, styles.sectionTitle, { color: theme.textPrimary }]}>
+                  Text-to-Speech
+                </Text>
+
+                <Text style={[textStyles.caption, styles.sectionTitle, { color: theme.textSecondary }]}>
+                  Speech Rate
+                </Text>
+                <DiscreteSlider
+                  options={TTS_RATE_OPTIONS}
+                  value={ttsRate}
+                  onValueChange={setTtsRate}
+                  theme={theme}
+                  leftIcon={<Ionicons name="walk-outline" size={24} color={theme.textPrimary} />}
+                  rightIcon={<Ionicons name="rocket-outline" size={24} color={theme.textPrimary} />}
+                />
+
+                <Text style={[textStyles.caption, styles.sectionTitle, { color: theme.textSecondary }]}>
+                  Pitch
+                </Text>
+                <DiscreteSlider
+                  options={TTS_PITCH_OPTIONS}
+                  value={ttsPitch}
+                  onValueChange={setTtsPitch}
+                  theme={theme}
+                  leftIcon={<Ionicons name="musical-note-outline" size={24} color={theme.textPrimary} />}
+                  rightIcon={<Ionicons name="musical-notes" size={24} color={theme.textPrimary} />}
+                />
+
+                <View style={styles.toggleRow}>
+                  <Text style={[textStyles.body, { color: theme.textPrimary }]}>
+                    Auto Continue Chapters
+                  </Text>
+                  <Switch
+                    value={ttsAutoChapters}
+                    onValueChange={setTtsAutoChapters}
+                    trackColor={{ false: theme.border, true: theme.primary }}
+                    thumbColor="#FFFFFF"
+                  />
+                </View>
+
+                <View style={styles.toggleRow}>
+                  <Text style={[textStyles.body, { color: theme.textPrimary }]}>
+                    Sentence Highlighting
+                  </Text>
+                  <Switch
+                    value={ttsSentenceHighlight}
+                    onValueChange={setTtsSentenceHighlight}
+                    trackColor={{ false: theme.border, true: theme.primary }}
+                    thumbColor="#FFFFFF"
+                  />
+                </View>
+
                 <View style={styles.bottomPadding} />
               </ScrollView>
             </View>
@@ -187,6 +252,18 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   bottomPadding: {
-    height: spacing['4xl'],
+    height: spacing['3xl'],
+  },
+  divider: {
+    height: 1,
+    backgroundColor: 'rgba(150,150,150,0.2)',
+    marginVertical: spacing.lg,
+  },
+  toggleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: spacing.sm,
+    marginBottom: spacing.sm,
   },
 });

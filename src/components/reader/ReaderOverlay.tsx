@@ -31,6 +31,7 @@ interface ReaderOverlayProps {
   onChapters: () => void;
   onAnnotations: () => void;
   onBookmark: () => void;
+  onListen: () => void;
   onSettings: () => void;
 }
 
@@ -44,6 +45,7 @@ export function ReaderOverlay({
   onChapters,
   onAnnotations,
   onBookmark,
+  onListen,
   onSettings,
 }: ReaderOverlayProps) {
   const themeName = useSettingsStore((s) => s.theme);
@@ -177,9 +179,19 @@ export function ReaderOverlay({
             onPress={onAnnotations} 
             style={({ pressed }) => [styles.footerButton, pressed && { opacity: 0.5 }]}
           >
-            <Ionicons name="chatbubbles-outline" size={24} color={theme.textSecondary} />
+            <Ionicons name="bookmark-outline" size={24} color={theme.textSecondary} />
             <Text style={[textStyles.caption, { color: theme.textSecondary }]}>
-              Notes
+              Saved
+            </Text>
+          </Pressable>
+
+          <Pressable 
+            onPress={onListen} 
+            style={({ pressed }) => [styles.footerButton, pressed && { opacity: 0.5 }]}
+          >
+            <Ionicons name="volume-medium-outline" size={24} color={theme.textSecondary} />
+            <Text style={[textStyles.caption, { color: theme.textSecondary }]}>
+              Listen
             </Text>
           </Pressable>
 

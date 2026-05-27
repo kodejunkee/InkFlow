@@ -129,6 +129,13 @@ export function generateReaderHtml(options: Partial<GenerateOptions> = {}): stri
       letter-spacing: 2px;
       text-transform: uppercase;
     }
+
+    /* ─── TTS sentence highlighting ─────────────────────────────────── */
+    .tts-sentence { transition: background 0.2s ease; }
+    .tts-active {
+      background: rgba(100, 149, 237, 0.18) !important;
+      border-radius: 3px;
+    }
   </style>
 </head>
 <body>
@@ -220,6 +227,18 @@ export function generateReaderHtml(options: Partial<GenerateOptions> = {}): stri
             break;
           case 'restoreHighlights':
             restoreHighlights(cmd.highlights);
+            break;
+          case 'extractChapterText':
+            extractChapterText();
+            break;
+          case 'highlightSentence':
+            highlightTtsSentence(cmd.index);
+            break;
+          case 'clearTtsHighlight':
+            clearTtsHighlights();
+            break;
+          case 'scrollToSentence':
+            scrollToTtsSentence(cmd.index);
             break;
         }
       } catch (e) {
@@ -651,6 +670,134 @@ export function generateReaderHtml(options: Partial<GenerateOptions> = {}): stri
           }
         });
       });
+    }
+
+    // ─── TTS helpers ────────────────────────────────────────────────
+
+    var ttsSentenceEls = [];
+
+    function extractChapterText() {
+      if (!rendition) return;
+      try {
+        var contents = rendition.getContents();
+        if (!contents || contents.length === 0) {
+          sendToRN({ type: 'chapterText', sentences: [], chapterTitle: '', chapterIndex: 0 });
+          return;
+        }
+
+        var allSentences = [];
+        // Process each content iframe (usually 1 in scrolled-doc mode)
+        for (var c = 0; c < contents.length; c++) {
+          var doc = contents[c].document;
+          if (!doc || !doc.body) continue;
+
+          // Clear previous TTS spans
+          var oldSpans = doc.querySelectorAll('.tts-sentence');
+          for (var os = 0; os < oldSpans.length; os++) {
+            var parent = oldSpans[os].parentNode;
+            while (oldSpans[os].firstChild) {
+              parent.insertBefore(oldSpans[os].firstChild, oldSpans[os]);
+            }
+            parent.removeChild(oldSpans[os]);
+          }
+
+          // Walk all text nodes and wrap sentences
+          var walker = doc.createTreeWalker(doc.body, NodeFilter.SHOW_TEXT, null, false);
+          var textNodes = [];
+          while (walker.nextNode()) {
+            var text = walker.currentNode.nodeValue.trim();
+            if (text.length > 0) textNodes.push(walker.currentNode);
+          }
+
+          for (var t = 0; t < textNodes.length; t++) {
+            var node = textNodes[t];
+            var raw = node.nodeValue;
+            if (!raw || raw.trim().length === 0) continue;
+
+            // Split into sentences: split on .!? followed by space or end
+            var sentenceParts = raw.match(/[^.!?]*[.!?]+[\\s]?|[^.!?]+$/g);
+            if (!sentenceParts || sentenceParts.length <= 1) {
+              // Whole text node is a single sentence fragment
+              var trimmed = raw.trim();
+              if (trimmed.length === 0) continue;
+              var span = doc.createElement('span');
+              span.className = 'tts-sentence';
+              span.setAttribute('data-tts-idx', allSentences.length);
+              node.parentNode.insertBefore(span, node);
+              span.appendChild(node);
+              allSentences.push(trimmed);
+            } else {
+              // Multiple sentences in one text node — wrap each
+              var frag = doc.createDocumentFragment();
+              for (var s = 0; s < sentenceParts.length; s++) {
+                var part = sentenceParts[s];
+                if (part.trim().length === 0) continue;
+                var sSpan = doc.createElement('span');
+                sSpan.className = 'tts-sentence';
+                sSpan.setAttribute('data-tts-idx', allSentences.length);
+                sSpan.textContent = part;
+                frag.appendChild(sSpan);
+                allSentences.push(part.trim());
+              }
+              node.parentNode.replaceChild(frag, node);
+            }
+          }
+        }
+
+        ttsSentenceEls = [];
+        // Re-collect all tts-sentence spans in order
+        for (var c2 = 0; c2 < contents.length; c2++) {
+          var doc2 = contents[c2].document;
+          if (!doc2) continue;
+          var spans = doc2.querySelectorAll('.tts-sentence');
+          for (var i = 0; i < spans.length; i++) {
+            spans[i].setAttribute('data-tts-idx', ttsSentenceEls.length);
+            ttsSentenceEls.push(spans[i]);
+          }
+        }
+
+        // Get chapter info from current location
+        var loc = rendition.currentLocation();
+        var chapTitle = '';
+        var chapIdx = 0;
+        if (loc && loc.start) {
+          chapTitle = getChapterTitle(loc.start.href) || '';
+          chapIdx = getChapterIndex(loc.start.href);
+        }
+
+        sendToRN({
+          type: 'chapterText',
+          sentences: allSentences,
+          chapterTitle: chapTitle,
+          chapterIndex: chapIdx,
+        });
+      } catch (e) {
+        sendToRN({ type: 'error', message: 'extractChapterText: ' + e.message, stack: e.stack });
+      }
+    }
+
+    function highlightTtsSentence(index) {
+      // Remove previous highlight
+      for (var i = 0; i < ttsSentenceEls.length; i++) {
+        ttsSentenceEls[i].classList.remove('tts-active');
+      }
+      // Apply new highlight
+      if (index >= 0 && index < ttsSentenceEls.length) {
+        ttsSentenceEls[index].classList.add('tts-active');
+      }
+    }
+
+    function clearTtsHighlights() {
+      for (var i = 0; i < ttsSentenceEls.length; i++) {
+        ttsSentenceEls[i].classList.remove('tts-active');
+      }
+      ttsSentenceEls = [];
+    }
+
+    function scrollToTtsSentence(index) {
+      if (index >= 0 && index < ttsSentenceEls.length) {
+        ttsSentenceEls[index].scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
     }
 
     // ─── Error handling ──────────────────────────────────────────────

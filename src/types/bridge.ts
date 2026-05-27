@@ -62,6 +62,13 @@ export interface WVContentLoadedMessage {
   totalPages: number;
 }
 
+export interface WVChapterTextMessage {
+  type: 'chapterText';
+  sentences: string[];
+  chapterTitle: string;
+  chapterIndex: number;
+}
+
 export type WebViewMessage =
   | WVReadyMessage
   | WVLocationChangedMessage
@@ -71,7 +78,8 @@ export type WebViewMessage =
   | WVTapMessage
   | WVSwipeMessage
   | WVErrorMessage
-  | WVContentLoadedMessage;
+  | WVContentLoadedMessage
+  | WVChapterTextMessage;
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // React Native → WebView  (commands RN sends into the WebView)
@@ -136,6 +144,24 @@ export interface RNRestoreHighlightsCommand {
   highlights: Array<{ cfiRange: string; color: HighlightColor; id: number }>;
 }
 
+export interface RNExtractChapterTextCommand {
+  type: 'extractChapterText';
+}
+
+export interface RNHighlightSentenceCommand {
+  type: 'highlightSentence';
+  index: number;
+}
+
+export interface RNClearTtsHighlightCommand {
+  type: 'clearTtsHighlight';
+}
+
+export interface RNScrollToSentenceCommand {
+  type: 'scrollToSentence';
+  index: number;
+}
+
 export type ReaderCommand =
   | RNLoadBookCommand
   | RNGoToCfiCommand
@@ -147,7 +173,11 @@ export type ReaderCommand =
   | RNRemoveHighlightCommand
   | RNClearSelectionCommand
   | RNGetBookmarkContextCommand
-  | RNRestoreHighlightsCommand;
+  | RNRestoreHighlightsCommand
+  | RNExtractChapterTextCommand
+  | RNHighlightSentenceCommand
+  | RNClearTtsHighlightCommand
+  | RNScrollToSentenceCommand;
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // Helpers

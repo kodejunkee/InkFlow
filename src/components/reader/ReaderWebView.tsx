@@ -26,7 +26,8 @@ interface ReaderWebViewProps {
   onReady?: () => void;
   onLocationChanged?: (cfi: string, progress: number, chapterIndex: number, chapterTitle: string) => void;
   onTocLoaded?: (toc: any[]) => void;
-  onTextSelected?: (cfiRange: string, selectedText: string, chapterTitle: string, rect: any) => void;
+  onTextSelected?: (cfiRange: string, text: string, chapterTitle: string, rect: any) => void;
+  onChapterText?: (data: { sentences: string[], chapterTitle: string, chapterIndex: number }) => void;
   onBookmarkContext?: (cfi: string, chapterTitle: string, contextText: string) => void;
   onTap?: (x: number, y: number) => void;
   onError?: (message: string) => void;
@@ -41,6 +42,7 @@ export const ReaderWebView = React.forwardRef<WebView, ReaderWebViewProps>(
       onLocationChanged,
       onTocLoaded,
       onTextSelected,
+      onChapterText,
       onBookmarkContext,
       onTap,
       onError,
@@ -147,6 +149,14 @@ export const ReaderWebView = React.forwardRef<WebView, ReaderWebViewProps>(
 
           case 'tocLoaded':
             onTocLoaded?.(message.toc);
+            break;
+
+          case 'chapterText':
+            onChapterText?.({
+              sentences: message.sentences,
+              chapterTitle: message.chapterTitle,
+              chapterIndex: message.chapterIndex,
+            });
             break;
 
           case 'textSelected':
