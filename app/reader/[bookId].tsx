@@ -113,7 +113,7 @@ export default function ReaderScreen() {
   }
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: theme.reader.background }]}>
+    <View style={[styles.container, { backgroundColor: theme.reader.background }]}>
       <StatusBar
         translucent
         backgroundColor="transparent"
