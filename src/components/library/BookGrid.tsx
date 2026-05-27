@@ -27,10 +27,9 @@ export function BookGrid({
   refreshing,
   onRefresh,
 }: BookGridProps) {
-  const renderItem = ({ item, index }: { item: Book; index: number }) => {
-    const isRightColumn = index % NUM_COLUMNS === 1;
+  const renderItem = ({ item }: { item: Book }) => {
     return (
-      <View style={[styles.cardWrapper, isRightColumn && styles.rightColumn]}>
+      <View style={styles.cardWrapper}>
         <BookCard
           id={item.id}
           title={item.title}
@@ -51,6 +50,7 @@ export function BookGrid({
       keyExtractor={(item) => item.id.toString()}
       numColumns={NUM_COLUMNS}
       contentContainerStyle={styles.container}
+      columnWrapperStyle={styles.columnWrapper}
       showsVerticalScrollIndicator={false}
       ListHeaderComponent={ListHeaderComponent}
       refreshing={refreshing}
@@ -72,10 +72,10 @@ const styles = StyleSheet.create({
     paddingBottom: spacing['5xl'],
   },
   cardWrapper: {
-    flex: 1,
-    maxWidth: '50%',
+    width: CARD_WIDTH,
   },
-  rightColumn: {
-    paddingLeft: CARD_MARGIN,
+  columnWrapper: {
+    justifyContent: 'flex-start',
+    gap: CARD_MARGIN,
   },
 });

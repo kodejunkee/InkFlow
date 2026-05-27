@@ -24,7 +24,7 @@ import { spacing, borderRadius, shadows } from '../../theme/spacing';
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const CARD_MARGIN = spacing.sm;
 const GRID_PADDING = spacing.lg;
-const NUM_COLUMNS = 2;
+const NUM_COLUMNS = 3;
 const CARD_WIDTH = (SCREEN_WIDTH - GRID_PADDING * 2 - CARD_MARGIN * (NUM_COLUMNS - 1)) / NUM_COLUMNS;
 const COVER_HEIGHT = CARD_WIDTH * 1.5;
 

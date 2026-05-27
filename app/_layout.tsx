@@ -59,7 +59,7 @@ export default function RootLayout() {
           animation: 'slide_from_right',
         }}
       >
-        <Stack.Screen name="index" />
+        <Stack.Screen name="(tabs)" />
         <Stack.Screen
           name="reader/[bookId]"
           options={{
@@ -73,10 +73,6 @@ export default function RootLayout() {
         />
         <Stack.Screen
           name="highlights/[bookId]"
-          options={{ animation: 'slide_from_bottom' }}
-        />
-        <Stack.Screen
-          name="settings"
           options={{ animation: 'slide_from_bottom' }}
         />
       </Stack>

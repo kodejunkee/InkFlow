@@ -157,13 +157,6 @@ export default function LibraryScreen() {
           <Text style={[textStyles.hero, { color: theme.textPrimary }]}>
             InkFlow
           </Text>
-          <Pressable
-            onPress={() => router.push('/settings' as any)}
-            style={styles.settingsButton}
-            hitSlop={12}
-          >
-            <Ionicons name="settings-outline" size={24} color={theme.textSecondary} />
-          </Pressable>
         </View>
 
         {/* Continue Reading */}
