@@ -277,4 +277,20 @@ class TtsModule(reactContext: ReactApplicationContext) :
     fun isAvailable(promise: Promise) {
         promise.resolve(ttsInitialised)
     }
+
+    /**
+     * Required for NativeEventEmitter to work without warnings.
+     */
+    @ReactMethod
+    fun addListener(eventName: String) {
+        // Keep: Required for RN built-in Event Emitter Calls.
+    }
+
+    /**
+     * Required for NativeEventEmitter to work without warnings.
+     */
+    @ReactMethod
+    fun removeListeners(count: Int) {
+        // Keep: Required for RN built-in Event Emitter Calls.
+    }
 }
