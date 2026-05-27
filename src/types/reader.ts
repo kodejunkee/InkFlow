@@ -9,7 +9,7 @@ export interface TocItem {
 
 // ─── Theme ───────────────────────────────────────────────────────────────────
 
-export type ReaderTheme = 'light' | 'dark' | 'sepia';
+export type ReaderTheme = 'light' | 'dark' | 'sepia' | 'ocean';
 
 // ─── Reader Settings ─────────────────────────────────────────────────────────
 

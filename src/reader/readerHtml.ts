@@ -431,14 +431,18 @@ export function generateReaderHtml(options: Partial<GenerateOptions> = {}): stri
         body: { background: '#F4ECD8', color: '#5B4636' },
         'a, a:link, a:visited': { color: '#8B6914' },
       },
+      ocean: {
+        body: { background: '#141E28', color: '#D1E0E8' },
+        'a, a:link, a:visited': { color: '#5E93C5' },
+      },
     };
 
     function applyTheme(cmd) {
       if (!rendition) return;
 
       // Update CSS variables
-      document.body.style.background = cmd.theme === 'light' ? '#FFFFFF'
-        : cmd.theme === 'sepia' ? '#F4ECD8' : '#121212';
+      var bgColors = { light: '#FFFFFF', dark: '#121212', sepia: '#F4ECD8', ocean: '#141E28' };
+      document.body.style.background = bgColors[cmd.theme] || '#121212';
       document.getElementById('reader').style.padding = '0 ' + cmd.margins + 'px';
 
       // Register and apply the theme to epub.js rendition

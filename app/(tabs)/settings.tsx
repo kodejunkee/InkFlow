@@ -40,6 +40,7 @@ export default function SettingsScreen() {
     { name: 'light', label: 'Light', bgColor: '#FFFFFF', textColor: '#1A1A1A' },
     { name: 'dark', label: 'Dark', bgColor: '#121212', textColor: '#CCCCCC' },
     { name: 'sepia', label: 'Sepia', bgColor: '#F4ECD8', textColor: '#5B4636' },
+    { name: 'ocean', label: 'Ocean', bgColor: '#141E28', textColor: '#D1E0E8' },
   ];
 
   const fontSizeOptions = [14, 16, 18, 20, 22, 24];

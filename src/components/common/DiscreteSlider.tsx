@@ -1,9 +1,9 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
   View,
   StyleSheet,
-  PanResponder,
   Animated,
+  type GestureResponderEvent,
   type LayoutChangeEvent,
 } from 'react-native';
 import { type AppTheme } from '../../theme/themes';
@@ -27,12 +27,14 @@ export function DiscreteSlider({
   theme,
 }: DiscreteSliderProps) {
   const [trackWidth, setTrackWidth] = useState(0);
-  const selectedIndex = options.indexOf(value) >= 0 ? options.indexOf(value) : 0;
-  const numSteps = Math.max(1, options.length - 1);
-  
-  // Use Animated.Value to smoothly transition thumb position
+  const trackLayoutX = useRef(0);
+  const trackRef = useRef<View>(null);
   const thumbPosition = useRef(new Animated.Value(0)).current;
 
+  const selectedIndex = Math.max(0, options.indexOf(value));
+  const numSteps = Math.max(1, options.length - 1);
+
+  // Animate thumb to correct position whenever value or layout changes
   useEffect(() => {
     if (trackWidth > 0) {
       const stepWidth = trackWidth / numSteps;
@@ -45,66 +47,52 @@ export function DiscreteSlider({
     }
   }, [selectedIndex, trackWidth, numSteps, thumbPosition]);
 
-  const handleLayout = (e: LayoutChangeEvent) => {
-    setTrackWidth(e.nativeEvent.layout.width);
-  };
+  const handleLayout = useCallback((e: LayoutChangeEvent) => {
+    const w = e.nativeEvent.layout.width;
+    setTrackWidth(w);
+    // Also measure absolute position for touch calculations
+    setTimeout(() => {
+      trackRef.current?.measureInWindow((pageX) => {
+        trackLayoutX.current = pageX;
+      });
+    }, 50);
+  }, []);
 
-  const panResponder = useRef(
-    PanResponder.create({
-      onStartShouldSetPanResponder: () => true,
-      onMoveShouldSetPanResponder: () => true,
-      onPanResponderGrant: (e, gestureState) => {
-        // Find closest step on initial tap
-        const x = gestureState.x0 - trackLeftOffset.current;
-        snapToClosest(x);
-      },
-      onPanResponderMove: (e, gestureState) => {
-        // Find closest step during drag
-        const x = gestureState.moveX - trackLeftOffset.current;
-        snapToClosest(x);
-      },
-      onPanResponderRelease: () => {
-        // Optional: finalize action
-      },
-    })
-  ).current;
-
-  // We need to know the absolute screen X coordinate of the track to calculate relative touches
-  const trackRef = useRef<View>(null);
-  const trackLeftOffset = useRef(0);
-
-  const measureTrack = () => {
-    trackRef.current?.measure((x, y, width, height, pageX, pageY) => {
-      trackLeftOffset.current = pageX;
-    });
-  };
-
-  const snapToClosest = (x: number) => {
+  const snapFromTouch = useCallback((pageX: number) => {
     if (trackWidth === 0) return;
-    let boundedX = Math.max(0, Math.min(x, trackWidth));
+    const relativeX = pageX - trackLayoutX.current;
+    const boundedX = Math.max(0, Math.min(relativeX, trackWidth));
     const stepWidth = trackWidth / numSteps;
     const index = Math.round(boundedX / stepWidth);
-    
-    if (index >= 0 && index < options.length && options[index] !== value) {
-      onValueChange(options[index]);
-    }
-  };
+    const clampedIndex = Math.max(0, Math.min(index, options.length - 1));
+    onValueChange(options[clampedIndex]);
+  }, [trackWidth, numSteps, options, onValueChange]);
+
+  const handleTouchStart = useCallback((e: GestureResponderEvent) => {
+    snapFromTouch(e.nativeEvent.pageX);
+  }, [snapFromTouch]);
+
+  const handleTouchMove = useCallback((e: GestureResponderEvent) => {
+    snapFromTouch(e.nativeEvent.pageX);
+  }, [snapFromTouch]);
 
   return (
     <View style={styles.container}>
       {leftIcon && <View style={styles.iconContainer}>{leftIcon}</View>}
-      
+
       <View style={styles.sliderContainer}>
-        <View 
-          style={[styles.trackArea]} 
-          onLayout={handleLayout}
+        <View
           ref={trackRef}
-          onLayoutCapture={measureTrack} // Update offset when layout settles
-          {...panResponder.panHandlers}
+          style={styles.trackArea}
+          onLayout={handleLayout}
+          onStartShouldSetResponder={() => true}
+          onMoveShouldSetResponder={() => true}
+          onResponderGrant={handleTouchStart}
+          onResponderMove={handleTouchMove}
         >
-          {/* Main Track Line */}
+          {/* Track line */}
           <View style={[styles.trackLine, { backgroundColor: theme.border }]} />
-          
+
           {/* Dots */}
           <View style={styles.dotsContainer} pointerEvents="none">
             {options.map((_, i) => {
@@ -120,8 +108,8 @@ export function DiscreteSlider({
               );
             })}
           </View>
-          
-          {/* Draggable Thumb */}
+
+          {/* Thumb */}
           {trackWidth > 0 && (
             <Animated.View
               style={[
@@ -156,12 +144,12 @@ const styles = StyleSheet.create({
   },
   sliderContainer: {
     flex: 1,
-    height: 40,
+    height: 44,
     justifyContent: 'center',
     paddingHorizontal: 8,
   },
   trackArea: {
-    height: 40,
+    height: 44,
     justifyContent: 'center',
   },
   trackLine: {
@@ -189,6 +177,6 @@ const styles = StyleSheet.create({
     width: 16,
     height: 24,
     borderRadius: 8,
-    left: -8, // Center thumb over the dot (width 16 / 2 = 8)
+    left: -8,
   },
 });
