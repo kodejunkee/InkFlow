@@ -735,7 +735,8 @@ export function generateReaderHtml(options: Partial<GenerateOptions> = {}): stri
                   var cfi = new ePub.CFI(range, cfiBase).toString();
                   
                   var rect = range.getBoundingClientRect();
-                  allSentences.push({ text: trimmed, cfi: cfi, top: rect.top });
+                  var docScrollTop = doc.defaultView ? (doc.defaultView.scrollY || doc.documentElement.scrollTop) : 0;
+                  allSentences.push({ text: trimmed, cfi: cfi, top: rect.top + docScrollTop });
                 } catch(e) {
                    allSentences.push({ text: trimmed, cfi: null, top: 0 });
                 }
@@ -751,7 +752,15 @@ export function generateReaderHtml(options: Partial<GenerateOptions> = {}): stri
         if (startCfi) {
            // 'Read from here' button uses the exact CFI of the highlighted selection
            try {
-              var targetCfi = new ePub.CFI(startCfi);
+              var targetCfiStr = startCfi;
+              if (startCfi.indexOf(',') !== -1) {
+                 // Convert range epubcfi(/6/14!/4,/1:0,/2:10) to point epubcfi(/6/14!/4/1:0)
+                 var parts = startCfi.replace('epubcfi(', '').replace(')', '').split(',');
+                 if (parts.length >= 2) {
+                    targetCfiStr = 'epubcfi(' + parts[0].trim() + parts[1].trim() + ')';
+                 }
+              }
+              var targetCfi = new ePub.CFI(targetCfiStr);
               for (var i = 0; i < allSentences.length; i++) {
                  if (allSentences[i].cfi) {
                     var cmp = targetCfi.compare(allSentences[i].cfi);
@@ -774,17 +783,17 @@ export function generateReaderHtml(options: Partial<GenerateOptions> = {}): stri
            }
         } else {
            // Normal 'Listen' button uses exact physical scroll position
-           var scrollTop = 0;
-           if (rendition.manager && rendition.manager.container) {
-              scrollTop = rendition.manager.container.scrollTop;
-           } else {
-              scrollTop = window.scrollY || 0;
-           }
+           var scrollContainer = document.getElementById('reader');
+           var epubContainer = document.querySelector('.epub-container');
+           var scrollTop = Math.max(
+             scrollContainer ? scrollContainer.scrollTop : 0,
+             epubContainer ? epubContainer.scrollTop : 0,
+             window.scrollY || 0
+           );
            
            if (allSentences.length > 0) {
               for (var i = 0; i < allSentences.length; i++) {
                  // top is relative to the document, scrollTop is how far down we scrolled
-                 // if sentence top is near or below scroll offset, it's visible!
                  if (allSentences[i].top >= Math.max(0, scrollTop - 50)) {
                     startIndex = i;
                     break;
@@ -843,10 +852,15 @@ export function generateReaderHtml(options: Partial<GenerateOptions> = {}): stri
     function scrollToTtsSentence(index) {
        if (window.ttsSentences && index >= 0 && index < window.ttsSentences.length) {
           var item = window.ttsSentences[index];
-          if (item && item.top !== undefined && rendition.manager) {
-             // Smoothly scroll the container to the sentence instead of reloading the chapter!
+          if (item && item.top !== undefined) {
              var offset = Math.max(0, item.top - 80);
-             rendition.manager.scrollTo(0, offset);
+             if (rendition.manager && rendition.manager.container) {
+                rendition.manager.container.scrollTop = offset;
+             }
+             var scrollContainer = document.getElementById('reader');
+             if (scrollContainer) scrollContainer.scrollTop = offset;
+             var epubContainer = document.querySelector('.epub-container');
+             if (epubContainer) epubContainer.scrollTop = offset;
           }
        }
     }
