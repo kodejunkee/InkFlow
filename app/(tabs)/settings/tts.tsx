@@ -92,6 +92,28 @@ export default function TTSSettings() {
           {showVoiceList && (
             <View style={{ maxHeight: 250, borderTopWidth: 1, borderTopColor: theme.border }}>
               <ScrollView nestedScrollEnabled>
+                <Pressable
+                  style={({ pressed }) => [
+                    styles.voiceItem,
+                    { borderBottomColor: theme.border },
+                    pressed && { backgroundColor: theme.surfaceHighlight || 'rgba(128,128,128,0.1)' },
+                  ]}
+                  onPress={() => {
+                    setTtsVoiceId(null);
+                    setShowVoiceList(false);
+                  }}
+                >
+                  <Ionicons 
+                    name="checkmark" 
+                    size={20} 
+                    color={ttsVoiceId === null ? theme.primary : 'transparent'} 
+                    style={{ marginRight: spacing.sm }}
+                  />
+                  <View>
+                    <Text style={[textStyles.body, { color: theme.textPrimary, fontWeight: ttsVoiceId === null ? '600' : '400' }]}>Default System Voice</Text>
+                    <Text style={[textStyles.caption, { color: theme.textSecondary }]}>Uses device default</Text>
+                  </View>
+                </Pressable>
                 {voices.map((voice) => (
                   <Pressable
                     key={voice.id}
