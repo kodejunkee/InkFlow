@@ -63,6 +63,7 @@ export function useTTS({ webViewRef }: UseTTSOptions): UseTTSReturn {
   const sleepEndTimeRef = useRef<number | null>(null);
   const isPlayingSelectedTextRef = useRef(false);
   const waitingForChapterRef = useRef(false);
+  const isSettingVoiceRef = useRef(false);
   const chapterTitleRef = useRef('');
 
   // Keep ref in sync with state
@@ -84,11 +85,7 @@ export function useTTS({ webViewRef }: UseTTSOptions): UseTTSReturn {
     TTS.setPitch(ttsPitch).catch(() => {});
   }, [ttsPitch]);
 
-  useEffect(() => {
-    if (ttsVoiceId) {
-      TTS.setVoice(ttsVoiceId).catch(() => {});
-    }
-  }, [ttsVoiceId]);
+
 
   // ─── Playback Controls ────────────────────────────────────────
   
@@ -142,6 +139,32 @@ export function useTTS({ webViewRef }: UseTTSOptions): UseTTSReturn {
       queueSentence(index + 3);
     }
   }, [sendCommand, ttsSentenceHighlight, queueSentence]);
+
+  useEffect(() => {
+    if (ttsVoiceId) {
+      isSettingVoiceRef.current = true;
+      
+      const wasPlaying = statusRef.current === 'playing';
+      if (wasPlaying) {
+        setTtsStatus('loading');
+        statusRef.current = 'loading';
+        TTS.stop();
+      }
+
+      TTS.setVoice(ttsVoiceId).then(() => {
+        isSettingVoiceRef.current = false;
+        
+        // If it was playing previously (and hasn't been paused), OR if they pressed play
+        if ((wasPlaying && statusRef.current !== 'paused') || statusRef.current === 'playing') {
+          setTtsStatus('playing');
+          statusRef.current = 'playing';
+          speakSentence(currentIndexRef.current);
+        }
+      }).catch(() => {
+        isSettingVoiceRef.current = false;
+      });
+    }
+  }, [ttsVoiceId, speakSentence]);
 
   // ─── Handle chapter text received from WebView ────────────────
 
@@ -341,7 +364,9 @@ export function useTTS({ webViewRef }: UseTTSOptions): UseTTSReturn {
     if (statusRef.current === 'paused' && sentencesRef.current.length > 0) {
       setTtsStatus('playing');
       statusRef.current = 'playing';
-      speakSentence(currentIndexRef.current);
+      if (!isSettingVoiceRef.current) {
+        speakSentence(currentIndexRef.current);
+      }
     }
   }, [speakSentence]);
 
