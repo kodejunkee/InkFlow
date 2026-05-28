@@ -1,47 +1,25 @@
-/**
- * InkFlow Settings Screen
- *
- * Reader preferences: theme, font size, line spacing, margins.
- * Minimal, focused settings panel.
- */
-
 import React from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  Pressable,
-  Switch,
-} from 'react-native';
+import { View, Text, StyleSheet, Pressable, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
-import { useSettingsStore } from '../../src/stores/settingsStore';
-import { getTheme, type ThemeName } from '../../src/theme/themes';
-import { textStyles } from '../../src/theme/typography';
-import { spacing, borderRadius } from '../../src/theme/spacing';
 import { Ionicons } from '@expo/vector-icons';
+import { useSettingsStore } from '../../../src/stores/settingsStore';
+import { getTheme } from '../../../src/theme/themes';
+import { textStyles } from '../../../src/theme/typography';
+import { spacing, borderRadius } from '../../../src/theme/spacing';
 
-export default function SettingsScreen() {
+export default function PreferencesSettings() {
   const router = useRouter();
   const {
     theme: themeName,
     fontSize,
     lineHeight,
     margins,
-    setTheme,
     setFontSize,
     setLineHeight,
     setMargins,
   } = useSettingsStore();
   const theme = getTheme(themeName);
-
-  const themeOptions: { name: ThemeName; label: string; bgColor: string; textColor: string }[] = [
-    { name: 'light', label: 'Light', bgColor: '#FFFFFF', textColor: '#1A1A1A' },
-    { name: 'dark', label: 'Dark', bgColor: '#121212', textColor: '#CCCCCC' },
-    { name: 'sepia', label: 'Sepia', bgColor: '#F4ECD8', textColor: '#5B4636' },
-    { name: 'ocean', label: 'Ocean', bgColor: '#141E28', textColor: '#D1E0E8' },
-  ];
 
   const fontSizeOptions = [14, 16, 18, 20, 22, 24];
   const lineHeightOptions = [1.4, 1.6, 1.8, 2.0, 2.2];
@@ -58,41 +36,11 @@ export default function SettingsScreen() {
         >
           <Ionicons name="chevron-back" size={28} color={theme.primary} />
         </Pressable>
-        <Text style={[textStyles.title, { color: theme.textPrimary }]}>Settings</Text>
+        <Text style={[textStyles.title, { color: theme.textPrimary }]}>Preferences</Text>
         <View style={styles.placeholder} />
       </View>
 
-      <ScrollView
-        style={styles.scrollView}
-        contentContainerStyle={styles.content}
-        showsVerticalScrollIndicator={false}
-      >
-        {/* Theme Selection */}
-        <Text style={[textStyles.caption, styles.sectionTitle, { color: theme.textSecondary }]}>
-          READING THEME
-        </Text>
-        <View style={[styles.card, { backgroundColor: theme.surface, borderColor: theme.border }]}>
-          <View style={styles.themeRow}>
-            {themeOptions.map((opt) => (
-              <Pressable
-                key={opt.name}
-                onPress={() => setTheme(opt.name)}
-                style={[
-                  styles.themeOption,
-                  {
-                    backgroundColor: opt.bgColor,
-                    borderColor: themeName === opt.name ? theme.primary : theme.border,
-                    borderWidth: themeName === opt.name ? 2 : 1,
-                  },
-                ]}
-              >
-                <Text style={[styles.themePreviewText, { color: opt.textColor }]}>Aa</Text>
-                <Text style={[textStyles.caption, { color: opt.textColor }]}>{opt.label}</Text>
-              </Pressable>
-            ))}
-          </View>
-        </View>
-
+      <ScrollView style={styles.scrollView} contentContainerStyle={styles.content}>
         {/* Font Size */}
         <Text style={[textStyles.caption, styles.sectionTitle, { color: theme.textSecondary }]}>
           FONT SIZE
@@ -208,22 +156,13 @@ export default function SettingsScreen() {
             ))}
           </View>
         </View>
-
-        {/* App info */}
-        <View style={styles.footer}>
-          <Text style={[textStyles.caption, { color: theme.textTertiary, textAlign: 'center' }]}>
-            InkFlow v1.0.0
-          </Text>
-        </View>
       </ScrollView>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
+  container: { flex: 1 },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -231,26 +170,10 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.lg,
     borderBottomWidth: 1,
   },
-  backButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginRight: spacing.lg,
-  },
-  backText: {
-    fontSize: 16,
-    fontWeight: '500',
-    marginLeft: spacing.xs,
-  },
-  placeholder: {
-    width: 60,
-  },
-  scrollView: {
-    flex: 1,
-  },
-  content: {
-    paddingHorizontal: spacing.lg,
-    paddingBottom: spacing['5xl'],
-  },
+  backButton: { marginRight: spacing.lg },
+  placeholder: { width: 40 },
+  scrollView: { flex: 1 },
+  content: { paddingHorizontal: spacing.lg, paddingBottom: spacing['5xl'] },
   sectionTitle: {
     letterSpacing: 1.5,
     fontWeight: '600',
@@ -261,23 +184,6 @@ const styles = StyleSheet.create({
     borderRadius: borderRadius.lg,
     borderWidth: 1,
     overflow: 'hidden',
-  },
-  themeRow: {
-    flexDirection: 'row',
-    padding: spacing.md,
-    gap: spacing.md,
-  },
-  themeOption: {
-    flex: 1,
-    paddingVertical: spacing.lg,
-    borderRadius: borderRadius.md,
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: spacing.xs,
-  },
-  themePreviewText: {
-    fontSize: 24,
-    fontWeight: '600',
   },
   optionRow: {
     flexDirection: 'row',
@@ -295,9 +201,5 @@ const styles = StyleSheet.create({
   previewLabel: {
     paddingHorizontal: spacing.md,
     marginBottom: spacing.xs,
-  },
-  footer: {
-    marginTop: spacing['4xl'],
-    marginBottom: spacing['2xl'],
   },
 });
