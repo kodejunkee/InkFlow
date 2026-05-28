@@ -267,25 +267,31 @@ class TtsModule(reactContext: ReactApplicationContext) :
     @ReactMethod
     fun setVoice(voiceId: String, promise: Promise) {
         ensureTts()
-        val engine = tts
-        if (engine == null || !ttsInitialised) {
-            promise.reject("TTS_NOT_READY", "TTS engine is not initialised")
-            return
-        }
+        Thread {
+            try {
+                val engine = tts
+                if (engine == null || !ttsInitialised) {
+                    promise.reject("TTS_NOT_READY", "TTS engine is not initialised")
+                    return@Thread
+                }
 
-        val voices: Set<Voice>? = engine.voices
-        val target = voices?.firstOrNull { it.name == voiceId }
-        if (target == null) {
-            promise.reject("TTS_VOICE_NOT_FOUND", "Voice '$voiceId' not found")
-            return
-        }
+                val voices: Set<Voice>? = engine.voices
+                val target = voices?.firstOrNull { it.name == voiceId }
+                if (target == null) {
+                    promise.reject("TTS_VOICE_NOT_FOUND", "Voice '$voiceId' not found")
+                    return@Thread
+                }
 
-        val result = engine.setVoice(target)
-        if (result == TextToSpeech.SUCCESS) {
-            promise.resolve(null)
-        } else {
-            promise.reject("TTS_SET_VOICE_ERROR", "Failed to set voice to '$voiceId'")
-        }
+                val result = engine.setVoice(target)
+                if (result == TextToSpeech.SUCCESS) {
+                    promise.resolve(null)
+                } else {
+                    promise.reject("TTS_SET_VOICE_ERROR", "Failed to set voice to '$voiceId'")
+                }
+            } catch (e: Exception) {
+                promise.reject("TTS_SET_VOICE_ERROR", e.message, e)
+            }
+        }.start()
     }
 
     /**

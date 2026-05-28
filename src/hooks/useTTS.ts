@@ -135,9 +135,11 @@ export function useTTS({ webViewRef }: UseTTSOptions): UseTTSReturn {
     // Flush queue and play current sentence
     TTS.speak(sentences[index], `sentence-${index}`);
 
-    // Pre-queue the next sentence for seamless transitions (if supported)
+    // Pre-queue the next few sentences for seamless transitions (especially network voices)
     if (TTS.hasNativeQueue) {
       queueSentence(index + 1);
+      queueSentence(index + 2);
+      queueSentence(index + 3);
     }
   }, [sendCommand, ttsSentenceHighlight, queueSentence]);
 
@@ -252,9 +254,9 @@ export function useTTS({ webViewRef }: UseTTSOptions): UseTTSReturn {
         const finishedIdx = parseInt(match[1], 10);
 
         if (TTS.hasNativeQueue) {
-          // Native queue is already playing the next sentence.
-          // We just need to pre-queue the *next next* sentence.
-          const nextIdxToQueue = finishedIdx + 2;
+          // Native queue is already playing the next sentences.
+          // We just need to pre-queue the sentences further ahead (e.g. index + 4).
+          const nextIdxToQueue = finishedIdx + 4;
           if (nextIdxToQueue < sentencesRef.current.length) {
             queueSentence(nextIdxToQueue);
           } else if (finishedIdx === sentencesRef.current.length - 1) {
