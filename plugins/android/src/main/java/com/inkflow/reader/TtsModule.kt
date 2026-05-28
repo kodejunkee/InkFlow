@@ -151,7 +151,7 @@ class TtsModule(reactContext: ReactApplicationContext) :
         var bundle: android.os.Bundle? = null
         if (currentVoiceId != null) {
             bundle = android.os.Bundle()
-            bundle.putString(TextToSpeech.Engine.KEY_PARAM_VOICE_NAME, currentVoiceId)
+            bundle.putString("voiceName", currentVoiceId)
         }
         engine.speak(text, TextToSpeech.QUEUE_FLUSH, bundle, utteranceId)
     }
@@ -174,7 +174,7 @@ class TtsModule(reactContext: ReactApplicationContext) :
         var bundle: android.os.Bundle? = null
         if (currentVoiceId != null) {
             bundle = android.os.Bundle()
-            bundle.putString(TextToSpeech.Engine.KEY_PARAM_VOICE_NAME, currentVoiceId)
+            bundle.putString("voiceName", currentVoiceId)
         }
         engine.speak(text, TextToSpeech.QUEUE_ADD, bundle, utteranceId)
     }
