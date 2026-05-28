@@ -10,9 +10,9 @@ import {
   Pressable,
   StyleSheet,
   Modal,
+  TextInput,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { TextInput } from 'react-native-gesture-handler';
 import type { TocItem } from '../../types/reader';
 import { useSettingsStore } from '../../stores/settingsStore';
 import { getTheme } from '../../theme/themes';
