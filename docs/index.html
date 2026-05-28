@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>InkFlow | The Modern EPUB Reader</title>
+  <meta name="description" content="InkFlow is a beautiful, offline-first EPUB reader with powerful text-to-speech, annotations, and customizable themes.">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Phosphor Icons for elegant UI icons -->
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+<body>
+
+  <!-- Navigation -->
+  <nav class="glass-nav">
+    <div class="nav-container">
+      <div class="logo">
+        <img src="assets/icon.png" alt="InkFlow Logo" class="logo-img">
+        <span class="logo-text">InkFlow</span>
+      </div>
+      <a href="#download" class="nav-btn">Download</a>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <header class="hero">
+    <div class="hero-content">
+      <div class="hero-text fade-in-up">
+        <div class="badge">Version 1.0 is here</div>
+        <h1 class="headline">Immerse yourself in <br><span class="gradient-text">every word.</span></h1>
+        <p class="subtitle">A beautiful, offline-first EPUB reader designed to keep you focused. Complete with powerful text-to-speech, seamless annotations, and stunning themes.</p>
+        
+        <div class="cta-container">
+          <a href="#download" class="primary-btn">
+            <i class="ph-bold ph-download-simple"></i>
+            Download for Android
+          </a>
+          <p class="download-counter" id="downloadCounter">
+            <i class="ph ph-trend-up"></i>
+            <span id="count">Loading...</span> downloads
+          </p>
+        </div>
+      </div>
+      
+      <div class="hero-visual fade-in-up delay-1">
+        <div class="phone-mockup">
+          <img src="assets/mockup-reader.png" alt="InkFlow Reader Interface" class="mockup-img" id="heroMockup">
+          <div class="mockup-glow"></div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Features Section -->
+  <section class="features" id="features">
+    <div class="section-header fade-in-up">
+      <h2>Everything you need. <br>Nothing you don't.</h2>
+      <p>Built for readers who appreciate beautiful typography and seamless functionality.</p>
+    </div>
+
+    <div class="feature-grid">
+      <!-- Offline First -->
+      <div class="feature-card fade-in-up">
+        <div class="feature-icon"><i class="ph-bold ph-wifi-slash"></i></div>
+        <h3>Offline-First Reading</h3>
+        <p>Your library lives entirely on your device. Fast, local EPUB parsing means you can read anywhere, anytime, with zero loading screens.</p>
+      </div>
+
+      <!-- TTS -->
+      <div class="feature-card fade-in-up delay-1">
+        <div class="feature-icon"><i class="ph-bold ph-speaker-high"></i></div>
+        <h3>Studio-Quality TTS</h3>
+        <p>Rest your eyes. Our advanced Text-to-Speech engine features sentence highlighting and auto-chapter progression for an audiobook-like experience.</p>
+      </div>
+
+      <!-- Notes -->
+      <div class="feature-card fade-in-up delay-2">
+        <div class="feature-icon"><i class="ph-bold ph-highlighter-circle"></i></div>
+        <h3>Smart Annotations</h3>
+        <p>Highlight meaningful quotes, add personal notes, and search through your annotations globally across your entire library.</p>
+      </div>
+
+      <!-- Themes -->
+      <div class="feature-card fade-in-up">
+        <div class="feature-icon"><i class="ph-bold ph-palette"></i></div>
+        <h3>Beautiful Themes</h3>
+        <p>Custom-crafted reading environments. Switch between Light, Dark, Sepia, and Ocean modes to perfectly match your environment.</p>
+      </div>
+
+      <!-- Sharing -->
+      <div class="feature-card fade-in-up delay-1">
+        <div class="feature-icon"><i class="ph-bold ph-share-network"></i></div>
+        <h3>Aesthetic Quotes</h3>
+        <p>Share your favorite passages instantly. InkFlow generates gorgeous, typography-focused quote images perfect for social media.</p>
+      </div>
+
+      <!-- Privacy -->
+      <div class="feature-card fade-in-up delay-2">
+        <div class="feature-icon"><i class="ph-bold ph-shield-check"></i></div>
+        <h3>Absolute Privacy</h3>
+        <p>No telemetry, no tracking, no accounts required. Your reading habits and notes are yours alone.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Download Section -->
+  <section class="download-section" id="download">
+    <div class="glass-panel fade-in-up">
+      <h2>Ready to start reading?</h2>
+      <p>Download the latest APK file directly from GitHub and install it on your Android device.</p>
+      
+      <a href="https://github.com/kodejunkee/InkFlow/releases/latest" id="downloadLink" class="primary-btn large-btn">
+        <i class="ph-bold ph-android-logo"></i>
+        Download APK
+      </a>
+      
+      <p class="install-instructions">
+        Note: You may need to enable "Install from Unknown Sources" in your Android settings to install the APK.
+      </p>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-content">
+      <div class="footer-logo">
+        <img src="assets/icon.png" alt="InkFlow Logo">
+        <span>InkFlow</span>
+      </div>
+      <p>Created by <a href="https://github.com/kodejunkee" target="_blank">Kode_Junkee</a>.</p>
+      <div class="social-links">
+        <a href="https://github.com/kodejunkee/InkFlow" target="_blank" aria-label="GitHub"><i class="ph-bold ph-github-logo"></i></a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
