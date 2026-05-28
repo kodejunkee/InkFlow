@@ -13,6 +13,7 @@ import type * as SQLite from 'expo-sqlite';
 import { useDatabase } from '../src/hooks/useDatabase';
 import { useSettingsStore } from '../src/stores/settingsStore';
 import { getTheme } from '../src/theme/themes';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 // Prevent the splash screen from auto-hiding
 SplashScreen.preventAutoHideAsync().catch(() => {});
@@ -50,33 +51,35 @@ export default function RootLayout() {
   }
 
   return (
-    <DatabaseContext.Provider value={db}>
-      <StatusBar style={theme.isDark ? 'light' : 'dark'} />
-      <Stack
-        screenOptions={{
-          headerShown: false,
-          contentStyle: { backgroundColor: theme.background },
-          animation: 'slide_from_right',
-        }}
-      >
-        <Stack.Screen name="(tabs)" />
-        <Stack.Screen
-          name="reader/[bookId]"
-          options={{
-            animation: 'fade',
-            gestureEnabled: false,
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <DatabaseContext.Provider value={db}>
+        <StatusBar style={theme.isDark ? 'light' : 'dark'} />
+        <Stack
+          screenOptions={{
+            headerShown: false,
+            contentStyle: { backgroundColor: theme.background },
+            animation: 'slide_from_right',
           }}
-        />
-        <Stack.Screen
-          name="bookmarks/[bookId]"
-          options={{ animation: 'slide_from_bottom' }}
-        />
-        <Stack.Screen
-          name="highlights/[bookId]"
-          options={{ animation: 'slide_from_bottom' }}
-        />
-      </Stack>
-    </DatabaseContext.Provider>
+        >
+          <Stack.Screen name="(tabs)" />
+          <Stack.Screen
+            name="reader/[bookId]"
+            options={{
+              animation: 'fade',
+              gestureEnabled: false,
+            }}
+          />
+          <Stack.Screen
+            name="bookmarks/[bookId]"
+            options={{ animation: 'slide_from_bottom' }}
+          />
+          <Stack.Screen
+            name="highlights/[bookId]"
+            options={{ animation: 'slide_from_bottom' }}
+          />
+        </Stack>
+      </DatabaseContext.Provider>
+    </GestureHandlerRootView>
   );
 }
 
