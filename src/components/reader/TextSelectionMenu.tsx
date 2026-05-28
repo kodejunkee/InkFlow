@@ -170,8 +170,14 @@ export function TextSelectionMenu({
             <Text style={[textStyles.caption, { color: theme.textSecondary }]}>Listen</Text>
           </Pressable>
 
+          {/*
           <Pressable onPress={onStartHere} style={styles.actionButton}>
             <Ionicons name="play-forward-outline" size={20} color={theme.textPrimary} />
+            <Text style={[textStyles.caption, { color: theme.textSecondary }]}>Start Here</Text>
+          </Pressable>
+          */}
+          <Pressable disabled style={[styles.actionButton, { opacity: 0.3 }]}>
+            <Ionicons name="play-forward-outline" size={20} color={theme.textSecondary} />
             <Text style={[textStyles.caption, { color: theme.textSecondary }]}>Start Here</Text>
           </Pressable>
 
