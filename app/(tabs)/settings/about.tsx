@@ -31,9 +31,10 @@ export default function AboutSettings() {
       <ScrollView style={styles.scrollView} contentContainerStyle={styles.content}>
         
         <View style={styles.hero}>
-          <View style={[styles.logoPlaceholder, { backgroundColor: theme.primary }]}>
-            <Ionicons name="book" size={48} color="#FFF" />
-          </View>
+          <Image 
+            source={require('../../../assets/icon.png')} 
+            style={styles.logoPlaceholder} 
+          />
           <Text style={[textStyles.h1, { color: theme.textPrimary, marginTop: spacing.md }]}>InkFlow</Text>
           <Text style={[textStyles.body, { color: theme.textSecondary }]}>Version 1.0.0</Text>
         </View>
