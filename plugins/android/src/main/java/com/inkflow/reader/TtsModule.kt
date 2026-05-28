@@ -148,6 +148,24 @@ class TtsModule(reactContext: ReactApplicationContext) :
     }
 
     /**
+     * Add [text] to the TTS queue to be spoken after the current speech finishes.
+     */
+    @ReactMethod
+    fun queue(text: String, utteranceId: String) {
+        ensureTts()
+        val engine = tts ?: return
+        if (!ttsInitialised) {
+            val params = Arguments.createMap().apply {
+                putString("utteranceId", utteranceId)
+                putString("error", "TTS engine not initialised")
+            }
+            sendEvent("tts-error", params)
+            return
+        }
+        engine.speak(text, TextToSpeech.QUEUE_ADD, null, utteranceId)
+    }
+
+    /**
      * Stop all current and queued speech immediately.
      */
     @ReactMethod

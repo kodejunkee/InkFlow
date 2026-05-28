@@ -42,6 +42,8 @@ function getEmitter(): NativeEventEmitter {
 
 // ─── Service API ─────────────────────────────────────────────────────────────
 
+export const hasNativeQueue = !!InkFlowTts?.queue;
+
 /**
  * Speak a single piece of text. Uses QUEUE_FLUSH so any in-progress
  * speech is immediately replaced.
@@ -52,6 +54,17 @@ export function speak(text: string, utteranceId: string): void {
     return;
   }
   InkFlowTts.speak(text, utteranceId);
+}
+
+/** Queue a piece of text to play after the current one finishes. */
+export function queue(text: string, utteranceId: string): void {
+  if (!InkFlowTts) return;
+  if (InkFlowTts.queue) {
+    InkFlowTts.queue(text, utteranceId);
+  } else {
+    // Fallback if native app not rebuilt yet
+    console.warn('[TTSService] Native queue() method not found. Rebuild required.');
+  }
 }
 
 /** Stop all speech immediately. */

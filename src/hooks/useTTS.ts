@@ -88,7 +88,14 @@ export function useTTS({ webViewRef }: UseTTSOptions): UseTTSReturn {
     }
   }, [ttsVoiceId]);
 
-  // ─── Speak a specific sentence ────────────────────────────────
+  // ─── Playback Controls ────────────────────────────────────────
+
+  const queueSentence = useCallback((index: number) => {
+    const sentences = sentencesRef.current;
+    if (index >= 0 && index < sentences.length) {
+      TTS.queue(sentences[index], `sentence-${index}`);
+    }
+  }, []);
 
   const speakSentence = useCallback((index: number) => {
     const sentences = sentencesRef.current;
@@ -97,15 +104,20 @@ export function useTTS({ webViewRef }: UseTTSOptions): UseTTSReturn {
     currentIndexRef.current = index;
     setCurrentSentenceIndex(index);
 
-    // Highlight and scroll
-    if (ttsSentenceHighlight) {
+    // If native queue is not available, we highlight here before speaking
+    if (!TTS.hasNativeQueue && ttsSentenceHighlight) {
       sendCommand({ type: 'highlightSentence', index });
       sendCommand({ type: 'scrollToSentence', index });
     }
 
-    // Speak
+    // Flush queue and play current sentence
     TTS.speak(sentences[index], `sentence-${index}`);
-  }, [sendCommand, ttsSentenceHighlight]);
+
+    // Pre-queue the next sentence for seamless transitions (if supported)
+    if (TTS.hasNativeQueue) {
+      queueSentence(index + 1);
+    }
+  }, [sendCommand, ttsSentenceHighlight, queueSentence]);
 
   // ─── Handle chapter text received from WebView ────────────────
 
@@ -162,6 +174,26 @@ export function useTTS({ webViewRef }: UseTTSOptions): UseTTSReturn {
   // ─── TTS event listeners ──────────────────────────────────────
 
   useEffect(() => {
+    const unsubStart = TTS.onStart((event) => {
+      if (statusRef.current === 'idle') return;
+      
+      const match = event.utteranceId.match(/^sentence-(\d+)$/);
+      if (match) {
+        const index = parseInt(match[1], 10);
+        // Only update state & highlight on start if using the native queue,
+        // because the native queue manages advancing sentences automatically.
+        if (TTS.hasNativeQueue) {
+          currentIndexRef.current = index;
+          setCurrentSentenceIndex(index);
+          
+          if (ttsSentenceHighlight) {
+            sendCommand({ type: 'highlightSentence', index });
+            sendCommand({ type: 'scrollToSentence', index });
+          }
+        }
+      }
+    });
+
     const unsubDone = TTS.onDone((event) => {
       if (statusRef.current === 'idle') return;
 
@@ -185,41 +217,68 @@ export function useTTS({ webViewRef }: UseTTSOptions): UseTTSReturn {
         return;
       }
 
-      // Advance to next sentence
-      const nextIdx = currentIndexRef.current + 1;
-      if (nextIdx < sentencesRef.current.length) {
-        speakSentence(nextIdx);
-      } else {
-        // Chapter finished
-        if (ttsAutoChapters) {
-          // Clear highlights and request next chapter
-          sendCommand({ type: 'clearTtsHighlight' });
-          sendCommand({ type: 'nextPage' });
-          waitingForChapterRef.current = true;
-          setTtsStatus('loading');
-          statusRef.current = 'loading';
+      const match = event.utteranceId.match(/^sentence-(\d+)$/);
+      if (match) {
+        const finishedIdx = parseInt(match[1], 10);
+
+        if (TTS.hasNativeQueue) {
+          // Native queue is already playing the next sentence.
+          // We just need to pre-queue the *next next* sentence.
+          const nextIdxToQueue = finishedIdx + 2;
+          if (nextIdxToQueue < sentencesRef.current.length) {
+            queueSentence(nextIdxToQueue);
+          } else if (finishedIdx === sentencesRef.current.length - 1) {
+            // Chapter completely finished
+            if (ttsAutoChapters) {
+              sendCommand({ type: 'clearTtsHighlight' });
+              sendCommand({ type: 'nextPage' });
+              waitingForChapterRef.current = true;
+              setTtsStatus('loading');
+              statusRef.current = 'loading';
+            } else {
+              stopPlayback();
+            }
+          }
         } else {
-          stopPlayback();
+          // Fallback logic (no native queue)
+          const nextIdx = finishedIdx + 1;
+          if (nextIdx < sentencesRef.current.length) {
+            speakSentence(nextIdx);
+          } else {
+            if (ttsAutoChapters) {
+              sendCommand({ type: 'clearTtsHighlight' });
+              sendCommand({ type: 'nextPage' });
+              waitingForChapterRef.current = true;
+              setTtsStatus('loading');
+              statusRef.current = 'loading';
+            } else {
+              stopPlayback();
+            }
+          }
         }
       }
     });
 
     const unsubError = TTS.onError((event) => {
       console.error('[useTTS] TTS error:', event.error);
-      // Try to continue with next sentence
-      const nextIdx = currentIndexRef.current + 1;
-      if (nextIdx < sentencesRef.current.length && statusRef.current === 'playing') {
-        speakSentence(nextIdx);
-      } else {
-        stopPlayback();
+      const match = event.utteranceId?.match(/^sentence-(\d+)$/);
+      if (match) {
+        const failedIdx = parseInt(match[1], 10);
+        const nextIdx = failedIdx + 1;
+        if (nextIdx < sentencesRef.current.length && statusRef.current === 'playing') {
+          speakSentence(nextIdx); // this flushes queue and forces recovery
+        } else {
+          stopPlayback();
+        }
       }
     });
 
     return () => {
+      unsubStart();
       unsubDone();
       unsubError();
     };
-  }, [speakSentence, ttsAutoChapters, sendCommand]);
+  }, [speakSentence, queueSentence, ttsAutoChapters, sendCommand, ttsSentenceHighlight, stopPlayback]);
 
   // ─── Public API ───────────────────────────────────────────────
 
