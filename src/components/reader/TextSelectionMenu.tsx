@@ -124,15 +124,15 @@ export function TextSelectionMenu({
           <View style={styles.noteActions}>
             <Pressable
               onPress={handleCancelNote}
-              style={[styles.noteButton, { backgroundColor: theme.surfaceElevated, flex: 1 }]}
+              style={({ pressed }) => [styles.noteButton, { backgroundColor: theme.surfaceHighlight, flex: 1 }, pressed && { opacity: 0.6 }]}
             >
-              <Text style={[textStyles.caption, { color: theme.textSecondary, textAlign: 'center' }]}>
+              <Text style={[textStyles.caption, { color: theme.textSecondary, fontWeight: '600', textAlign: 'center' }]}>
                 Cancel
               </Text>
             </Pressable>
             <Pressable
               onPress={handleSaveQuote}
-              style={[styles.noteButton, { backgroundColor: theme.primary + '20', flex: 1 }]}
+              style={({ pressed }) => [styles.noteButton, { backgroundColor: theme.primary + '20', flex: 1 }, pressed && { opacity: 0.6 }]}
             >
               <Text style={[textStyles.caption, { color: theme.primary, fontWeight: '600', textAlign: 'center' }]}>
                 Save Quote
@@ -149,7 +149,7 @@ export function TextSelectionMenu({
             <Pressable
               key={item.color}
               onPress={() => onHighlight(item.color)}
-              style={[styles.colorButton, { backgroundColor: item.hex + '40' }]}
+              style={({ pressed }) => [styles.colorButton, { backgroundColor: item.hex + '40' }, pressed && { opacity: 0.6 }]}
             >
               <View style={[styles.colorDot, { backgroundColor: item.hex }]} />
             </Pressable>
@@ -160,12 +160,12 @@ export function TextSelectionMenu({
       {/* Action buttons */}
       {!showNoteInput && (
         <View style={styles.actionRow}>
-          <Pressable onPress={handleSaveQuote} style={styles.actionButton}>
+          <Pressable onPress={handleSaveQuote} style={({ pressed }) => [styles.actionButton, pressed && { opacity: 0.6 }]}>
             <Ionicons name="chatbubble-outline" size={20} color={theme.textPrimary} />
             <Text style={[textStyles.caption, { color: theme.textSecondary }]}>Quote</Text>
           </Pressable>
 
-          <Pressable onPress={onListenSelected} style={styles.actionButton}>
+          <Pressable onPress={onListenSelected} style={({ pressed }) => [styles.actionButton, pressed && { opacity: 0.6 }]}>
             <Ionicons name="volume-medium-outline" size={20} color={theme.textPrimary} />
             <Text style={[textStyles.caption, { color: theme.textSecondary }]}>Listen</Text>
           </Pressable>
@@ -181,12 +181,12 @@ export function TextSelectionMenu({
             <Text style={[textStyles.caption, { color: theme.textSecondary }]}>Start Here</Text>
           </Pressable>
 
-          <Pressable onPress={onShare} style={styles.actionButton}>
+          <Pressable onPress={onShare} style={({ pressed }) => [styles.actionButton, pressed && { opacity: 0.6 }]}>
             <Ionicons name="share-outline" size={20} color={theme.textPrimary} />
             <Text style={[textStyles.caption, { color: theme.textSecondary }]}>Share</Text>
           </Pressable>
 
-          <Pressable onPress={handleDismiss} style={styles.actionButton}>
+          <Pressable onPress={handleDismiss} style={({ pressed }) => [styles.actionButton, pressed && { opacity: 0.6 }]}>
             <Ionicons name="close" size={20} color={theme.textPrimary} />
             <Text style={[textStyles.caption, { color: theme.textSecondary }]}>Close</Text>
           </Pressable>

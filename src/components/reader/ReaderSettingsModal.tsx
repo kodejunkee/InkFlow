@@ -200,7 +200,7 @@ export function ReaderSettingsModal({ visible, onClose }: ReaderSettingsModalPro
                   Voice
                 </Text>
                 <Pressable
-                  style={[styles.voiceSelectorBtn, { borderColor: theme.border }]}
+                  style={({ pressed }) => [styles.voiceSelectorBtn, { borderColor: theme.border }, pressed && { opacity: 0.7 }]}
                   onPress={() => setVoiceSelectorOpen(true)}
                 >
                   <View style={{ flex: 1 }}>
@@ -257,13 +257,13 @@ export function ReaderSettingsModal({ visible, onClose }: ReaderSettingsModalPro
             <View style={[styles.sheet, { backgroundColor: theme.surfaceElevated, height: '70%' }]}>
               <View style={styles.sheetHeader}>
                 <Text style={[textStyles.h2, { color: theme.textPrimary }]}>Select Voice</Text>
-                <Pressable onPress={() => setVoiceSelectorOpen(false)}>
+                <Pressable onPress={() => setVoiceSelectorOpen(false)} hitSlop={12} style={({ pressed }) => pressed && { opacity: 0.7 }}>
                   <Ionicons name="close" size={24} color={theme.textPrimary} />
                 </Pressable>
               </View>
               <ScrollView style={styles.sheetContent}>
                 <Pressable
-                  style={[styles.voiceOption, ttsVoiceId === null && { backgroundColor: theme.surfaceHighlight }]}
+                  style={({ pressed }) => [styles.voiceOption, ttsVoiceId === null && { backgroundColor: theme.surfaceHighlight }, pressed && { opacity: 0.7 }]}
                   onPress={() => { setTtsVoiceId(null); setVoiceSelectorOpen(false); }}
                 >
                   <Text style={[textStyles.body, { color: theme.textPrimary, fontWeight: ttsVoiceId === null ? 'bold' : 'normal' }]}>
@@ -274,7 +274,7 @@ export function ReaderSettingsModal({ visible, onClose }: ReaderSettingsModalPro
                 {voices.map(voice => (
                   <Pressable
                     key={voice.id}
-                    style={[styles.voiceOption, ttsVoiceId === voice.id && { backgroundColor: theme.surfaceHighlight }]}
+                    style={({ pressed }) => [styles.voiceOption, ttsVoiceId === voice.id && { backgroundColor: theme.surfaceHighlight }, pressed && { opacity: 0.7 }]}
                     onPress={() => { setTtsVoiceId(voice.id); setVoiceSelectorOpen(false); }}
                   >
                     <View style={{ flex: 1 }}>

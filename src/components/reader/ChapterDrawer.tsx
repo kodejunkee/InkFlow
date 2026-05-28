@@ -107,7 +107,7 @@ export function ChapterDrawer({
                 <Text style={[textStyles.h2, { color: theme.textPrimary }]}>
                   Chapters
                 </Text>
-                <Pressable onPress={onClose} hitSlop={12} style={styles.closeBtn}>
+                <Pressable onPress={onClose} hitSlop={12} style={({ pressed }) => [styles.closeBtn, pressed && { opacity: 0.7 }]}>
                   <Ionicons name="close" size={24} color={theme.textSecondary} />
                 </Pressable>
               </View>

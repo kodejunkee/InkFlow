@@ -203,7 +203,7 @@ export default function TTSSettings() {
             <View style={{ flex: 1, marginRight: spacing.md }}>
               <Text style={[textStyles.body, { color: theme.textPrimary }]}>Auto-continue chapters</Text>
               <Text style={[textStyles.caption, { color: theme.textSecondary, marginTop: 4 }]}>
-                Automatically turn the page and read the next chapter when one finishes.
+                Automatically read the next chapter when one finishes.
               </Text>
             </View>
             <Switch

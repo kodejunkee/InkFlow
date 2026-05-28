@@ -158,9 +158,10 @@ export function QuotePreviewModal({
           <View style={styles.actions}>
             <Pressable
               onPress={onDismiss}
-              style={[
+              style={({ pressed }) => [
                 styles.actionButton,
                 { backgroundColor: theme.surfaceElevated },
+                pressed && { opacity: 0.7 }
               ]}
             >
               <Text style={[textStyles.body, { color: theme.textSecondary }]}>
@@ -170,10 +171,11 @@ export function QuotePreviewModal({
 
             <Pressable
               onPress={handleShare}
-              style={[
+              style={({ pressed }) => [
                 styles.actionButton,
                 styles.shareButton,
                 { backgroundColor: theme.primary },
+                pressed && { opacity: 0.8 }
               ]}
             >
               <Ionicons name="share-outline" size={24} color="#FFFFFF" style={styles.shareIcon} />

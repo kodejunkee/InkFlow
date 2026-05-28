@@ -164,7 +164,7 @@ export function AnnotationsDrawer({
               <View style={styles.dragIndicator} />
               <View style={styles.headerRow}>
                 <Text style={[textStyles.h2, { color: theme.textPrimary }]}>Saved</Text>
-                <Pressable onPress={onClose} hitSlop={12} style={styles.closeBtn}>
+                <Pressable onPress={onClose} hitSlop={12} style={({ pressed }) => [styles.closeBtn, pressed && { opacity: 0.7 }]}>
                   <Ionicons name="close" size={24} color={theme.textSecondary} />
                 </Pressable>
               </View>
@@ -175,7 +175,7 @@ export function AnnotationsDrawer({
               <View style={[styles.tabBg, { backgroundColor: theme.surfaceElevated || 'rgba(128,128,128,0.1)' }]}>
                 <Pressable
                   onPress={() => setActiveTab('quotes')}
-                  style={[styles.tabSegment, activeTab === 'quotes' && { backgroundColor: theme.surface }]}
+                  style={({ pressed }) => [styles.tabSegment, activeTab === 'quotes' && { backgroundColor: theme.surface }, pressed && { opacity: 0.7 }]}
                 >
                   <Text style={[textStyles.body, { 
                     color: activeTab === 'quotes' ? theme.primary : theme.textSecondary,
@@ -186,7 +186,7 @@ export function AnnotationsDrawer({
                 </Pressable>
                 <Pressable
                   onPress={() => setActiveTab('bookmarks')}
-                  style={[styles.tabSegment, activeTab === 'bookmarks' && { backgroundColor: theme.surface }]}
+                  style={({ pressed }) => [styles.tabSegment, activeTab === 'bookmarks' && { backgroundColor: theme.surface }, pressed && { opacity: 0.7 }]}
                 >
                   <Text style={[textStyles.body, { 
                     color: activeTab === 'bookmarks' ? theme.primary : theme.textSecondary,
