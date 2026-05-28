@@ -68,27 +68,24 @@ export function AnnotationsDrawer({
         onClose();
       }}
       onLongPress={() => onDeleteBookmark(item.id)}
-      style={[styles.annotationItem, { borderLeftColor: theme.primary }]}
+      style={({ pressed }) => [
+        styles.annotationItem,
+        pressed && { backgroundColor: theme.surfaceHighlight || 'rgba(128,128,128,0.1)' }
+      ]}
     >
-      <View style={styles.annotationHeader}>
-        <View style={styles.itemHeader}>
-          <Ionicons name="bookmark" size={14} color={theme.primary} style={styles.itemTypeIcon} />
-          <Text style={[textStyles.caption, { color: theme.primary }]}>Bookmark</Text>
+      <View style={styles.itemHeader}>
+        <View style={styles.itemTypeRow}>
+          <View style={[styles.colorDot, { backgroundColor: theme.primary }]} />
+          <Text style={[textStyles.caption, { color: theme.textSecondary, fontWeight: '600' }]}>Bookmark</Text>
         </View>
-        <Text style={[textStyles.caption, { color: theme.textSecondary, fontSize: 11 }]}>
+        <Text style={[textStyles.caption, { color: theme.textSecondary, opacity: 0.7 }]}>
           {formatDate(item.createdAt)}
         </Text>
       </View>
-      <Text
-        style={[textStyles.body, { color: theme.textPrimary, marginTop: 2 }]}
-        numberOfLines={1}
-      >
+      <Text style={[textStyles.body, { color: theme.textPrimary, fontWeight: '500', marginBottom: 4 }]} numberOfLines={2}>
         {item.label || item.chapterTitle}
       </Text>
-      <Text
-        style={[textStyles.caption, { color: theme.textSecondary, marginTop: 2 }]}
-        numberOfLines={1}
-      >
+      <Text style={[textStyles.caption, { color: theme.textSecondary }]} numberOfLines={1}>
         {item.chapterTitle}
       </Text>
     </Pressable>
@@ -105,54 +102,47 @@ export function AnnotationsDrawer({
           onClose();
         }}
         onLongPress={() => onDeleteHighlight(item.id)}
-        style={[styles.annotationItem, { borderLeftColor: colorHex }]}
+        style={({ pressed }) => [
+          styles.annotationItem,
+          pressed && { backgroundColor: theme.surfaceHighlight || 'rgba(128,128,128,0.1)' }
+        ]}
       >
-        <View style={styles.annotationHeader}>
-          <View style={styles.itemHeader}>
-            <Ionicons 
-              name={isQuote ? 'chatbubble-outline' : 'brush-outline'} 
-              size={14} 
-              color={colorHex} 
-              style={styles.itemTypeIcon} 
-            />
-            <Text style={[textStyles.caption, { color: colorHex }]}>
+        <View style={styles.itemHeader}>
+          <View style={styles.itemTypeRow}>
+            <View style={[styles.colorDot, { backgroundColor: colorHex }]} />
+            <Text style={[textStyles.caption, { color: theme.textSecondary, fontWeight: '600' }]}>
               {isQuote ? 'Quote' : 'Highlight'}
             </Text>
           </View>
-          <Text style={[textStyles.caption, { color: theme.textSecondary, fontSize: 11 }]}>
+          <Text style={[textStyles.caption, { color: theme.textSecondary, opacity: 0.7 }]}>
             {formatDate(item.createdAt)}
           </Text>
         </View>
-        <Text
-          style={[
-            textStyles.body,
-            { color: theme.textPrimary, marginTop: 4, fontStyle: 'italic' },
-          ]}
-          numberOfLines={3}
-        >
-          "{item.selectedText}"
-        </Text>
-        {item.note ? (
-          <View
-            style={[styles.notePreview, { backgroundColor: theme.primaryLight || theme.background }]}
+
+        <View style={styles.quoteBlock}>
+          <Text
+            style={[textStyles.body, { color: theme.textPrimary, lineHeight: 24 }]}
+            numberOfLines={4}
           >
-            <Text
-              style={[textStyles.caption, { color: theme.textSecondary }]}
-              numberOfLines={2}
-            >
-            <View style={styles.noteContainer}>
-              <Ionicons name="chatbubble-outline" size={14} color={theme.textSecondary} />
-              <Text style={[styles.noteText, { color: theme.textSecondary }]}>{item.note}</Text>
-            </View>
+            "{item.selectedText}"
+          </Text>
+        </View>
+
+        {item.note ? (
+          <View style={[styles.noteContainer, { backgroundColor: theme.surfaceElevated || 'rgba(128,128,128,0.05)' }]}>
+            <Ionicons name="create-outline" size={16} color={theme.primary} style={{ marginTop: 2 }} />
+            <Text style={[textStyles.body, { color: theme.textSecondary, flex: 1, marginLeft: 8 }]} numberOfLines={3}>
+              {item.note}
             </Text>
           </View>
         ) : null}
-        <Text
-          style={[textStyles.caption, { color: theme.textSecondary, marginTop: 2 }]}
-          numberOfLines={1}
-        >
-          {item.chapterTitle}
-        </Text>
+
+        <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: spacing.xs }}>
+          <Ionicons name="book-outline" size={14} color={theme.textSecondary} style={{ marginRight: 6 }} />
+          <Text style={[textStyles.caption, { color: theme.textSecondary }]} numberOfLines={1}>
+            {item.chapterTitle}
+          </Text>
+        </View>
       </Pressable>
     );
   };
@@ -170,69 +160,42 @@ export function AnnotationsDrawer({
             onPress={(e) => e.stopPropagation()}
           >
             {/* Header */}
-            <View style={[styles.drawerHeader, { borderBottomColor: theme.border }]}>
-              <Text style={[textStyles.title, { color: theme.textPrimary }]}>Annotations</Text>
-              <Pressable onPress={onClose} hitSlop={12}>
-                <Ionicons name="close" size={24} color={theme.textSecondary} />
-              </Pressable>
+            <View style={styles.drawerHeader}>
+              <View style={styles.dragIndicator} />
+              <View style={styles.headerRow}>
+                <Text style={[textStyles.h2, { color: theme.textPrimary }]}>Saved</Text>
+                <Pressable onPress={onClose} hitSlop={12} style={styles.closeBtn}>
+                  <Ionicons name="close" size={24} color={theme.textSecondary} />
+                </Pressable>
+              </View>
             </View>
 
-            {/* Tabs */}
-            <View style={[styles.tabRow, { borderBottomColor: theme.border }]}>
-              <Pressable
-                onPress={() => setActiveTab('quotes')}
-                style={[
-                  styles.tab,
-                  activeTab === 'quotes' && { borderBottomColor: theme.primary },
-                ]}
-              >
-                <View style={styles.tabContent}>
-                  <Ionicons 
-                    name="brush-outline" 
-                    size={16} 
-                    color={activeTab === 'quotes' ? theme.primary : theme.textSecondary} 
-                    style={styles.tabIcon} 
-                  />
-                  <Text
-                    style={[
-                      textStyles.body,
-                      {
-                        color: activeTab === 'quotes' ? theme.primary : theme.textSecondary,
-                        fontWeight: activeTab === 'quotes' ? '600' : '400',
-                      },
-                    ]}
-                  >
-                    Quotes & Highlights ({highlights.length})
+            {/* Segmented Control Tabs */}
+            <View style={styles.tabContainer}>
+              <View style={[styles.tabBg, { backgroundColor: theme.surfaceElevated || 'rgba(128,128,128,0.1)' }]}>
+                <Pressable
+                  onPress={() => setActiveTab('quotes')}
+                  style={[styles.tabSegment, activeTab === 'quotes' && { backgroundColor: theme.surface }]}
+                >
+                  <Text style={[textStyles.body, { 
+                    color: activeTab === 'quotes' ? theme.primary : theme.textSecondary,
+                    fontWeight: activeTab === 'quotes' ? '600' : '400',
+                  }]}>
+                    Highlights ({highlights.length})
                   </Text>
-                </View>
-              </Pressable>
-              <Pressable
-                onPress={() => setActiveTab('bookmarks')}
-                style={[
-                  styles.tab,
-                  activeTab === 'bookmarks' && { borderBottomColor: theme.primary },
-                ]}
-              >
-                <View style={styles.tabContent}>
-                  <Ionicons 
-                    name="bookmark-outline" 
-                    size={16} 
-                    color={activeTab === 'bookmarks' ? theme.primary : theme.textSecondary} 
-                    style={styles.tabIcon} 
-                  />
-                  <Text
-                    style={[
-                      textStyles.body,
-                      {
-                        color: activeTab === 'bookmarks' ? theme.primary : theme.textSecondary,
-                        fontWeight: activeTab === 'bookmarks' ? '600' : '400',
-                      },
-                    ]}
-                  >
+                </Pressable>
+                <Pressable
+                  onPress={() => setActiveTab('bookmarks')}
+                  style={[styles.tabSegment, activeTab === 'bookmarks' && { backgroundColor: theme.surface }]}
+                >
+                  <Text style={[textStyles.body, { 
+                    color: activeTab === 'bookmarks' ? theme.primary : theme.textSecondary,
+                    fontWeight: activeTab === 'bookmarks' ? '600' : '400',
+                  }]}>
                     Bookmarks ({bookmarks.length})
                   </Text>
-                </View>
-              </Pressable>
+                </Pressable>
+              </View>
             </View>
 
             {/* Content */}
@@ -300,66 +263,92 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   drawerWrapper: {
-    maxHeight: '80%',
+    maxHeight: '90%',
   },
   drawer: {
     borderTopLeftRadius: borderRadius.xl,
     borderTopRightRadius: borderRadius.xl,
-    borderWidth: 1,
-    borderBottomWidth: 0,
     maxHeight: '100%',
+    paddingTop: spacing.xs,
   },
   drawerHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
     paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.md,
-    borderBottomWidth: 1,
-  },
-  closeButtonContainer: {
-    padding: spacing.sm,
-  },
-  tabRow: {
-    flexDirection: 'row',
-    borderBottomWidth: 1,
-  },
-  tab: {
-    flex: 1,
-    alignItems: 'center',
-    paddingVertical: spacing.lg,
-    borderBottomWidth: 2,
-    borderBottomColor: 'transparent',
-  },
-  tabContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  tabIcon: {
-    marginRight: spacing.xs,
-  },
-  listContent: {
+    paddingTop: spacing.sm,
     paddingBottom: spacing.md,
   },
-  annotationItem: {
-    paddingVertical: spacing.md,
-    paddingHorizontal: spacing.lg,
-    borderLeftWidth: 3,
+  dragIndicator: {
+    width: 36,
+    height: 4,
+    backgroundColor: 'rgba(128,128,128,0.3)',
+    borderRadius: 2,
+    alignSelf: 'center',
+    marginBottom: spacing.md,
   },
-  annotationHeader: {
+  headerRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
   },
-  notePreview: {
-    marginTop: 6,
-    padding: spacing.sm,
+  closeBtn: {
+    padding: spacing.xs,
+    backgroundColor: 'rgba(128,128,128,0.1)',
+    borderRadius: 20,
+  },
+  tabContainer: {
+    paddingHorizontal: spacing.lg,
+    paddingBottom: spacing.md,
+  },
+  tabBg: {
+    flexDirection: 'row',
+    borderRadius: borderRadius.md,
+    padding: 4,
+  },
+  tabSegment: {
+    flex: 1,
+    paddingVertical: 10,
+    alignItems: 'center',
     borderRadius: borderRadius.sm,
+  },
+  listContent: {
+    paddingBottom: spacing.xxl,
+  },
+  annotationItem: {
+    paddingVertical: spacing.lg,
+    paddingHorizontal: spacing.lg,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: 'rgba(128,128,128,0.1)',
+  },
+  itemHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: spacing.sm,
+  },
+  itemTypeRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  colorDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    marginRight: 8,
+  },
+  quoteBlock: {
+    marginBottom: spacing.sm,
+  },
+  noteContainer: {
+    flexDirection: 'row',
+    padding: spacing.md,
+    borderRadius: borderRadius.md,
+    marginTop: spacing.xs,
+    marginBottom: spacing.xs,
+    alignItems: 'flex-start',
   },
   emptyState: {
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: spacing.xl * 2,
+    paddingVertical: spacing.xl * 3,
     paddingHorizontal: spacing.xl,
   },
 });
