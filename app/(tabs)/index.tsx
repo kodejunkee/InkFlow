@@ -16,6 +16,7 @@ import {
   StyleSheet,
   Alert,
   Pressable,
+  Image,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useFocusEffect } from 'expo-router';
@@ -155,9 +156,10 @@ export default function LibraryScreen() {
         {/* App header */}
         <View style={styles.header}>
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <View style={{ backgroundColor: theme.primary, padding: 8, borderRadius: 12, marginRight: 12 }}>
-              <Ionicons name="library" size={24} color="#FFFFFF" />
-            </View>
+            <Image 
+              source={require('../../assets/icon.png')} 
+              style={{ width: 40, height: 40, borderRadius: 10, marginRight: 12 }} 
+            />
             <Text style={[textStyles.h1, { color: theme.textPrimary, fontWeight: '700', letterSpacing: -0.5 }]}>
               InkFlow
             </Text>
