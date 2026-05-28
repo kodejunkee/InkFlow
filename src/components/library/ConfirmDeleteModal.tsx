@@ -97,11 +97,11 @@ export function ConfirmDeleteModal({
             </View>
           </View>
 
-          <Text style={[styles.title, textStyles.h3, { color: theme.text }]}>
+          <Text style={[styles.title, textStyles.title, { color: theme.textPrimary }]}>
             Remove from Library?
           </Text>
           <Text style={[styles.message, textStyles.body, { color: theme.textSecondary }]}>
-            Are you sure you want to delete <Text style={{ color: theme.text, fontWeight: 'bold' }}>"{book?.title}"</Text>? This will permanently remove the file and all your highlights and bookmarks.
+            Are you sure you want to delete <Text style={{ color: theme.textPrimary, fontWeight: 'bold' }}>"{book?.title}"</Text>? This will permanently remove the file and all your highlights and bookmarks.
           </Text>
 
           <View style={styles.actions}>
@@ -110,7 +110,7 @@ export function ConfirmDeleteModal({
               onPress={handleClose}
               activeOpacity={0.7}
             >
-              <Text style={[styles.buttonText, { color: theme.text }]}>Cancel</Text>
+              <Text style={[styles.buttonText, { color: theme.textPrimary }]}>Cancel</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
