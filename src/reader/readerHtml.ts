@@ -746,35 +746,49 @@ export function generateReaderHtml(options: Partial<GenerateOptions> = {}): stri
 
         window.ttsSentences = allSentences;
 
-        var loc = rendition.currentLocation();
-        var currentCfi = loc && loc.start ? loc.start.cfi : null;
-        var firstVisibleIndex = 0;
+        var startIndex = 0;
 
-        // Use precise CFI comparison to find the first sentence in the current viewport
-        if (currentCfi && allSentences.length > 0) {
+        if (startCfi) {
+           // 'Read from here' button uses the exact CFI of the highlighted selection
            try {
-              var baseCfi = new ePub.CFI(currentCfi);
+              var targetCfi = new ePub.CFI(startCfi);
               for (var i = 0; i < allSentences.length; i++) {
                  if (allSentences[i].cfi) {
-                    var cmp = baseCfi.compare(allSentences[i].cfi);
-                    // If baseCfi <= sentence CFI, the sentence is at or after the viewport start
+                    var cmp = targetCfi.compare(allSentences[i].cfi);
+                    // If targetCfi <= sentence CFI, the sentence is at or after the highlight
                     if (cmp <= 0) {
-                       firstVisibleIndex = i;
+                       startIndex = i;
                        break;
                     }
                  }
               }
            } catch(e) {}
-        }
-
-        // Find starting index if startText is provided
-        var startIndex = firstVisibleIndex;
-        if (startText && startText.trim().length > 0) {
+        } else if (startText && startText.trim().length > 0) {
+           // Fallback text matching
            var target = startText.trim();
            for (var i = 0; i < allSentences.length; i++) {
               if (allSentences[i].text.indexOf(target) !== -1 || target.indexOf(allSentences[i].text) !== -1) {
                  startIndex = i;
                  break;
+              }
+           }
+        } else {
+           // Normal 'Listen' button uses exact physical scroll position
+           var scrollTop = 0;
+           if (rendition.manager && rendition.manager.container) {
+              scrollTop = rendition.manager.container.scrollTop;
+           } else {
+              scrollTop = window.scrollY || 0;
+           }
+           
+           if (allSentences.length > 0) {
+              for (var i = 0; i < allSentences.length; i++) {
+                 // top is relative to the document, scrollTop is how far down we scrolled
+                 // if sentence top is near or below scroll offset, it's visible!
+                 if (allSentences[i].top >= Math.max(0, scrollTop - 50)) {
+                    startIndex = i;
+                    break;
+                 }
               }
            }
         }

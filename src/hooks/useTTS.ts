@@ -282,14 +282,14 @@ export function useTTS({ webViewRef }: UseTTSOptions): UseTTSReturn {
 
   // ─── Public API ───────────────────────────────────────────────
 
-  const startFromCurrentPosition = useCallback((startText?: string) => {
+  const startFromCurrentPosition = useCallback((startText?: string, startCfi?: string) => {
     isPlayingSelectedTextRef.current = false;
     waitingForChapterRef.current = false;
     setTtsStatus('loading');
     statusRef.current = 'loading';
 
     // Request text extraction from WebView
-    sendCommand({ type: 'extractChapterText', startText });
+    sendCommand({ type: 'extractChapterText', startText, startCfi });
   }, [sendCommand]);
 
   const startFromText = useCallback((text: string) => {
