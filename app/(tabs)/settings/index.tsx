@@ -43,7 +43,7 @@ export default function SettingsMenu() {
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
       {/* Header */}
-      <View style={[styles.header, { borderBottomColor: theme.border }]}>
+      <View style={styles.header}>
         <Text style={[textStyles.title, { color: theme.textPrimary }]}>Settings</Text>
       </View>
 
@@ -89,7 +89,6 @@ const styles = StyleSheet.create({
   header: {
     paddingHorizontal: spacing.xl,
     paddingVertical: spacing.lg,
-    borderBottomWidth: 1,
   },
   scrollView: {
     flex: 1,
