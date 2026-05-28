@@ -229,7 +229,7 @@ export function generateReaderHtml(options: Partial<GenerateOptions> = {}): stri
             restoreHighlights(cmd.highlights);
             break;
           case 'extractChapterText':
-            extractChapterText(cmd.startText);
+            extractChapterText(cmd.startText, cmd.startCfi);
             break;
           case 'highlightSentence':
             highlightTtsSentence(cmd.index);
@@ -676,7 +676,7 @@ export function generateReaderHtml(options: Partial<GenerateOptions> = {}): stri
 
     var ttsSentenceEls = [];
 
-    function extractChapterText(startText) {
+    function extractChapterText(startText, startCfi) {
       if (!rendition) return;
       try {
         var contents = rendition.getContents();
