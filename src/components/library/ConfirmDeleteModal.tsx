@@ -42,17 +42,17 @@ export function ConfirmDeleteModal({
 
   // Animations
   const opacity = useSharedValue(0);
-  const translateY = useSharedValue(50);
+  const scale = useSharedValue(0.85);
 
   useEffect(() => {
     if (visible) {
-      opacity.value = withTiming(1, { duration: 200 });
-      translateY.value = withSpring(0, { damping: 15, stiffness: 150 });
+      opacity.value = withTiming(1, { duration: 150 });
+      scale.value = withSpring(1, { damping: 12, stiffness: 250 });
     } else {
-      opacity.value = withTiming(0, { duration: 150 });
-      translateY.value = withTiming(50, { duration: 150 });
+      opacity.value = withTiming(0, { duration: 100 });
+      scale.value = withTiming(0.85, { duration: 100 });
     }
-  }, [visible, opacity, translateY]);
+  }, [visible, opacity, scale]);
 
   const animatedOverlay = useAnimatedStyle(() => ({
     opacity: opacity.value,
@@ -60,14 +60,14 @@ export function ConfirmDeleteModal({
 
   const animatedContent = useAnimatedStyle(() => ({
     opacity: opacity.value,
-    transform: [{ translateY: translateY.value }],
+    transform: [{ scale: scale.value }],
   }));
 
   if (!visible && opacity.value === 0) return null;
 
   const handleClose = () => {
-    opacity.value = withTiming(0, { duration: 150 });
-    translateY.value = withTiming(50, { duration: 150 }, () => {
+    opacity.value = withTiming(0, { duration: 100 });
+    scale.value = withTiming(0.85, { duration: 100 }, () => {
       runOnJS(onCancel)();
     });
   };
