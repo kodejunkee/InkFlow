@@ -180,7 +180,7 @@ const styles = StyleSheet.create({
   drawer: {
     borderTopLeftRadius: borderRadius.xl,
     borderTopRightRadius: borderRadius.xl,
-    maxHeight: '100%',
+    flex: 1,
     paddingTop: spacing.xs,
   },
   drawerHeader: {
