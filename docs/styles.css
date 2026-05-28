@@ -213,23 +213,48 @@ body {
 .hero-visual {
   position: relative;
   perspective: 1000px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
 }
 
 .phone-mockup {
   position: relative;
   transform: rotateY(-15deg) rotateX(5deg) scale(0.9);
   transition: transform 0.5s ease;
+  width: 100%;
+  max-width: 320px;
 }
 
 .phone-mockup:hover {
-  transform: rotateY(0) rotateX(0) scale(1);
+  transform: rotateY(-5deg) rotateX(2deg) scale(0.95);
+}
+
+.blurred-text-bg {
+  position: absolute;
+  top: -40px;
+  bottom: -40px;
+  left: -40px;
+  right: -40px;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 2.5;
+  color: var(--text-muted);
+  text-align: justify;
+  filter: blur(4px);
+  opacity: 0.25;
+  z-index: -1;
+  pointer-events: none;
+  user-select: none;
+  background: radial-gradient(circle at center, transparent 40%, var(--bg-color) 90%);
+  -webkit-mask-image: linear-gradient(to bottom, transparent, black 10%, black 90%, transparent);
+  mask-image: linear-gradient(to bottom, transparent, black 10%, black 90%, transparent);
 }
 
 .mockup-img {
   width: 100%;
-  max-width: 320px;
-  border-radius: 32px;
-  box-shadow: 0 24px 64px rgba(0,0,0,0.5), 0 0 0 8px var(--surface-elevated);
+  border-radius: 20px;
+  box-shadow: 0 24px 64px rgba(0,0,0,0.6), 0 0 0 2px var(--border-color), 0 0 0 8px var(--surface-elevated);
   display: block;
   margin: 0 auto;
 }
