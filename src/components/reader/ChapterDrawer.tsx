@@ -175,7 +175,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   drawerWrapper: {
-    maxHeight: '90%',
+    height: '90%',
   },
   drawer: {
     borderTopLeftRadius: borderRadius.xl,
