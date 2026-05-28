@@ -9,7 +9,7 @@
  * - Long-press to delete books
  */
 
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import {
   View,
   Text,
@@ -35,6 +35,8 @@ import { ContinueReading } from '../../src/components/library/ContinueReading';
 import { ImportButton } from '../../src/components/library/ImportButton';
 import { EmptyState } from '../../src/components/common/EmptyState';
 import { ErrorBoundary } from '../../src/components/common/ErrorBoundary';
+import { ConfirmDeleteModal } from '../../src/components/library/ConfirmDeleteModal';
+import { Book } from '../../src/types/book';
 
 export default function LibraryScreen() {
   const router = useRouter();
@@ -50,6 +52,8 @@ export default function LibraryScreen() {
 
   const { importBook, isImporting, importProgress, error: importError } =
     useBookImport(db);
+    
+  const [bookToDelete, setBookToDelete] = useState<Book | null>(null);
 
   // Load books from database
   const refreshBooks = useCallback(() => {
@@ -103,30 +107,23 @@ export default function LibraryScreen() {
     (bookId: number) => {
       const book = books.find((b) => b.id === bookId);
       if (!book || !db) return;
-
-      Alert.alert(
-        'Delete Book',
-        `Are you sure you want to remove "${book.title}" from your library?`,
-        [
-          { text: 'Cancel', style: 'cancel' },
-          {
-            text: 'Delete',
-            style: 'destructive',
-            onPress: () => {
-              try {
-                deleteBook(db, bookId);
-                deleteBookFiles(bookId, book.filePath, book.coverUri);
-                removeBooksAction(bookId);
-              } catch (e) {
-                console.error('[Library] Delete failed:', e);
-              }
-            },
-          },
-        ],
-      );
+      setBookToDelete(book);
     },
-    [books, db, removeBooksAction],
+    [books, db],
   );
+
+  const confirmDelete = useCallback(() => {
+    if (!bookToDelete || !db) return;
+    try {
+      deleteBook(db, bookToDelete.id);
+      deleteBookFiles(bookToDelete.id, bookToDelete.filePath, bookToDelete.coverUri);
+      removeBooksAction(bookToDelete.id);
+    } catch (e) {
+      console.error('[Library] Delete failed:', e);
+    } finally {
+      setBookToDelete(null);
+    }
+  }, [bookToDelete, db, removeBooksAction]);
 
   const handleContinueReading = useCallback(() => {
     if (continueBook) {
@@ -231,6 +228,12 @@ export default function LibraryScreen() {
           isImporting={isImporting}
           importProgress={progressText}
           importError={importError?.message ?? null}
+        />
+        <ConfirmDeleteModal
+          visible={!!bookToDelete}
+          book={bookToDelete}
+          onCancel={() => setBookToDelete(null)}
+          onConfirm={confirmDelete}
         />
       </SafeAreaView>
     </ErrorBoundary>
