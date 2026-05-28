@@ -58,7 +58,7 @@ export default function SettingsMenu() {
                 {
                   backgroundColor: pressed ? theme.surfaceHighlight || theme.surface : theme.background,
                   borderBottomColor: theme.border,
-                  borderBottomWidth: index === menuItems.length - 1 ? 0 : StyleSheet.hairlineWidth,
+                  borderBottomWidth: index === menuItems.length - 1 ? 0 : 1,
                 },
               ]}
             >
