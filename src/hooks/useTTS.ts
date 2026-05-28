@@ -26,7 +26,7 @@ interface UseTTSReturn {
   currentChapterTitle: string;
   sleepTimerRemaining: number | null;
 
-  startFromCurrentPosition: () => void;
+  startFromCurrentPosition: (startText?: string) => void;
   startFromText: (text: string) => void;
   play: () => void;
   pause: () => void;
@@ -34,6 +34,8 @@ interface UseTTSReturn {
   nextSentence: () => void;
   prevSentence: () => void;
   setSleepTimerActive: (minutes: number | null) => void;
+  handleChapterText: (data: { sentences: string[]; startIndex?: number; chapterTitle: string; chapterIndex: number; }) => void;
+  handleLocationChangedForTts: () => void;
 }
 
 // ─── Hook ────────────────────────────────────────────────────────────────────
@@ -89,6 +91,26 @@ export function useTTS({ webViewRef }: UseTTSOptions): UseTTSReturn {
   }, [ttsVoiceId]);
 
   // ─── Playback Controls ────────────────────────────────────────
+  
+  const stopPlayback = useCallback(() => {
+    TTS.stop();
+    sendCommand({ type: 'clearTtsHighlight' });
+    setTtsStatus('idle');
+    statusRef.current = 'idle';
+    setCurrentSentenceIndex(0);
+    currentIndexRef.current = 0;
+    sentencesRef.current = [];
+    isPlayingSelectedTextRef.current = false;
+    waitingForChapterRef.current = false;
+
+    // Clear sleep timer
+    if (sleepTimerRef.current) {
+      clearInterval(sleepTimerRef.current);
+      sleepTimerRef.current = null;
+    }
+    sleepEndTimeRef.current = null;
+    setSleepTimerRemaining(null);
+  }, [sendCommand]);
 
   const queueSentence = useCallback((index: number) => {
     const sentences = sentencesRef.current;
@@ -327,25 +349,6 @@ export function useTTS({ webViewRef }: UseTTSOptions): UseTTSReturn {
     statusRef.current = 'paused';
   }, []);
 
-  const stopPlayback = useCallback(() => {
-    TTS.stop();
-    sendCommand({ type: 'clearTtsHighlight' });
-    setTtsStatus('idle');
-    statusRef.current = 'idle';
-    setCurrentSentenceIndex(0);
-    currentIndexRef.current = 0;
-    sentencesRef.current = [];
-    isPlayingSelectedTextRef.current = false;
-    waitingForChapterRef.current = false;
-
-    // Clear sleep timer
-    if (sleepTimerRef.current) {
-      clearInterval(sleepTimerRef.current);
-      sleepTimerRef.current = null;
-    }
-    sleepEndTimeRef.current = null;
-    setSleepTimerRemaining(null);
-  }, [sendCommand]);
 
   const nextSentenceAction = useCallback(() => {
     const nextIdx = currentIndexRef.current + 1;
@@ -422,11 +425,7 @@ export function useTTS({ webViewRef }: UseTTSOptions): UseTTSReturn {
     prevSentence: prevSentenceAction,
     setSleepTimerActive,
 
-    // Internal handlers exposed for wiring
     handleChapterText,
     handleLocationChangedForTts,
-  } as UseTTSReturn & {
-    handleChapterText: typeof handleChapterText;
-    handleLocationChangedForTts: typeof handleLocationChangedForTts;
   };
 }

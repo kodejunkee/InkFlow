@@ -15,6 +15,7 @@ export interface AppTheme {
   background: string;
   surface: string;
   surfaceElevated: string;
+  surfaceHighlight?: string;
 
   // Text
   textPrimary: string;
@@ -65,9 +66,10 @@ export const lightTheme: AppTheme = {
   name: 'light',
   isDark: false,
 
-  background: '#FAFAFA',
+  background: '#F9F9F9',
   surface: palette.white,
   surfaceElevated: palette.white,
+  surfaceHighlight: 'rgba(0,0,0,0.05)',
 
   textPrimary: palette.gray[900],
   textSecondary: palette.gray[600],
@@ -112,6 +114,7 @@ export const darkTheme: AppTheme = {
   background: '#0D0D0D',
   surface: '#1A1A1A',
   surfaceElevated: '#242424',
+  surfaceHighlight: 'rgba(255,255,255,0.05)',
 
   textPrimary: '#EAEAEA',
   textSecondary: '#A0A0A0',

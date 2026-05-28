@@ -145,7 +145,7 @@ export default function HighlightsScreen() {
         quoteText: highlight.selectedText,
         author: book.author,
         title: book.title,
-        chapterTitle: highlight.chapterTitle,
+        chapterTitle: highlight.chapterTitle || undefined,
         coverUri: book.coverUri,
       });
       setIsQuotePreviewVisible(true);
@@ -503,5 +503,15 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.md,
     borderRadius: borderRadius.md,
     alignItems: 'center',
+  },
+  noteText: {
+    marginLeft: spacing.sm,
+    fontStyle: 'italic',
+  },
+  actionButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: spacing.xs,
+    marginRight: spacing.md,
   },
 });

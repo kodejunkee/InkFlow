@@ -310,7 +310,7 @@ const styles = StyleSheet.create({
     borderRadius: borderRadius.sm,
   },
   listContent: {
-    paddingBottom: spacing.xxl,
+    paddingBottom: spacing['2xl'],
   },
   annotationItem: {
     paddingVertical: spacing.lg,

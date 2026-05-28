@@ -41,13 +41,26 @@ export interface Highlight {
   id: number;
   bookId: number;
   /** EPUB CFI range covering the highlighted text */
-  cfiRange: string;
+  cfiRange: string; // Range CFI
   selectedText: string;
-  chapterTitle: string;
+  chapterTitle: string | null;
   note: string | null;
   color: HighlightColor;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface GlobalSearchResult {
+  id: number;
+  bookId: number;
+  bookTitle: string;
+  cfi: string;
+  chapterTitle: string | null;
+  text: string;
+  note: string | null;
+  color: string | null;
+  createdAt: string;
+  type: 'highlight' | 'bookmark';
 }
 
 // ─── EPUB Processing ─────────────────────────────────────────────────────────

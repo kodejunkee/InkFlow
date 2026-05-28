@@ -341,6 +341,9 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: 'rgba(128,128,128,0.2)',
   },
+  sheetContent: {
+    flex: 1,
+  },
   voiceOption: {
     flexDirection: 'row',
     alignItems: 'center',
