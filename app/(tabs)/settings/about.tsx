@@ -45,26 +45,8 @@ export default function AboutSettings() {
         <View style={[styles.card, { backgroundColor: theme.surface, borderColor: theme.border }]}>
           <View style={styles.row}>
             <Text style={[textStyles.body, { color: theme.textPrimary }]}>Created by</Text>
-            <Text style={[textStyles.body, { color: theme.textSecondary }]}>Jayce</Text>
+            <Text style={[textStyles.body, { color: theme.textSecondary }]}>Kode_Junkee</Text>
           </View>
-        </View>
-
-        <Text style={[textStyles.caption, styles.sectionTitle, { color: theme.textSecondary }]}>
-          LEGAL
-        </Text>
-        <View style={[styles.card, { backgroundColor: theme.surface, borderColor: theme.border }]}>
-          <Pressable style={[styles.row, { borderBottomWidth: 1, borderBottomColor: theme.border }]}>
-            <Text style={[textStyles.body, { color: theme.textPrimary }]}>Terms of Service</Text>
-            <Ionicons name="chevron-forward" size={20} color={theme.textTertiary} />
-          </Pressable>
-          <Pressable style={[styles.row, { borderBottomWidth: 1, borderBottomColor: theme.border }]}>
-            <Text style={[textStyles.body, { color: theme.textPrimary }]}>Privacy Policy</Text>
-            <Ionicons name="chevron-forward" size={20} color={theme.textTertiary} />
-          </Pressable>
-          <Pressable style={styles.row}>
-            <Text style={[textStyles.body, { color: theme.textPrimary }]}>Open Source Licenses</Text>
-            <Ionicons name="chevron-forward" size={20} color={theme.textTertiary} />
-          </Pressable>
         </View>
 
       </ScrollView>
