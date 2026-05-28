@@ -46,11 +46,11 @@ export function ConfirmDeleteModal({
 
   useEffect(() => {
     if (visible) {
-      opacity.value = withTiming(1, { duration: 150 });
-      scale.value = withSpring(1, { damping: 12, stiffness: 250 });
+      opacity.value = withTiming(1, { duration: 100 });
+      scale.value = withSpring(1, { damping: 18, stiffness: 450 });
     } else {
-      opacity.value = withTiming(0, { duration: 100 });
-      scale.value = withTiming(0.85, { duration: 100 });
+      opacity.value = withTiming(0, { duration: 80 });
+      scale.value = withTiming(0.85, { duration: 80 });
     }
   }, [visible, opacity, scale]);
 
@@ -66,8 +66,8 @@ export function ConfirmDeleteModal({
   if (!visible && opacity.value === 0) return null;
 
   const handleClose = () => {
-    opacity.value = withTiming(0, { duration: 100 });
-    scale.value = withTiming(0.85, { duration: 100 }, () => {
+    opacity.value = withTiming(0, { duration: 80 });
+    scale.value = withTiming(0.85, { duration: 80 }, () => {
       runOnJS(onCancel)();
     });
   };
