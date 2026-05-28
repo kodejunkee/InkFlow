@@ -712,8 +712,8 @@ export function generateReaderHtml(options: Partial<GenerateOptions> = {}): stri
             var raw = node.nodeValue;
             if (!raw || raw.trim().length === 0) continue;
 
-            // Split into sentences
-            var sentenceParts = raw.match(/[^.!?]*[.!?]+[\\s]?|[^.!?]+$/g);
+            // Split into sentences, keeping trailing quotes and punctuation attached
+            var sentenceParts = raw.match(/[^.!?]*[.!?]+['"“”‘’\\])}]*[\\s]*|[^.!?]+$/g);
             if (!sentenceParts) continue;
 
             var currentOffset = 0;
