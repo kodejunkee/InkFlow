@@ -62,12 +62,9 @@ export function ChapterDrawer({
           onSelectChapter(item.href);
           onClose();
         }}
-        style={[
+        style={({ pressed }) => [
           styles.chapterItem,
-          {
-            backgroundColor: isCurrent ? theme.primaryLight : 'transparent',
-            borderLeftColor: isCurrent ? theme.primary : 'transparent',
-          },
+          pressed && { backgroundColor: theme.surfaceHighlight || 'rgba(128,128,128,0.1)' }
         ]}
       >
         <Text
@@ -104,13 +101,16 @@ export function ChapterDrawer({
             onPress={(e) => e.stopPropagation()}
           >
             {/* Header */}
-            <View style={[styles.drawerHeader, { borderBottomColor: theme.border }]}>
-              <Text style={[textStyles.title, { color: theme.textPrimary }]}>
-                Chapters
-              </Text>
-              <Pressable onPress={onClose} hitSlop={12}>
-                <Ionicons name="close" size={24} color={theme.textSecondary} />
-              </Pressable>
+            <View style={styles.drawerHeader}>
+              <View style={styles.dragIndicator} />
+              <View style={styles.headerRow}>
+                <Text style={[textStyles.h2, { color: theme.textPrimary }]}>
+                  Chapters
+                </Text>
+                <Pressable onPress={onClose} hitSlop={12} style={styles.closeBtn}>
+                  <Ionicons name="close" size={24} color={theme.textSecondary} />
+                </Pressable>
+              </View>
             </View>
 
             {/* Search Bar */}
@@ -175,25 +175,36 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   drawerWrapper: {
-    maxHeight: '75%',
+    maxHeight: '90%',
   },
   drawer: {
     borderTopLeftRadius: borderRadius.xl,
     borderTopRightRadius: borderRadius.xl,
-    borderWidth: 1,
-    borderBottomWidth: 0,
     maxHeight: '100%',
+    paddingTop: spacing.xs,
   },
   drawerHeader: {
+    paddingHorizontal: spacing.lg,
+    paddingTop: spacing.sm,
+    paddingBottom: spacing.md,
+  },
+  dragIndicator: {
+    width: 36,
+    height: 4,
+    backgroundColor: 'rgba(128,128,128,0.3)',
+    borderRadius: 2,
+    alignSelf: 'center',
+    marginBottom: spacing.md,
+  },
+  headerRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.md,
-    borderBottomWidth: 1,
   },
-  closeButtonContainer: {
-    padding: spacing.sm,
+  closeBtn: {
+    padding: spacing.xs,
+    backgroundColor: 'rgba(128,128,128,0.1)',
+    borderRadius: 20,
   },
   listContent: {
     paddingBottom: spacing.xl,
@@ -201,7 +212,8 @@ const styles = StyleSheet.create({
   chapterItem: {
     paddingVertical: spacing.md,
     paddingHorizontal: spacing.lg,
-    borderLeftWidth: 3,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: 'rgba(128,128,128,0.1)',
     minHeight: 56,
     justifyContent: 'center',
   },
