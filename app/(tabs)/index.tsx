@@ -154,9 +154,14 @@ export default function LibraryScreen() {
       <View>
         {/* App header */}
         <View style={styles.header}>
-          <Text style={[textStyles.hero, { color: theme.textPrimary }]}>
-            InkFlow
-          </Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <View style={{ backgroundColor: theme.primary, padding: 8, borderRadius: 12, marginRight: 12 }}>
+              <Ionicons name="library" size={24} color="#FFFFFF" />
+            </View>
+            <Text style={[textStyles.h1, { color: theme.textPrimary, fontWeight: '700', letterSpacing: -0.5 }]}>
+              InkFlow
+            </Text>
+          </View>
         </View>
 
         {/* Continue Reading */}

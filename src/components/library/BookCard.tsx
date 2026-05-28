@@ -188,6 +188,8 @@ const styles = StyleSheet.create({
   },
   info: {
     padding: spacing.md,
+    height: 90,
+    justifyContent: 'space-between',
   },
   title: {
     fontWeight: '600',
