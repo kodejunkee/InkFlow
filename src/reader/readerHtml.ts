@@ -229,7 +229,7 @@ export function generateReaderHtml(options: Partial<GenerateOptions> = {}): stri
             restoreHighlights(cmd.highlights);
             break;
           case 'extractChapterText':
-            extractChapterText(cmd.startText, cmd.startCfi);
+            extractChapterText(cmd.startText);
             break;
           case 'highlightSentence':
             highlightTtsSentence(cmd.index);
@@ -676,7 +676,7 @@ export function generateReaderHtml(options: Partial<GenerateOptions> = {}): stri
 
     var ttsSentenceEls = [];
 
-    function extractChapterText(startText, startCfi) {
+    function extractChapterText(startText) {
       if (!rendition) return;
       try {
         var contents = rendition.getContents();
@@ -735,8 +735,7 @@ export function generateReaderHtml(options: Partial<GenerateOptions> = {}): stri
                   var cfi = new ePub.CFI(range, cfiBase).toString();
                   
                   var rect = range.getBoundingClientRect();
-                  var docScrollTop = doc.defaultView ? (doc.defaultView.scrollY || doc.documentElement.scrollTop) : 0;
-                  allSentences.push({ text: trimmed, cfi: cfi, top: rect.top + docScrollTop });
+                  allSentences.push({ text: trimmed, cfi: cfi, top: rect.top });
                 } catch(e) {
                    allSentences.push({ text: trimmed, cfi: null, top: 0 });
                 }
@@ -747,57 +746,35 @@ export function generateReaderHtml(options: Partial<GenerateOptions> = {}): stri
 
         window.ttsSentences = allSentences;
 
-        var startIndex = 0;
+        var loc = rendition.currentLocation();
+        var currentCfi = loc && loc.start ? loc.start.cfi : null;
+        var firstVisibleIndex = 0;
 
-        if (startCfi) {
-           // 'Read from here' button uses the exact CFI of the highlighted selection
+        // Use precise CFI comparison to find the first sentence in the current viewport
+        if (currentCfi && allSentences.length > 0) {
            try {
-              var targetCfiStr = startCfi;
-              if (startCfi.indexOf(',') !== -1) {
-                 // Convert range epubcfi(/6/14!/4,/1:0,/2:10) to point epubcfi(/6/14!/4/1:0)
-                 var parts = startCfi.replace('epubcfi(', '').replace(')', '').split(',');
-                 if (parts.length >= 2) {
-                    targetCfiStr = 'epubcfi(' + parts[0].trim() + parts[1].trim() + ')';
-                 }
-              }
-              var targetCfi = new ePub.CFI(targetCfiStr);
+              var baseCfi = new ePub.CFI(currentCfi);
               for (var i = 0; i < allSentences.length; i++) {
                  if (allSentences[i].cfi) {
-                    var cmp = targetCfi.compare(allSentences[i].cfi);
-                    // If targetCfi <= sentence CFI, the sentence is at or after the highlight
+                    var cmp = baseCfi.compare(allSentences[i].cfi);
+                    // If baseCfi <= sentence CFI, the sentence is at or after the viewport start
                     if (cmp <= 0) {
-                       startIndex = i;
+                       firstVisibleIndex = i;
                        break;
                     }
                  }
               }
            } catch(e) {}
-        } else if (startText && startText.trim().length > 0) {
-           // Fallback text matching
+        }
+
+        // Find starting index if startText is provided
+        var startIndex = firstVisibleIndex;
+        if (startText && startText.trim().length > 0) {
            var target = startText.trim();
            for (var i = 0; i < allSentences.length; i++) {
               if (allSentences[i].text.indexOf(target) !== -1 || target.indexOf(allSentences[i].text) !== -1) {
                  startIndex = i;
                  break;
-              }
-           }
-        } else {
-           // Normal 'Listen' button uses exact physical scroll position
-           var scrollContainer = document.getElementById('reader');
-           var epubContainer = document.querySelector('.epub-container');
-           var scrollTop = Math.max(
-             scrollContainer ? scrollContainer.scrollTop : 0,
-             epubContainer ? epubContainer.scrollTop : 0,
-             window.scrollY || 0
-           );
-           
-           if (allSentences.length > 0) {
-              for (var i = 0; i < allSentences.length; i++) {
-                 // top is relative to the document, scrollTop is how far down we scrolled
-                 if (allSentences[i].top >= Math.max(0, scrollTop - 50)) {
-                    startIndex = i;
-                    break;
-                 }
               }
            }
         }
@@ -852,15 +829,10 @@ export function generateReaderHtml(options: Partial<GenerateOptions> = {}): stri
     function scrollToTtsSentence(index) {
        if (window.ttsSentences && index >= 0 && index < window.ttsSentences.length) {
           var item = window.ttsSentences[index];
-          if (item && item.top !== undefined) {
+          if (item && item.top !== undefined && rendition.manager) {
+             // Smoothly scroll the container to the sentence instead of reloading the chapter!
              var offset = Math.max(0, item.top - 80);
-             if (rendition.manager && rendition.manager.container) {
-                rendition.manager.container.scrollTop = offset;
-             }
-             var scrollContainer = document.getElementById('reader');
-             if (scrollContainer) scrollContainer.scrollTop = offset;
-             var epubContainer = document.querySelector('.epub-container');
-             if (epubContainer) epubContainer.scrollTop = offset;
+             rendition.manager.scrollTo(0, offset);
           }
        }
     }

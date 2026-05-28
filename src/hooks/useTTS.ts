@@ -146,6 +146,9 @@ export function useTTS({ webViewRef }: UseTTSOptions): UseTTSReturn {
     chapterTitleRef.current = chapterTitle;
     setCurrentChapterTitle(chapterTitle);
 
+    setTtsStatus('playing');
+    statusRef.current = 'playing';
+
     if (waitingForChapterRef.current) {
       waitingForChapterRef.current = false;
       // Read chapter title first, then start sentences
@@ -176,6 +179,11 @@ export function useTTS({ webViewRef }: UseTTSOptions): UseTTSReturn {
   useEffect(() => {
     const unsubStart = TTS.onStart((event) => {
       if (statusRef.current === 'idle') return;
+      
+      if (statusRef.current === 'loading') {
+        setTtsStatus('playing');
+        statusRef.current = 'playing';
+      }
       
       const match = event.utteranceId.match(/^sentence-(\d+)$/);
       if (match) {
@@ -282,14 +290,14 @@ export function useTTS({ webViewRef }: UseTTSOptions): UseTTSReturn {
 
   // ─── Public API ───────────────────────────────────────────────
 
-  const startFromCurrentPosition = useCallback((startText?: string, startCfi?: string) => {
+  const startFromCurrentPosition = useCallback((startText?: string) => {
     isPlayingSelectedTextRef.current = false;
     waitingForChapterRef.current = false;
     setTtsStatus('loading');
     statusRef.current = 'loading';
 
     // Request text extraction from WebView
-    sendCommand({ type: 'extractChapterText', startText, startCfi });
+    sendCommand({ type: 'extractChapterText', startText });
   }, [sendCommand]);
 
   const startFromText = useCallback((text: string) => {
