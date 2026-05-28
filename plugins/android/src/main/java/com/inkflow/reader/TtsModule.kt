@@ -38,6 +38,10 @@ class TtsModule(reactContext: ReactApplicationContext) :
     @Volatile
     private var ttsInitialised = false
 
+    /** Tracks the currently selected voice ID to enforce it on utterances. */
+    @Volatile
+    private var currentVoiceId: String? = null
+
     // -----------------------------------------------------------------------
     // Lifecycle
     // -----------------------------------------------------------------------
@@ -144,7 +148,12 @@ class TtsModule(reactContext: ReactApplicationContext) :
             sendEvent("tts-error", params)
             return
         }
-        engine.speak(text, TextToSpeech.QUEUE_FLUSH, null, utteranceId)
+        var bundle: android.os.Bundle? = null
+        if (currentVoiceId != null) {
+            bundle = android.os.Bundle()
+            bundle.putString(TextToSpeech.Engine.KEY_PARAM_VOICE_NAME, currentVoiceId)
+        }
+        engine.speak(text, TextToSpeech.QUEUE_FLUSH, bundle, utteranceId)
     }
 
     /**
@@ -162,7 +171,12 @@ class TtsModule(reactContext: ReactApplicationContext) :
             sendEvent("tts-error", params)
             return
         }
-        engine.speak(text, TextToSpeech.QUEUE_ADD, null, utteranceId)
+        var bundle: android.os.Bundle? = null
+        if (currentVoiceId != null) {
+            bundle = android.os.Bundle()
+            bundle.putString(TextToSpeech.Engine.KEY_PARAM_VOICE_NAME, currentVoiceId)
+        }
+        engine.speak(text, TextToSpeech.QUEUE_ADD, bundle, utteranceId)
     }
 
     /**
@@ -284,6 +298,7 @@ class TtsModule(reactContext: ReactApplicationContext) :
 
                 val result = engine.setVoice(target)
                 if (result == TextToSpeech.SUCCESS) {
+                    currentVoiceId = target.name
                     promise.resolve(null)
                 } else {
                     promise.reject("TTS_SET_VOICE_ERROR", "Failed to set voice to '$voiceId'")
