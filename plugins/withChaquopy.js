@@ -70,6 +70,7 @@ function withAppGradle(config) {
                 install "lxml"
                 install "beautifulsoup4"
                 install "Pillow"
+                install "requests"
             }
         }
         ndk {

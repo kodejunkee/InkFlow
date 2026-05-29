@@ -12,7 +12,7 @@ class EpubProcessorPackage : ReactPackage {
     override fun createNativeModules(
         reactContext: ReactApplicationContext
     ): List<NativeModule> {
-        return listOf(EpubProcessorModule(reactContext), TtsModule(reactContext))
+        return listOf(EpubProcessorModule(reactContext), TtsModule(reactContext), NovelSourceModule(reactContext))
     }
 
     override fun createViewManagers(

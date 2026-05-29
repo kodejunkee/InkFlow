@@ -2,7 +2,7 @@
  * Current schema version. Bump this whenever the schema changes and add a
  * corresponding migration in `migrations.ts`.
  */
-export const DB_VERSION = 1;
+export const DB_VERSION = 2;
 
 // ─── Table: books ────────────────────────────────────────────────────────────
 
@@ -96,6 +96,27 @@ CREATE TABLE IF NOT EXISTS _meta (
 );
 `;
 
+// ─── Table: novel_downloads ──────────────────────────────────────────────────
+
+export const CREATE_NOVEL_DOWNLOADS_TABLE = `
+CREATE TABLE IF NOT EXISTS novel_downloads (
+  id                       INTEGER PRIMARY KEY AUTOINCREMENT,
+  book_id                  INTEGER REFERENCES books(id) ON DELETE SET NULL,
+  source_id                TEXT    NOT NULL,
+  source_url               TEXT    NOT NULL,
+  novel_title              TEXT    NOT NULL,
+  last_chapter_downloaded  INTEGER NOT NULL DEFAULT 0,
+  total_chapters           INTEGER NOT NULL DEFAULT 0,
+  status                   TEXT    NOT NULL DEFAULT 'pending',
+  last_checked_at          TEXT,
+  created_at               TEXT    NOT NULL DEFAULT (datetime('now'))
+);
+`;
+
+export const CREATE_NOVEL_DOWNLOADS_SOURCE_INDEX = `
+CREATE INDEX IF NOT EXISTS idx_novel_downloads_source_url ON novel_downloads(source_url);
+`;
+
 // ─── All DDL statements in execution order ───────────────────────────────────
 
 export const ALL_CREATE_STATEMENTS: string[] = [
@@ -108,4 +129,6 @@ export const ALL_CREATE_STATEMENTS: string[] = [
   CREATE_HIGHLIGHTS_TEXT_INDEX,
   CREATE_READING_SESSIONS_TABLE,
   CREATE_SESSIONS_BOOK_INDEX,
+  CREATE_NOVEL_DOWNLOADS_TABLE,
+  CREATE_NOVEL_DOWNLOADS_SOURCE_INDEX,
 ];

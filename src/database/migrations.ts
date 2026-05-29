@@ -1,5 +1,10 @@
 import type * as SQLite from 'expo-sqlite';
-import { ALL_CREATE_STATEMENTS, DB_VERSION } from './schema';
+import {
+  ALL_CREATE_STATEMENTS,
+  DB_VERSION,
+  CREATE_NOVEL_DOWNLOADS_TABLE,
+  CREATE_NOVEL_DOWNLOADS_SOURCE_INDEX,
+} from './schema';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -18,11 +23,10 @@ const MIGRATIONS: Migration[] = [
     version: 1,
     statements: ALL_CREATE_STATEMENTS,
   },
-  // Example future migration:
-  // {
-  //   version: 2,
-  //   statements: ['ALTER TABLE books ADD COLUMN publisher TEXT;'],
-  // },
+  {
+    version: 2,
+    statements: [CREATE_NOVEL_DOWNLOADS_TABLE, CREATE_NOVEL_DOWNLOADS_SOURCE_INDEX],
+  },
 ];
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────

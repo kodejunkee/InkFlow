@@ -1,5 +1,6 @@
 import type * as SQLite from 'expo-sqlite';
 import type { Book, Bookmark, Highlight, HighlightColor, GlobalSearchResult, NewBook } from '../types/book';
+import type { NovelDownloadRecord } from '../types/novel';
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // Row ↔ Model mappers
@@ -430,4 +431,140 @@ export function getTotalReadingTime(
     [bookId],
   );
   return row?.total ?? 0;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// Novel Downloads
+// ═══════════════════════════════════════════════════════════════════════════════
+
+interface NovelDownloadRow {
+  id: number;
+  book_id: number | null;
+  source_id: string;
+  source_url: string;
+  novel_title: string;
+  last_chapter_downloaded: number;
+  total_chapters: number;
+  status: string;
+  last_checked_at: string | null;
+  created_at: string;
+}
+
+function rowToNovelDownload(row: NovelDownloadRow): NovelDownloadRecord {
+  return {
+    id: row.id,
+    bookId: row.book_id,
+    sourceId: row.source_id,
+    sourceUrl: row.source_url,
+    novelTitle: row.novel_title,
+    lastChapterDownloaded: row.last_chapter_downloaded,
+    totalChapters: row.total_chapters,
+    status: row.status,
+    lastCheckedAt: row.last_checked_at,
+    createdAt: row.created_at,
+  };
+}
+
+export function insertNovelDownload(
+  db: SQLite.SQLiteDatabase,
+  record: Omit<NovelDownloadRecord, 'id' | 'createdAt'>,
+): NovelDownloadRecord {
+  const result = db.runSync(
+    `INSERT INTO novel_downloads (
+       book_id, source_id, source_url, novel_title,
+       last_chapter_downloaded, total_chapters, status, last_checked_at
+     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+    [
+      record.bookId,
+      record.sourceId,
+      record.sourceUrl,
+      record.novelTitle,
+      record.lastChapterDownloaded,
+      record.totalChapters,
+      record.status,
+      record.lastCheckedAt,
+    ],
+  );
+
+  const row = db.getFirstSync<NovelDownloadRow>(
+    `SELECT * FROM novel_downloads WHERE id = ?`,
+    [result.lastInsertRowId],
+  );
+  return rowToNovelDownload(row!);
+}
+
+export function getNovelDownloadBySourceUrl(
+  db: SQLite.SQLiteDatabase,
+  sourceUrl: string,
+): NovelDownloadRecord | null {
+  const row = db.getFirstSync<NovelDownloadRow>(
+    `SELECT * FROM novel_downloads WHERE source_url = ?`,
+    [sourceUrl],
+  );
+  return row ? rowToNovelDownload(row) : null;
+}
+
+export function getNovelDownloadByBookId(
+  db: SQLite.SQLiteDatabase,
+  bookId: number,
+): NovelDownloadRecord | null {
+  const row = db.getFirstSync<NovelDownloadRow>(
+    `SELECT * FROM novel_downloads WHERE book_id = ?`,
+    [bookId],
+  );
+  return row ? rowToNovelDownload(row) : null;
+}
+
+export function getAllNovelDownloads(
+  db: SQLite.SQLiteDatabase,
+): NovelDownloadRecord[] {
+  const rows = db.getAllSync<NovelDownloadRow>(
+    `SELECT * FROM novel_downloads ORDER BY created_at DESC`,
+  );
+  return rows.map(rowToNovelDownload);
+}
+
+export function updateNovelDownload(
+  db: SQLite.SQLiteDatabase,
+  id: number,
+  updates: Partial<Pick<NovelDownloadRecord, 'bookId' | 'lastChapterDownloaded' | 'totalChapters' | 'status' | 'lastCheckedAt'>>,
+): void {
+  const fields: string[] = [];
+  const values: (string | number | null)[] = [];
+
+  if (updates.bookId !== undefined) {
+    fields.push('book_id = ?');
+    values.push(updates.bookId);
+  }
+  if (updates.lastChapterDownloaded !== undefined) {
+    fields.push('last_chapter_downloaded = ?');
+    values.push(updates.lastChapterDownloaded);
+  }
+  if (updates.totalChapters !== undefined) {
+    fields.push('total_chapters = ?');
+    values.push(updates.totalChapters);
+  }
+  if (updates.status !== undefined) {
+    fields.push('status = ?');
+    values.push(updates.status);
+  }
+  if (updates.lastCheckedAt !== undefined) {
+    fields.push('last_checked_at = ?');
+    values.push(updates.lastCheckedAt);
+  }
+
+  if (fields.length === 0) return;
+
+  values.push(id);
+  db.runSync(
+    `UPDATE novel_downloads SET ${fields.join(', ')} WHERE id = ?`,
+    values,
+  );
+}
+
+export function deleteNovelDownload(
+  db: SQLite.SQLiteDatabase,
+  id: number,
+): void {
+  db.runSync(`DELETE FROM novel_downloads WHERE id = ?`, [id]);
 }

@@ -33,6 +33,12 @@ export default function SettingsMenu() {
       route: '/(tabs)/settings/tts' as const,
     },
     {
+      title: 'Sources',
+      subtitle: 'Manage novel sources',
+      icon: 'globe-outline' as const,
+      route: '/(tabs)/settings/sources' as const,
+    },
+    {
       title: 'About',
       subtitle: 'App info and version',
       icon: 'information-circle-outline' as const,
@@ -52,7 +58,7 @@ export default function SettingsMenu() {
           {menuItems.map((item, index) => (
             <Pressable
               key={item.title}
-              onPress={() => router.push(item.route)}
+              onPress={() => router.push(item.route as any)}
               style={({ pressed }) => [
                 styles.menuItem,
                 {

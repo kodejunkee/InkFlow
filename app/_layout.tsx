@@ -77,6 +77,10 @@ export default function RootLayout() {
             name="highlights/[bookId]"
             options={{ animation: 'slide_from_bottom' }}
           />
+          <Stack.Screen
+            name="novel/[novelSlug]"
+            options={{ animation: 'slide_from_right' }}
+          />
         </Stack>
       </DatabaseContext.Provider>
     </GestureHandlerRootView>
