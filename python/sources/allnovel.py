@@ -58,10 +58,11 @@ def parse_search_results(html: str) -> list[dict]:
         soup = BeautifulSoup(html, "html.parser")
 
     # Primary selector: div.list-truyen rows (NOT list-novel)
+    # Primary selector: div.list-truyen rows inside the main column (avoid list-side sidebar)
     rows = (
-        soup.select("div.list-truyen .row")
-        or soup.select(".list.list-truyen .row")
-        or soup.select("div.list-novel .row")  # fallback
+        soup.select(".col-truyen-main div.list-truyen .row")
+        or soup.select(".col-truyen-main .list.list-truyen .row")
+        or soup.select("div.list-truyen .row")  # fallback
     )
 
     for row in rows:
@@ -271,11 +272,22 @@ def parse_chapter_list_page(html: str) -> list[dict]:
     Parse a single page of the chapter list.
 
     Actual HTML structure (verified 2025-05):
-      <ul class="l-chapters">
-        <li><a href="/slug/chapter-n.html" title="Chapter N Title">
-          <span class="chapter-text">Chapter N Title</span>
-        </a></li>
-      </ul>
+      <div id="list-chapter">
+        <div class="row">
+          <div class="col-xs-12 col-sm-6 col-md-6">
+            <ul class="list-chapter">
+              <li><a href="/slug/ch-n.html" title="...">
+                <span class="chapter-text">Chapter N Title</span>
+              </a></li>
+            </ul>
+          </div>
+          <div class="col-xs-12 col-sm-6 col-md-6">
+            <ul class="list-chapter">...</ul>
+          </div>
+        </div>
+      </div>
+
+    Note: ul.l-chapters is only the "Latest 5 chapters" sidebar!
 
     Returns:
         List of dicts: [{index, title, url}, ...]
@@ -289,12 +301,13 @@ def parse_chapter_list_page(html: str) -> list[dict]:
         from bs4 import BeautifulSoup
         soup = BeautifulSoup(html, "html.parser")
 
-    # Primary selector: ul.l-chapters li a
+    # The main chapter list lives inside #list-chapter > ul.list-chapter
+    # NOTE: ul.l-chapters is only the "Latest 5" sidebar — do NOT use it first!
     links = (
-        soup.select("ul.l-chapters li a")
-        or soup.select(".l-chapters li a")
-        or soup.select("ul.list-chapter li a")   # fallback
-        or soup.select("#list-chapter li a")      # fallback
+        soup.select("#list-chapter ul.list-chapter li a")  # primary: full list
+        or soup.select("ul.list-chapter li a")             # fallback
+        or soup.select("#list-chapter li a")               # fallback
+        or soup.select("ul.l-chapters li a")               # last resort (latest only)
     )
 
     for idx, link in enumerate(links):

@@ -34,6 +34,18 @@ def _get_source(source_id: str):
     if source_id in ("allnovel", "allnovel.org"):
         from sources import allnovel
         return allnovel
+    elif source_id in ("royalroad", "royalroad.com"):
+        from sources import royalroad
+        return royalroad
+    elif source_id in ("novelbin", "novelbin.me", "novelbin.com"):
+        from sources import novelbin
+        return novelbin
+    elif source_id in ("boxnovel", "boxnovel.com"):
+        from sources import boxnovel
+        return boxnovel
+    elif source_id in ("lightnovelpub", "lightnovelpub.com"):
+        from sources import lightnovelpub
+        return lightnovelpub
 
     raise ValueError(f"Unknown source: {source_id}")
 

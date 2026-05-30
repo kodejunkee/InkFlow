@@ -42,6 +42,14 @@ export function useDatabase(): UseDatabaseResult {
     try {
       const database = SQLite.openDatabaseSync(DB_NAME);
       runMigrations(database);
+      
+      // Cleanup for orphaned novel downloads from the previous deletion bug
+      try {
+        database.runSync(`DELETE FROM novel_downloads WHERE book_id IS NULL AND status = 'completed'`);
+      } catch (e) {
+        console.warn('Cleanup query failed (harmless):', e);
+      }
+      
       dbRef.current = database;
     } catch (e) {
       const err = e instanceof Error ? e : new Error(String(e));

@@ -24,7 +24,7 @@ import { useDB } from '../_layout';
 import { useSettingsStore } from '../../src/stores/settingsStore';
 import { useLibraryStore } from '../../src/stores/libraryStore';
 import { useBookImport } from '../../src/hooks/useBookImport';
-import { getBooks, deleteBook } from '../../src/database/queries';
+import { getBooks, deleteBook, deleteNovelDownloadByBookId } from '../../src/database/queries';
 import { deleteBookFiles } from '../../src/services/fileManager';
 import { getTheme } from '../../src/theme/themes';
 import { textStyles } from '../../src/theme/typography';
@@ -115,6 +115,7 @@ export default function LibraryScreen() {
   const confirmDelete = useCallback(() => {
     if (!bookToDelete || !db) return;
     try {
+      deleteNovelDownloadByBookId(db, bookToDelete.id);
       deleteBook(db, bookToDelete.id);
       deleteBookFiles(bookToDelete.id, bookToDelete.filePath, bookToDelete.coverUri);
       removeBooksAction(bookToDelete.id);

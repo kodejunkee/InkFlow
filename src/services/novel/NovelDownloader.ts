@@ -26,8 +26,8 @@ import { useNovelStore } from '../../stores/novelStore';
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
-/** Number of chapters to download per batch call to Python. */
-const BATCH_SIZE = 25;
+/** Number of chapters to download per batch call to Python. Keep small for smooth progress updates. */
+const BATCH_SIZE = 5;
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -96,9 +96,15 @@ export async function downloadNovel(options: DownloadOptions): Promise<number | 
 
   try {
     // ── 1. Create temp directory ─────────────────────────────────────
+    // FileSystem.*Directory returns file:// URIs but Python needs raw paths
+    const stripFileUri = (uri: string) => uri.replace(/^file:\/\//, '');
+
     const tempDir = `${FileSystem.cacheDirectory}novel_download_${Date.now()}/`;
     const chaptersDir = `${tempDir}chapters/`;
     await FileSystem.makeDirectoryAsync(chaptersDir, { intermediates: true });
+
+    // Raw paths for Python/native calls
+    const chaptersDirPath = stripFileUri(chaptersDir);
 
     // ── 2. Download chapters in batches ──────────────────────────────
     updateDownloadStatus('downloading');
@@ -117,7 +123,7 @@ export async function downloadNovel(options: DownloadOptions): Promise<number | 
         JSON.stringify(batch),
         cookies,
         userAgent,
-        chaptersDir,
+        chaptersDirPath,
       );
 
       downloaded += result.success;
@@ -147,10 +153,10 @@ export async function downloadNovel(options: DownloadOptions): Promise<number | 
           headers: {
             'User-Agent': userAgent,
             Cookie: cookies,
-            Referer: 'https://allnovel.org',
+            Referer: novel.sourceUrl,
           },
         });
-        coverPath = coverFile;
+        coverPath = stripFileUri(coverFile);
       } catch (e) {
         console.warn('[NovelDownloader] Cover download failed (non-fatal):', e);
       }
@@ -178,11 +184,13 @@ export async function downloadNovel(options: DownloadOptions): Promise<number | 
       language: 'en',
     });
 
+    const outputPathRaw = stripFileUri(outputPath);
+
     const epubResult = await generateNovelEpub(
-      chaptersDir,
+      chaptersDirPath,
       metadataJson,
       coverPath,
-      outputPath,
+      outputPathRaw,
     );
 
     if (!epubResult.success) {
@@ -194,7 +202,8 @@ export async function downloadNovel(options: DownloadOptions): Promise<number | 
     progress.status = 'importing';
     onProgress?.(progress);
 
-    const outputUri = `file://${outputPath}`;
+    // FileSystem.documentDirectory already starts with file://, ensure we don't double it
+    const outputUri = outputPath.startsWith('file://') ? outputPath : `file://${outputPath}`;
     const epubData = await processEpub(outputUri);
 
     // ── 6. Import into library ───────────────────────────────────────

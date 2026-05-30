@@ -17,6 +17,30 @@ const SOURCES: NovelSource[] = [
     baseUrl: 'https://allnovel.org',
     enabled: true,
   },
+  {
+    id: 'royalroad',
+    name: 'RoyalRoad',
+    baseUrl: 'https://www.royalroad.com',
+    enabled: true,
+  },
+  {
+    id: 'novelbin',
+    name: 'NovelBin',
+    baseUrl: 'https://novelbin.me',
+    enabled: true,
+  },
+  {
+    id: 'boxnovel',
+    name: 'BoxNovel',
+    baseUrl: 'https://boxnovel.com',
+    enabled: true,
+  },
+  {
+    id: 'lightnovelpub',
+    name: 'LightNovelPub',
+    baseUrl: 'https://www.lightnovelpub.com',
+    enabled: true,
+  },
 ];
 
 // ─── Public API ──────────────────────────────────────────────────────────────

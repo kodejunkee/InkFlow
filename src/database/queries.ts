@@ -568,3 +568,10 @@ export function deleteNovelDownload(
 ): void {
   db.runSync(`DELETE FROM novel_downloads WHERE id = ?`, [id]);
 }
+
+export function deleteNovelDownloadByBookId(
+  db: SQLite.SQLiteDatabase,
+  bookId: number,
+): void {
+  db.runSync(`DELETE FROM novel_downloads WHERE book_id = ?`, [bookId]);
+}
