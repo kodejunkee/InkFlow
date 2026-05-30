@@ -14,6 +14,10 @@ import { useDatabase } from '../src/hooks/useDatabase';
 import { useSettingsStore } from '../src/stores/settingsStore';
 import { getTheme } from '../src/theme/themes';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { configureReanimatedLogger, ReanimatedLogLevel } from 'react-native-reanimated';
+
+// Suppress harmless Reanimated strict-mode warnings from expo-router internals
+configureReanimatedLogger({ level: ReanimatedLogLevel.warn, strict: false });
 
 // Prevent the splash screen from auto-hiding
 SplashScreen.preventAutoHideAsync().catch(() => {});

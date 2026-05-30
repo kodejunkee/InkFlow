@@ -30,10 +30,23 @@ def parse_search_results(html: str) -> list[dict]:
     """
     Parse search results page HTML.
 
+    Actual HTML structure (verified 2025-05):
+      <div class="list list-truyen col-xs-12">
+        <div class="row">
+          <div class="col-xs-3"><img class="cover" src="..." alt="..."></div>
+          <div class="col-xs-7">
+            <h3 class="truyen-title"><a href="/slug.html">Title</a></h3>
+            <span class="author">Author</span>
+          </div>
+          <div class="col-xs-2 text-info">
+            <a href="/slug/chapter.html">Chapter N Title</a>
+          </div>
+        </div>
+      </div>
+
     Returns:
-        List of dicts, each containing:
-            title, author, coverUrl, sourceUrl, status,
-            latestChapter, description
+        List of dicts: {title, author, coverUrl, sourceUrl, status,
+                        latestChapter, description}
     """
     results = []
 
@@ -41,10 +54,15 @@ def parse_search_results(html: str) -> list[dict]:
         from bs4 import BeautifulSoup
         soup = BeautifulSoup(html, "lxml")
     except Exception:
-        return results
+        from bs4 import BeautifulSoup
+        soup = BeautifulSoup(html, "html.parser")
 
-    # Primary selector: div.list-novel rows
-    rows = soup.select("div.list-novel .row") or soup.select(".list.list-novel .row")
+    # Primary selector: div.list-truyen rows (NOT list-novel)
+    rows = (
+        soup.select("div.list-truyen .row")
+        or soup.select(".list.list-truyen .row")
+        or soup.select("div.list-novel .row")  # fallback
+    )
 
     for row in rows:
         try:
@@ -60,8 +78,9 @@ def parse_search_results(html: str) -> list[dict]:
 
             # ── Title & URL ──────────────────────────────────────────────
             title_el = (
-                row.select_one("h3.novel-title a")
-                or row.select_one(".novel-title a")
+                row.select_one("h3.truyen-title a")
+                or row.select_one(".truyen-title a")
+                or row.select_one("h3.novel-title a")
                 or row.select_one("h3 a")
             )
             if title_el:
@@ -70,7 +89,12 @@ def parse_search_results(html: str) -> list[dict]:
                 entry["sourceUrl"] = urljoin(BASE_URL, href)
 
             # ── Cover image ──────────────────────────────────────────────
-            cover_el = row.select_one(".cover img") or row.select_one("img")
+            # Actual: <img class="cover" src="...">  (class is ON the img)
+            cover_el = (
+                row.select_one("img.cover")
+                or row.select_one(".cover img")
+                or row.select_one("img")
+            )
             if cover_el:
                 entry["coverUrl"] = cover_el.get("src", "") or cover_el.get("data-src", "")
                 if entry["coverUrl"] and not entry["coverUrl"].startswith("http"):
@@ -82,13 +106,20 @@ def parse_search_results(html: str) -> list[dict]:
                 entry["author"] = author_el.get_text(strip=True)
 
             # ── Latest chapter ───────────────────────────────────────────
-            chapter_el = row.select_one(".text-info a") or row.select_one(".latest-chapter a")
+            chapter_el = (
+                row.select_one(".text-info a")
+                or row.select_one(".col-xs-2 a")
+                or row.select_one(".latest-chapter a")
+            )
             if chapter_el:
                 entry["latestChapter"] = chapter_el.get_text(strip=True)
 
             # ── Status ───────────────────────────────────────────────────
-            # Sometimes indicated by a badge or label element
-            status_el = row.select_one(".label-status") or row.select_one(".status")
+            status_el = (
+                row.select_one(".label-status")
+                or row.select_one(".label-hot")
+                or row.select_one(".status")
+            )
             if status_el:
                 entry["status"] = status_el.get_text(strip=True)
 
@@ -113,13 +144,16 @@ def parse_novel_details(html: str, url: str) -> dict:
     """
     Parse a novel detail page.
 
-    Args:
-        html: Raw HTML of the novel detail page.
-        url:  The URL of the page (used as sourceUrl).
-
-    Returns:
-        Dict with: title, author, coverUrl, description, status,
-                   genres, sourceUrl, totalChapters, chapters
+    Actual HTML structure (verified 2025-05):
+      <h3 class="title">TITLE</h3>
+      <div class="book"><img src="..." alt="..."></div>
+      <div class="info">
+        <div><h3>Author:</h3><a href="/author/...">Name</a></div>
+        <div><h3>Genre:</h3><a>Action</a>, <a>Fantasy</a></div>
+        <div><h3>Status:</h3><a href="/status/Ongoing">Ongoing</a></div>
+      </div>
+      <div class="desc-text">Description text...</div>
+      <ul class="l-chapters"><li><a href="...">Chapter N Title</a></li></ul>
     """
     details = {
         "title": "",
@@ -137,7 +171,8 @@ def parse_novel_details(html: str, url: str) -> dict:
         from bs4 import BeautifulSoup
         soup = BeautifulSoup(html, "lxml")
     except Exception:
-        return details
+        from bs4 import BeautifulSoup
+        soup = BeautifulSoup(html, "html.parser")
 
     # ── Title ─────────────────────────────────────────────────────────────
     try:
@@ -153,10 +188,11 @@ def parse_novel_details(html: str, url: str) -> dict:
 
     # ── Cover ─────────────────────────────────────────────────────────────
     try:
+        # Actual: <div class="book"><img src="..." alt="..."></div>
         cover_el = (
             soup.select_one("div.book img")
-            or soup.select_one(".info-holder .book img")
             or soup.select_one(".books .book img")
+            or soup.select_one(".info-holder .book img")
         )
         if cover_el:
             src = cover_el.get("src", "") or cover_el.get("data-src", "")
@@ -167,7 +203,12 @@ def parse_novel_details(html: str, url: str) -> dict:
 
     # ── Info block (Author, Status, Genre) ────────────────────────────────
     try:
-        info_divs = soup.select(".info-holder .info div") or soup.select(".info div")
+        # Actual: <div class="info"><div><h3>Label:</h3>value</div>...</div>
+        info_el = soup.select_one("div.info")
+        if info_el:
+            info_divs = info_el.find_all("div", recursive=False)
+        else:
+            info_divs = soup.select(".info div")
 
         for div in info_divs:
             heading = div.find(["h3", "strong", "b", "label"])
@@ -180,7 +221,6 @@ def parse_novel_details(html: str, url: str) -> dict:
                 if author_link:
                     details["author"] = author_link.get_text(strip=True)
                 else:
-                    # Fallback: text after the heading
                     text = div.get_text(strip=True)
                     text = text.replace(heading.get_text(strip=True), "").strip()
                     if text:
@@ -208,7 +248,6 @@ def parse_novel_details(html: str, url: str) -> dict:
         if desc_el:
             details["description"] = desc_el.get_text(strip=True)
         else:
-            # Fallback: look for a <div> with itemprop="description"
             desc_el = soup.find(attrs={"itemprop": "description"})
             if desc_el:
                 details["description"] = desc_el.get_text(strip=True)
@@ -231,9 +270,15 @@ def parse_chapter_list_page(html: str) -> list[dict]:
     """
     Parse a single page of the chapter list.
 
+    Actual HTML structure (verified 2025-05):
+      <ul class="l-chapters">
+        <li><a href="/slug/chapter-n.html" title="Chapter N Title">
+          <span class="chapter-text">Chapter N Title</span>
+        </a></li>
+      </ul>
+
     Returns:
         List of dicts: [{index, title, url}, ...]
-        Index is zero-based within this page; the caller re-indexes globally.
     """
     chapters = []
 
@@ -241,13 +286,15 @@ def parse_chapter_list_page(html: str) -> list[dict]:
         from bs4 import BeautifulSoup
         soup = BeautifulSoup(html, "lxml")
     except Exception:
-        return chapters
+        from bs4 import BeautifulSoup
+        soup = BeautifulSoup(html, "html.parser")
 
-    # Primary selector: ul.list-chapter li a
+    # Primary selector: ul.l-chapters li a
     links = (
-        soup.select("ul.list-chapter li a")
-        or soup.select(".list-chapter li a")
-        or soup.select("#list-chapter li a")
+        soup.select("ul.l-chapters li a")
+        or soup.select(".l-chapters li a")
+        or soup.select("ul.list-chapter li a")   # fallback
+        or soup.select("#list-chapter li a")      # fallback
     )
 
     for idx, link in enumerate(links):
@@ -270,17 +317,22 @@ def get_last_page_number(html: str) -> int:
     """
     Extract the total number of chapter-list pages from pagination links.
 
-    Returns:
-        The last page number (1 if no pagination found).
+    Actual: <ul class="pagination pagination-sm">
+              <li><a href="/slug.html?page=2">2</a></li> ...
+            </ul>
     """
     try:
         from bs4 import BeautifulSoup
         soup = BeautifulSoup(html, "lxml")
     except Exception:
-        return 1
+        from bs4 import BeautifulSoup
+        soup = BeautifulSoup(html, "html.parser")
 
     try:
-        pagination_links = soup.select(".pagination li a") or soup.select("ul.pagination a")
+        pagination_links = (
+            soup.select(".pagination li a")
+            or soup.select("ul.pagination a")
+        )
 
         max_page = 1
         for link in pagination_links:
@@ -292,7 +344,7 @@ def get_last_page_number(html: str) -> int:
                 page_num = int(match.group(1))
                 max_page = max(max_page, page_num)
 
-            # Also check the link text for "Last" / "»" with page number
+            # Also check the link text for page numbers
             text = link.get_text(strip=True)
             if text.isdigit():
                 max_page = max(max_page, int(text))
@@ -308,6 +360,16 @@ def parse_chapter_content(html: str) -> dict:
     """
     Parse chapter page HTML and extract reading content.
 
+    Actual HTML structure (verified 2025-05):
+      <div id="chapter" class="chapter container">
+        <a class="truyen-title" href="/slug.html">Novel Title</a>
+        <h2><a class="chapter-title" href="...">Chapter N Title</a></h2>
+        <hr class="chapter-start">
+        <div id="chapter-content" class="chapter-c">
+          <p>Chapter text here...</p>
+        </div>
+      </div>
+
     Returns:
         Dict with: title, content (cleaned HTML string)
     """
@@ -317,12 +379,14 @@ def parse_chapter_content(html: str) -> dict:
         from bs4 import BeautifulSoup
         soup = BeautifulSoup(html, "lxml")
     except Exception:
-        return result
+        from bs4 import BeautifulSoup
+        soup = BeautifulSoup(html, "html.parser")
 
     # ── Chapter title ─────────────────────────────────────────────────────
     try:
         title_el = (
-            soup.select_one(".chr-title")
+            soup.select_one("a.chapter-title")
+            or soup.select_one(".chapter-title")
             or soup.select_one("a.chr-title")
             or soup.select_one("h2")
             or soup.select_one("h1")
@@ -335,11 +399,12 @@ def parse_chapter_content(html: str) -> dict:
     # ── Chapter body ──────────────────────────────────────────────────────
     try:
         content_el = (
-            soup.select_one("#chr-content")
+            soup.select_one("#chapter-content")
+            or soup.select_one(".chapter-c")
+            or soup.select_one("#chr-content")
             or soup.select_one(".chr-c")
             or soup.select_one(".chr-text")
-            or soup.select_one("#chapter-content")
-            or soup.select_one(".chapter-content")
+            or soup.select_one("#chapter-c")
         )
 
         if content_el:

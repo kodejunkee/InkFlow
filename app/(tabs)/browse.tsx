@@ -16,6 +16,7 @@ import {
   Pressable,
   Keyboard,
   Platform,
+  Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
@@ -45,6 +46,7 @@ function BrowseScreen() {
   const setSearchQuery = useNovelStore((s) => s.setSearchQuery);
 
   const [localQuery, setLocalQuery] = useState(searchQuery);
+  const [searchError, setSearchError] = useState<string | null>(null);
   const inputRef = useRef<TextInput>(null);
 
   const handleSearch = useCallback(async () => {
@@ -54,6 +56,7 @@ function BrowseScreen() {
     Keyboard.dismiss();
     setSearchQuery(query);
     setSearching(true);
+    setSearchError(null);
 
     try {
       const sources = getEnabledSources();
@@ -69,8 +72,11 @@ function BrowseScreen() {
       );
       setSearchResults(results);
     } catch (e) {
-      console.error('[Browse] Search failed:', e);
+      const msg = e instanceof Error ? e.message : String(e);
+      console.error('[Browse] Search failed:', msg);
+      setSearchError(msg);
       setSearchResults([]);
+      Alert.alert('Search Error', msg);
     } finally {
       setSearching(false);
     }
@@ -167,7 +173,7 @@ function BrowseScreen() {
             returnKeyType="search"
             autoCapitalize="none"
             autoCorrect={false}
-            editable={cookieStatus === 'ready'}
+            editable={true}
           />
           {localQuery.length > 0 && (
             <Pressable onPress={() => setLocalQuery('')} hitSlop={8}>
@@ -195,13 +201,32 @@ function BrowseScreen() {
         />
       ) : searchQuery ? (
         <View style={styles.centered}>
-          <Ionicons name="search-outline" size={48} color={theme.textTertiary} />
+          <Ionicons
+            name={searchError ? 'alert-circle-outline' : 'search-outline'}
+            size={48}
+            color={searchError ? '#EF5350' : theme.textTertiary}
+          />
           <Text style={[textStyles.body, { color: theme.textSecondary, marginTop: 12 }]}>
-            No results found
+            {searchError ? 'Search failed' : 'No results found'}
           </Text>
-          <Text style={[textStyles.caption, { color: theme.textTertiary, marginTop: 4 }]}>
-            Try a different search term
+          <Text
+            style={[
+              textStyles.caption,
+              { color: theme.textTertiary, marginTop: 4, textAlign: 'center', paddingHorizontal: 32 },
+            ]}
+          >
+            {searchError || 'Try a different search term'}
           </Text>
+          {searchError && (
+            <Pressable
+              onPress={handleSearch}
+              style={{ marginTop: 12, paddingHorizontal: 16, paddingVertical: 8, borderRadius: 8, backgroundColor: theme.primary }}
+            >
+              <Text style={[textStyles.caption, { color: '#fff', fontWeight: '600' }]}>
+                Retry
+              </Text>
+            </Pressable>
+          )}
         </View>
       ) : (
         <View style={styles.centered}>
@@ -215,9 +240,7 @@ function BrowseScreen() {
               { color: theme.textTertiary, marginTop: 6, textAlign: 'center', paddingHorizontal: 40 },
             ]}
           >
-            {cookieStatus === 'ready'
-              ? 'Find thousands of web novels to read offline'
-              : 'Establishing connection to source…'}
+            Find thousands of web novels to read offline
           </Text>
         </View>
       )}
