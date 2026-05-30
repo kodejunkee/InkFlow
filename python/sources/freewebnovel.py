@@ -1,28 +1,28 @@
 """
-InkFlow Light Novel Pub Source Parser (.me)
+InkFlow FreeWebNovel Source Parser
 
 URL Patterns:
-  - Search (POST): https://lightnovelpub.me/search/
-  - Novel:         https://lightnovelpub.me/book/{slug}
-  - Chapter:       https://lightnovelpub.me/book/{slug}/{chapter}
+  - Search (GET):  https://freewebnovel.com/search?searchkey={query}
+  - Novel:         https://freewebnovel.com/novel/{slug}
+  - Chapter:       https://freewebnovel.com/novel/{slug}/chapter-{num}
 """
 
 import re
 from urllib.parse import urljoin
 
-BASE_URL = "https://lightnovelpub.me"
+BASE_URL = "https://freewebnovel.com"
 
 def perform_search(session, query: str) -> list[dict]:
-    search_url = f"{BASE_URL}/search/"
-    # LNP uses POST with searchkey
-    data = {"searchkey": query}
+    search_url = f"{BASE_URL}/search"
+    # FNW uses GET with searchkey
+    params = {"searchkey": query}
     try:
-        response = session.post(search_url, data=data, timeout=30)
+        response = session.get(search_url, params=params, timeout=30)
         response.raise_for_status()
         return parse_search_results(response.text)
     except Exception as e:
         import logging
-        logging.getLogger("novel_scraper").error("LNP search POST failed: %s", e)
+        logging.getLogger("novel_scraper").error("FNW search GET failed: %s", e)
         return []
 
 def parse_search_results(html: str) -> list[dict]:
@@ -58,8 +58,6 @@ def parse_search_results(html: str) -> list[dict]:
             if cover_el:
                 entry["coverUrl"] = urljoin(BASE_URL, cover_el.get("src", ""))
 
-            # Author not directly in search result item, sometimes under genres or hidden
-            # latestChapter
             chapter_el = row.select_one("a.chapter span.s1")
             if chapter_el:
                 entry["latestChapter"] = chapter_el.get_text(strip=True)
@@ -90,28 +88,29 @@ def parse_novel_details(html: str, url: str) -> dict:
         soup = BeautifulSoup(html, "html.parser")
 
     try:
-        title_el = soup.select_one(".m-desc h1.tit") or soup.select_one(".novel-title")
+        title_el = soup.select_one(".m-desc h1.tit")
         if title_el:
             details["title"] = title_el.get_text(strip=True)
     except Exception:
         pass
 
     try:
-        cover_el = soup.select_one(".m-imgtxt .pic img") or soup.select_one(".novel-cover img")
+        # Cover might be in a different element, but we can try to find the main image
+        cover_el = soup.select_one(".pic img")
         if cover_el:
             details["coverUrl"] = urljoin(BASE_URL, cover_el.get("src", ""))
     except Exception:
         pass
 
     try:
-        author_el = soup.select_one(".m-imgtxt .txt .item a[href*='/author/']")
+        author_el = soup.select_one(".m-desc .txt .item a[href*='/author/']") or soup.select_one("a[href*='/author/']")
         if author_el:
             details["author"] = author_el.get_text(strip=True)
     except Exception:
         pass
 
     try:
-        desc_el = soup.select_one(".m-desc .txt .inner") or soup.select_one(".summary .content")
+        desc_el = soup.select_one(".m-desc .txt .inner")
         if desc_el:
             details["description"] = desc_el.get_text(strip=True)
     except Exception:
@@ -134,7 +133,7 @@ def parse_chapter_list_page(html: str) -> list[dict]:
         from bs4 import BeautifulSoup
         soup = BeautifulSoup(html, "html.parser")
 
-    links = soup.select(".m-newest2 ul.ul-list5 li a") or soup.select(".list-chapter li a")
+    links = soup.select("#idData li a") or soup.select(".m-newest2 ul.ul-list5 li a")
     
     for idx, link in enumerate(links):
         try:
@@ -150,29 +149,6 @@ def parse_chapter_list_page(html: str) -> list[dict]:
             continue
     return chapters
 
-def get_last_page_number(html: str) -> int:
-    try:
-        from bs4 import BeautifulSoup
-        soup = BeautifulSoup(html, "lxml")
-    except Exception:
-        from bs4 import BeautifulSoup
-        soup = BeautifulSoup(html, "html.parser")
-
-    try:
-        pagination_links = soup.select("ul.pagination li a")
-        max_page = 1
-        for link in pagination_links:
-            href = link.get("href", "")
-            match = re.search(r"[?&]page=(\d+)", href)
-            if match:
-                max_page = max(max_page, int(match.group(1)))
-            text = link.get_text(strip=True)
-            if text.isdigit():
-                max_page = max(max_page, int(text))
-        return max_page
-    except Exception:
-        return 1
-
 def parse_chapter_content(html: str) -> dict:
     result = {"title": "", "content": ""}
     try:
@@ -183,19 +159,26 @@ def parse_chapter_content(html: str) -> dict:
         soup = BeautifulSoup(html, "html.parser")
 
     try:
-        title_el = soup.select_one(".chapter-title") or soup.select_one("h2")
+        title_el = soup.select_one("h1.tit") or soup.select_one(".chapter-title")
         if title_el:
             result["title"] = title_el.get_text(strip=True)
     except Exception:
         pass
 
     try:
-        content_el = soup.select_one("#chapter-content") or soup.select_one("#chr-content")
+        content_el = soup.select_one("div.txt") or soup.select_one("#article")
         if content_el:
-            for junk in content_el.find_all(["script", "style", "iframe"]):
-                junk.decompose()
+            for junk in content_el.find_all(["script", "style", "iframe", "div", "a"]):
+                if junk.name == "div" and "class" in junk.attrs and "notice" in junk.attrs["class"]:
+                    junk.decompose()
+                elif junk.name in ["script", "style", "iframe"]:
+                    junk.decompose()
             result["content"] = str(content_el)
     except Exception:
         pass
 
     return result
+
+def get_last_page_number(html: str) -> int:
+    # All chapters are typically loaded on the main novel page or a single chapter list page.
+    return 1

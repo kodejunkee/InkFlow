@@ -60,7 +60,7 @@ interface DownloadOptions {
 export async function downloadNovel(options: DownloadOptions): Promise<number | null> {
   const { db, novel, cookies, userAgent, startFromChapter = 0, onProgress } = options;
 
-  const { setActiveDownload, updateDownloadProgress, updateDownloadStatus } =
+  const { addDownload, updateDownloadProgress, updateDownloadStatus, removeDownload } =
     useNovelStore.getState();
 
   // Initialize progress
@@ -70,8 +70,9 @@ export async function downloadNovel(options: DownloadOptions): Promise<number | 
     currentChapter: 0,
     totalChapters: novel.totalChapters,
     status: 'pending',
+    coverUrl: novel.coverUrl,
   };
-  setActiveDownload(progress);
+  addDownload(novel.sourceUrl, progress);
   onProgress?.(progress);
 
   // Create or update download record
@@ -107,7 +108,7 @@ export async function downloadNovel(options: DownloadOptions): Promise<number | 
     const chaptersDirPath = stripFileUri(chaptersDir);
 
     // ── 2. Download chapters in batches ──────────────────────────────
-    updateDownloadStatus('downloading');
+    updateDownloadStatus(novel.sourceUrl, 'downloading');
     progress.status = 'downloading';
     onProgress?.(progress);
 
@@ -128,7 +129,7 @@ export async function downloadNovel(options: DownloadOptions): Promise<number | 
 
       downloaded += result.success;
       progress.currentChapter = startFromChapter + downloaded;
-      updateDownloadProgress(progress.currentChapter, progress.totalChapters);
+      updateDownloadProgress(novel.sourceUrl, progress.currentChapter, progress.totalChapters);
       onProgress?.(progress);
 
       // Update the download record after each batch
@@ -163,7 +164,7 @@ export async function downloadNovel(options: DownloadOptions): Promise<number | 
     }
 
     // ── 4. Generate EPUB ─────────────────────────────────────────────
-    updateDownloadStatus('generating_epub');
+    updateDownloadStatus(novel.sourceUrl, 'generating_epub');
     progress.status = 'generating_epub';
     onProgress?.(progress);
 
@@ -197,8 +198,8 @@ export async function downloadNovel(options: DownloadOptions): Promise<number | 
       throw new Error(epubResult.error || 'EPUB generation failed');
     }
 
-    // ── 5. Process generated EPUB ────────────────────────────────────
-    updateDownloadStatus('importing');
+    // ── 5. Import into library ───────────────────────────────────────
+    updateDownloadStatus(novel.sourceUrl, 'importing');
     progress.status = 'importing';
     onProgress?.(progress);
 
@@ -257,17 +258,21 @@ export async function downloadNovel(options: DownloadOptions): Promise<number | 
       console.warn('[NovelDownloader] Temp cleanup failed (non-fatal):', e);
     }
 
-    // ── Done! ────────────────────────────────────────────────────────
-    updateDownloadStatus('completed');
+    // ── 6. Cleanup & Complete ────────────────────────────────────────
+    updateDownloadStatus(novel.sourceUrl, 'completed');
     progress.status = 'completed';
     onProgress?.(progress);
 
-    return insertedBook.id;
-  } catch (e) {
-    const errorMsg = e instanceof Error ? e.message : String(e);
-    console.error('[NovelDownloader] Download failed:', errorMsg);
+    // Remove from active downloads queue after a short delay so UI shows completion
+    setTimeout(() => {
+      removeDownload(novel.sourceUrl);
+    }, 2000);
 
-    updateDownloadStatus('failed', errorMsg);
+    return insertedBook.id;
+  } catch (error) {
+    console.error('[NovelDownloader] Error downloading novel:', error);
+    const errorMsg = error instanceof Error ? error.message : 'Unknown error';
+    updateDownloadStatus(novel.sourceUrl, 'failed', errorMsg);
     progress.status = 'failed';
     progress.error = errorMsg;
     onProgress?.(progress);

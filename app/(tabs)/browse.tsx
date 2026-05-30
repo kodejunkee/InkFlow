@@ -17,6 +17,7 @@ import {
   Platform,
   Alert,
   FlatList,
+  Animated,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
@@ -35,6 +36,43 @@ import type { NovelSearchResult, NovelSource } from '../../src/types/novel';
 
 // ─── Inner Screen ───────────────────────────────────────
 
+const SkeletonSourceRow = () => {
+  const theme = getTheme(useSettingsStore((s) => s.theme));
+  const pulseAnim = useRef(new Animated.Value(0.4)).current;
+
+  useEffect(() => {
+    const anim = Animated.loop(
+      Animated.sequence([
+        Animated.timing(pulseAnim, { toValue: 0.8, duration: 800, useNativeDriver: true }),
+        Animated.timing(pulseAnim, { toValue: 0.4, duration: 800, useNativeDriver: true })
+      ])
+    );
+    anim.start();
+    return () => anim.stop();
+  }, [pulseAnim]);
+
+  return (
+    <View style={{ flexDirection: 'row', paddingHorizontal: 16 }}>
+      {[1, 2, 3, 4].map((key) => (
+        <View key={key} style={{ width: 105, marginRight: 12 }}>
+          <Animated.View style={{ 
+            width: 105, height: 155, borderRadius: 8, 
+            backgroundColor: theme.surfaceElevated, opacity: pulseAnim, marginBottom: 6 
+          }} />
+          <Animated.View style={{ 
+            width: '80%', height: 14, borderRadius: 4, 
+            backgroundColor: theme.surfaceElevated, opacity: pulseAnim, marginBottom: 4 
+          }} />
+          <Animated.View style={{ 
+            width: '60%', height: 14, borderRadius: 4, 
+            backgroundColor: theme.surfaceElevated, opacity: pulseAnim 
+          }} />
+        </View>
+      ))}
+    </View>
+  );
+};
+
 export default function BrowseScreen() {
   const router = useRouter();
   const theme = getTheme(useSettingsStore((s) => s.theme));
@@ -52,6 +90,7 @@ export default function BrowseScreen() {
   const [searchError, setSearchError] = useState<string | null>(null);
   const [sourceErrors, setSourceErrors] = useState<Record<string, boolean>>({});
   const [bypassingSource, setBypassingSource] = useState<NovelSource | null>(null);
+  const [resolvedSourcesCount, setResolvedSourcesCount] = useState(0);
   
   const inputRef = useRef<TextInput>(null);
 
@@ -65,6 +104,8 @@ export default function BrowseScreen() {
     }));
   }, [searchResults, searchQuery]);
 
+  const appendSearchResults = useNovelStore((s) => s.appendSearchResults);
+
   const handleSearch = useCallback(async () => {
     const query = localQuery.trim();
     if (!query) return;
@@ -74,6 +115,8 @@ export default function BrowseScreen() {
     setSearching(true);
     setSearchError(null);
     setSourceErrors({});
+    setSearchResults([]); // Clear old results
+    setResolvedSourcesCount(0); // Reset count
 
     try {
       const sources = getEnabledSources();
@@ -81,32 +124,35 @@ export default function BrowseScreen() {
         throw new Error('No enabled sources');
       }
 
-      // Search all enabled sources in parallel
+      // Search all enabled sources in parallel, appending results as they finish
       const searchPromises = sources.map((source) => {
         const cookieData = getCookies(source.baseUrl);
         const cookies = cookieData?.cookies || '';
         const userAgent = cookieData?.userAgent || DEFAULT_USER_AGENT;
         
-        return searchNovels(source.id, query, cookies, userAgent).catch((e) => {
-          console.log(`[Browse] Search failed for source ${source.id} (likely Cloudflare):`, e);
-          setSourceErrors((prev) => ({ ...prev, [source.id]: true }));
-          return []; // Return empty array on failure for a specific source
-        });
+        return searchNovels(source.id, query, cookies, userAgent)
+          .then((results) => {
+            appendSearchResults(results);
+          })
+          .catch((e) => {
+            console.log(`[Browse] Search failed for source ${source.id} (likely Cloudflare):`, e);
+            setSourceErrors((prev) => ({ ...prev, [source.id]: true }));
+          })
+          .finally(() => {
+            setResolvedSourcesCount((prev) => prev + 1);
+          });
       });
       
-      const resultsArray = await Promise.all(searchPromises);
-      const results = resultsArray.flat();
-      setSearchResults(results);
+      await Promise.allSettled(searchPromises);
     } catch (e) {
       const msg = e instanceof Error ? e.message : String(e);
       console.error('[Browse] Search failed:', msg);
       setSearchError(msg);
-      setSearchResults([]);
       Alert.alert('Search Error', msg);
     } finally {
       setSearching(false);
     }
-  }, [localQuery, getCookies, setSearchQuery, setSearching, setSearchResults]);
+  }, [localQuery, getCookies, setSearchQuery, setSearching, setSearchResults, appendSearchResults]);
 
   const handleNovelPress = useCallback(
     (result: NovelSearchResult) => {
@@ -159,6 +205,10 @@ export default function BrowseScreen() {
               </Text>
             </Pressable>
           </View>
+        ) : isSearching ? (
+          <View style={{ paddingVertical: 4, overflow: 'hidden' }}>
+            <SkeletonSourceRow />
+          </View>
         ) : (
           <View style={{ paddingHorizontal: 16, paddingVertical: 12, opacity: 0.5 }}>
             <Text style={[textStyles.caption, { color: theme.textSecondary }]}>No results found.</Text>
@@ -166,7 +216,7 @@ export default function BrowseScreen() {
         )}
       </View>
     ),
-    [handleNovelPress, theme, sourceErrors]
+    [handleNovelPress, theme, sourceErrors, isSearching]
   );
 
   return (
@@ -219,15 +269,15 @@ export default function BrowseScreen() {
         </View>
       </View>
 
-      {/* Content */}
-      {isSearching ? (
+      {/* Main Content */}
+      {isSearching && resolvedSourcesCount === 0 ? (
         <View style={styles.centered}>
           <ActivityIndicator size="large" color={theme.primary} />
           <Text style={[textStyles.caption, { color: theme.textSecondary, marginTop: 12 }]}>
             Searching…
           </Text>
         </View>
-      ) : searchResults.length > 0 ? (
+      ) : isSearching || searchResults.length > 0 || Object.keys(sourceErrors).length > 0 ? (
         <FlatList
           data={groupedResults}
           renderItem={renderSourceGroup}

@@ -1,10 +1,12 @@
 import { create } from 'zustand';
 import type { Book } from '../types/book';
+import type { NovelDownloadRecord } from '../types/novel';
 
 // ─── State shape ─────────────────────────────────────────────────────────────
 
 interface LibraryState {
   books: Book[];
+  downloads: NovelDownloadRecord[];
   isLoading: boolean;
   isImporting: boolean;
   /** Import progress 0.0 – 1.0, meaningful only while `isImporting` is true. */
@@ -14,6 +16,7 @@ interface LibraryState {
 interface LibraryActions {
   /** Replace the entire book list (typically after loading from DB). */
   loadBooks: (books: Book[]) => void;
+  loadDownloads: (downloads: NovelDownloadRecord[]) => void;
   /** Prepend a newly imported book to the list. */
   addBook: (book: Book) => void;
   /** Remove a book by ID. */
@@ -34,11 +37,13 @@ type LibraryStore = LibraryState & LibraryActions;
 
 export const useLibraryStore = create<LibraryStore>()((set) => ({
   books: [],
+  downloads: [],
   isLoading: false,
   isImporting: false,
   importProgress: 0,
 
   loadBooks: (books) => set({ books, isLoading: false }),
+  loadDownloads: (downloads) => set({ downloads }),
 
   addBook: (book) =>
     set((state) => ({

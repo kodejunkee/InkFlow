@@ -1,5 +1,6 @@
 import React, { useRef, useCallback, useState, useEffect } from 'react';
-import { View, StyleSheet, Modal, SafeAreaView, Pressable, Text, ActivityIndicator } from 'react-native';
+import { View, StyleSheet, Modal, Pressable, Text, ActivityIndicator } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { WebView, type WebViewNavigation } from 'react-native-webview';
 import { Ionicons } from '@expo/vector-icons';
 import { useSettingsStore } from '../../stores/settingsStore';
@@ -31,6 +32,9 @@ export default function CloudflareBypasser({ url, visible, onCookiesReady, onClo
   const webViewRef = useRef<WebView>(null);
   const theme = getTheme(useSettingsStore((s) => s.theme));
   const [loading, setLoading] = useState(true);
+  
+  const latestCookies = useRef<string>('');
+  const latestUserAgent = useRef<string>(DEFAULT_USER_AGENT);
 
   // When url changes, reset loading
   useEffect(() => {
@@ -48,9 +52,12 @@ export default function CloudflareBypasser({ url, visible, onCookiesReady, onClo
     (event: { nativeEvent: { data: string } }) => {
       try {
         const data = JSON.parse(event.nativeEvent.data);
-        if (data.type === 'cookies' && data.cookies) {
-          // If we got cf_clearance, we solved it!
-          if (data.cookies.includes('cf_clearance')) {
+        if (data.type === 'cookies') {
+          latestCookies.current = data.cookies || '';
+          latestUserAgent.current = data.userAgent || DEFAULT_USER_AGENT;
+          
+          // Still auto-close if we specifically see cf_clearance
+          if (data.cookies && data.cookies.includes('cf_clearance')) {
             onCookiesReady(data.cookies, data.userAgent);
           }
         }
@@ -60,6 +67,10 @@ export default function CloudflareBypasser({ url, visible, onCookiesReady, onClo
     },
     [onCookiesReady],
   );
+
+  const handleDone = useCallback(() => {
+    onCookiesReady(latestCookies.current, latestUserAgent.current);
+  }, [onCookiesReady]);
 
   const handleNavigationStateChange = useCallback(
     (navState: WebViewNavigation) => {
@@ -78,12 +89,22 @@ export default function CloudflareBypasser({ url, visible, onCookiesReady, onClo
       <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
         <View style={[styles.header, { borderBottomColor: theme.border }]}>
           <Pressable onPress={onClose} style={styles.closeBtn}>
-            <Ionicons name="close" size={24} color={theme.textPrimary} />
+            <Text style={[textStyles.body, { color: theme.textSecondary }]}>Cancel</Text>
           </Pressable>
-          <Text style={[textStyles.body, { color: theme.textPrimary, flex: 1, textAlign: 'center' }]} numberOfLines={1}>
-            Cloudflare Verification
+          <Text style={[textStyles.body, { color: theme.textPrimary, flex: 1, textAlign: 'center', fontWeight: '600' }]} numberOfLines={1}>
+            Verification
           </Text>
-          <View style={{ width: 40 }} />
+          <Pressable onPress={handleDone} style={styles.doneBtn}>
+            <Text style={[textStyles.body, { color: theme.primary, fontWeight: 'bold' }]}>Done</Text>
+          </Pressable>
+        </View>
+        
+        {/* Instruction Banner */}
+        <View style={{ backgroundColor: theme.primary + '15', paddingVertical: 10, paddingHorizontal: 16, flexDirection: 'row', alignItems: 'center' }}>
+          <Ionicons name="information-circle" size={20} color={theme.primary} style={{ marginRight: 8 }} />
+          <Text style={[textStyles.caption, { color: theme.primary, flex: 1 }]}>
+            Solve any captchas. Once the site fully loads, tap "Done" to continue.
+          </Text>
         </View>
         <View style={styles.webviewContainer}>
           {loading && (
@@ -120,13 +141,22 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
     height: 56,
     borderBottomWidth: 1,
+    paddingHorizontal: 8,
   },
   closeBtn: {
     padding: 8,
-    width: 40,
+    justifyContent: 'center',
     alignItems: 'center',
+    minWidth: 60,
+  },
+  doneBtn: {
+    padding: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+    minWidth: 60,
   },
   webviewContainer: {
     flex: 1,
@@ -135,7 +165,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   loadingOverlay: {
-    ...StyleSheet.absoluteFillObject,
+    ...(StyleSheet.absoluteFill as any),
     justifyContent: 'center',
     alignItems: 'center',
     zIndex: 10,

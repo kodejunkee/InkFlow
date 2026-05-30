@@ -15,6 +15,7 @@ interface BookGridProps {
   onBookPress: (bookId: number) => void;
   onBookLongPress?: (bookId: number) => void;
   ListHeaderComponent?: React.ReactElement;
+  ListEmptyComponent?: React.ReactElement;
   refreshing?: boolean;
   onRefresh?: () => void;
 }
@@ -24,6 +25,7 @@ export function BookGrid({
   onBookPress,
   onBookLongPress,
   ListHeaderComponent,
+  ListEmptyComponent,
   refreshing,
   onRefresh,
 }: BookGridProps) {
@@ -53,6 +55,7 @@ export function BookGrid({
       columnWrapperStyle={styles.columnWrapper}
       showsVerticalScrollIndicator={false}
       ListHeaderComponent={ListHeaderComponent}
+      ListEmptyComponent={ListEmptyComponent}
       refreshing={refreshing}
       onRefresh={onRefresh}
       // Performance optimizations

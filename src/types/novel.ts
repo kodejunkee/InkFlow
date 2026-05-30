@@ -67,6 +67,7 @@ export interface DownloadProgress {
   totalChapters: number;
   status: DownloadStatus;
   error?: string;
+  coverUrl?: string;
 }
 
 // ─── Database Record ─────────────────────────────────────────────────────────

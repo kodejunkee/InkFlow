@@ -16,6 +16,7 @@ import {
   ActivityIndicator,
   Animated,
   Platform,
+  ToastAndroid,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -25,37 +26,55 @@ import { useDB } from '../_layout';
 import { useSettingsStore } from '../../src/stores/settingsStore';
 import { getTheme } from '../../src/theme/themes';
 import { textStyles } from '../../src/theme/typography';
-import { CookieProvider, useCookies } from '../../src/contexts/CookieContext';
+import { useCookieStore, DEFAULT_USER_AGENT } from '../../src/stores/cookieStore';
 import { useNovelStore } from '../../src/stores/novelStore';
 import { getNovelDetails } from '../../src/services/novel/NovelSourceService';
+import { getEnabledSources, getSource } from '../../src/services/novel/ExtensionManager';
 import { downloadNovel } from '../../src/services/novel/NovelDownloader';
 import { getNovelDownloadBySourceUrl } from '../../src/database/queries';
-import DownloadProgressModal from '../../src/components/novel/DownloadProgressModal';
 import type { NovelDetails } from '../../src/types/novel';
 
 // ─── Inner Page ──────────────────────────────────────────────────────────────
 
 function NovelDetailsPage() {
-  const { novelSlug } = useLocalSearchParams<{ novelSlug: string }>();
+  const { novelSlug, sourceId: paramSourceId } = useLocalSearchParams<{ novelSlug: string; sourceId?: string }>();
   const router = useRouter();
   const db = useDB();
   const theme = getTheme(useSettingsStore((s) => s.theme));
-  const { cookies, userAgent, status: cookieStatus } = useCookies();
+  
+  const getCookies = useCookieStore((s) => s.getCookies);
 
   const [novel, setNovel] = useState<NovelDetails | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [descExpanded, setDescExpanded] = useState(false);
   const [chaptersExpanded, setChaptersExpanded] = useState(false);
-  const [showProgressModal, setShowProgressModal] = useState(false);
   const [isAlreadyDownloaded, setIsAlreadyDownloaded] = useState(false);
 
-  const activeDownload = useNovelStore((s) => s.activeDownload);
+  const activeDownloads = useNovelStore((s) => s.activeDownloads);
   const sourceUrl = novelSlug ? decodeURIComponent(novelSlug) : '';
+  const activeDownload = sourceUrl ? activeDownloads[sourceUrl] : null;
+  
+  // Resolve sourceId
+  const sourceId = useMemo(() => {
+    if (paramSourceId) return paramSourceId;
+    if (sourceUrl) {
+      const sources = getEnabledSources();
+      for (const s of sources) {
+        if (sourceUrl.startsWith(s.baseUrl)) return s.id;
+      }
+    }
+    return 'allnovel';
+  }, [paramSourceId, sourceUrl]);
 
-  // Fetch novel details when cookies are ready
+  const resolvedSource = getSource(sourceId);
+  const cookieData = resolvedSource ? getCookies(resolvedSource.baseUrl) : null;
+  const cookies = cookieData?.cookies || '';
+  const userAgent = cookieData?.userAgent || DEFAULT_USER_AGENT;
+
+  // Fetch novel details
   useEffect(() => {
-    if (cookieStatus !== 'ready' || !sourceUrl) return;
+    if (!sourceUrl || !sourceId) return;
 
     let cancelled = false;
 
@@ -63,9 +82,9 @@ function NovelDetailsPage() {
       setLoading(true);
       setError(null);
       try {
-        const details = await getNovelDetails('allnovel', sourceUrl, cookies, userAgent);
+        const details = await getNovelDetails(sourceId, sourceUrl, cookies, userAgent);
         if (!cancelled) {
-          details.sourceId = 'allnovel';
+          details.sourceId = sourceId;
           setNovel(details);
         }
       } catch (e) {
@@ -78,7 +97,7 @@ function NovelDetailsPage() {
     })();
 
     return () => { cancelled = true; };
-  }, [sourceUrl, cookies, userAgent, cookieStatus]);
+  }, [sourceUrl, sourceId, cookies, userAgent]);
 
   // Check if already downloaded
   useEffect(() => {
@@ -87,21 +106,26 @@ function NovelDetailsPage() {
     setIsAlreadyDownloaded(record?.status === 'completed');
   }, [db, sourceUrl]);
 
-  const handleDownload = useCallback(async () => {
+  const handleDownload = useCallback(() => {
     if (!db || !novel) return;
 
-    setShowProgressModal(true);
+    ToastAndroid.show('Download started in background', ToastAndroid.SHORT);
 
-    const bookId = await downloadNovel({
+    // Fire and forget download
+    downloadNovel({
       db,
       novel,
       cookies,
       userAgent,
-    });
-
-    if (bookId) {
-      setIsAlreadyDownloaded(true);
-    }
+    })
+      .then((bookId) => {
+        if (bookId) {
+          setIsAlreadyDownloaded(true);
+        }
+      })
+      .catch((e) => {
+        console.error('Download failed:', e);
+      });
   }, [db, novel, cookies, userAgent]);
 
   // ── Chapter list display ───────────────────────────────────────────
@@ -114,20 +138,19 @@ function NovelDetailsPage() {
   }, [novel?.chapters, chaptersExpanded]);
 
   // ── Loading State ──────────────────────────────────────────────────
-  if (loading || cookieStatus !== 'ready') {
+  if (loading) {
     return (
       <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
         <View style={styles.headerBar}>
           <Pressable onPress={() => router.back()} hitSlop={12}>
             <Ionicons name="chevron-back" size={24} color={theme.textPrimary} />
           </Pressable>
-          <Text style={[textStyles.body, { color: theme.textPrimary, fontWeight: '600' }]}>
-            {cookieStatus !== 'ready' ? 'Connecting…' : 'Loading…'}
-          </Text>
-          <View style={{ width: 24 }} />
         </View>
         <View style={styles.centered}>
           <ActivityIndicator size="large" color={theme.primary} />
+          <Text style={[textStyles.body, { color: theme.textSecondary, marginTop: 12 }]}>
+            Loading…
+          </Text>
         </View>
       </SafeAreaView>
     );
@@ -301,6 +324,8 @@ function NovelDetailsPage() {
             >
               {isAlreadyDownloaded
                 ? 'Already in Library'
+                : !!activeDownload && activeDownload.status !== 'completed' && activeDownload.status !== 'failed'
+                ? 'Downloading...'
                 : `Download (${novel.totalChapters} chapters)`}
             </Text>
           </Pressable>
@@ -364,25 +389,13 @@ function NovelDetailsPage() {
 
         <View style={{ height: 60 }} />
       </ScrollView>
-
-      {/* Download Progress Modal */}
-      <DownloadProgressModal
-        visible={showProgressModal}
-        onDismiss={() => setShowProgressModal(false)}
-      />
     </SafeAreaView>
   );
 }
 
-// ─── Wrapper ─────────────────────────────────────────────────────────────────
+// ─── Export ──────────────────────────────────────────────────────────────────
 
-export default function NovelDetailsWrapper() {
-  return (
-    <CookieProvider sourceUrl="https://allnovel.org">
-      <NovelDetailsPage />
-    </CookieProvider>
-  );
-}
+export default NovelDetailsPage;
 
 // ─── Styles ──────────────────────────────────────────────────────────────────
 

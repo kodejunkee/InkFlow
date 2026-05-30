@@ -20,11 +20,12 @@ interface NovelStoreState {
   currentNovel: NovelDetails | null;
   isLoadingNovel: boolean;
 
-  // Active download
-  activeDownload: DownloadProgress | null;
+  // Active downloads
+  activeDownloads: Record<string, DownloadProgress>;
 
   // Actions — Search
   setSearchResults: (results: NovelSearchResult[]) => void;
+  appendSearchResults: (results: NovelSearchResult[]) => void;
   setSearching: (loading: boolean) => void;
   setSearchQuery: (query: string) => void;
   clearSearch: () => void;
@@ -34,9 +35,10 @@ interface NovelStoreState {
   setLoadingNovel: (loading: boolean) => void;
 
   // Actions — Download
-  setActiveDownload: (progress: DownloadProgress | null) => void;
-  updateDownloadProgress: (current: number, total: number) => void;
-  updateDownloadStatus: (status: DownloadStatus, error?: string) => void;
+  addDownload: (sourceUrl: string, progress: DownloadProgress) => void;
+  updateDownloadProgress: (sourceUrl: string, current: number, total: number) => void;
+  updateDownloadStatus: (sourceUrl: string, status: DownloadStatus, error?: string) => void;
+  removeDownload: (sourceUrl: string) => void;
 }
 
 export const useNovelStore = create<NovelStoreState>((set) => ({
@@ -46,10 +48,11 @@ export const useNovelStore = create<NovelStoreState>((set) => ({
   searchQuery: '',
   currentNovel: null,
   isLoadingNovel: false,
-  activeDownload: null,
+  activeDownloads: {},
 
   // Search
   setSearchResults: (results) => set({ searchResults: results }),
+  appendSearchResults: (results) => set((state) => ({ searchResults: [...state.searchResults, ...results] })),
   setSearching: (loading) => set({ isSearching: loading }),
   setSearchQuery: (query) => set({ searchQuery: query }),
   clearSearch: () => set({ searchResults: [], searchQuery: '', isSearching: false }),
@@ -59,17 +62,35 @@ export const useNovelStore = create<NovelStoreState>((set) => ({
   setLoadingNovel: (loading) => set({ isLoadingNovel: loading }),
 
   // Download
-  setActiveDownload: (progress) => set({ activeDownload: progress }),
-  updateDownloadProgress: (current, total) =>
+  addDownload: (sourceUrl, progress) =>
     set((state) => ({
-      activeDownload: state.activeDownload
-        ? { ...state.activeDownload, currentChapter: current, totalChapters: total }
-        : null,
+      activeDownloads: { ...state.activeDownloads, [sourceUrl]: progress },
     })),
-  updateDownloadStatus: (status, error) =>
-    set((state) => ({
-      activeDownload: state.activeDownload
-        ? { ...state.activeDownload, status, error }
-        : null,
-    })),
+  updateDownloadProgress: (sourceUrl, current, total) =>
+    set((state) => {
+      const existing = state.activeDownloads[sourceUrl];
+      if (!existing) return state;
+      return {
+        activeDownloads: {
+          ...state.activeDownloads,
+          [sourceUrl]: { ...existing, currentChapter: current, totalChapters: total },
+        },
+      };
+    }),
+  updateDownloadStatus: (sourceUrl, status, error) =>
+    set((state) => {
+      const existing = state.activeDownloads[sourceUrl];
+      if (!existing) return state;
+      return {
+        activeDownloads: {
+          ...state.activeDownloads,
+          [sourceUrl]: { ...existing, status, error },
+        },
+      };
+    }),
+  removeDownload: (sourceUrl) =>
+    set((state) => {
+      const { [sourceUrl]: _, ...rest } = state.activeDownloads;
+      return { activeDownloads: rest };
+    }),
 }));

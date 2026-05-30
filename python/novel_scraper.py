@@ -40,12 +40,25 @@ def _get_source(source_id: str):
     elif source_id in ("novelbin", "novelbin.me", "novelbin.com"):
         from sources import novelbin
         return novelbin
-    elif source_id in ("boxnovel", "boxnovel.com"):
-        from sources import boxnovel
-        return boxnovel
-    elif source_id in ("lightnovelpub", "lightnovelpub.com"):
+    elif source_id in ("lightnovelpub", "lightnovelpub.me"):
         from sources import lightnovelpub
         return lightnovelpub
+    elif source_id in ("freewebnovel", "freewebnovel.com"):
+        from sources import freewebnovel
+        return freewebnovel
+    elif source_id in ("wuxiaclick", "wuxia.click"):
+        from sources import wuxiaclick
+        # Wrap it if we need to expose the same interface
+        return wuxiaclick.WuxiaClickScraper()
+    elif source_id in ("libread", "libread.com"):
+        from sources import libread
+        return libread.LibReadScraper()
+    elif source_id in ("novelfire", "novelfire.net"):
+        from sources import novelfire
+        return novelfire.NovelFireScraper()
+    elif source_id in ("chrysanthemumgarden", "chrysanthemumgarden.com"):
+        from sources import chrysanthemum
+        return chrysanthemum.ChrysanthemumGardenScraper()
 
     raise ValueError(f"Unknown source: {source_id}")
 
@@ -64,14 +77,21 @@ def _parse_cookies(cookie_str: str) -> dict:
     return cookies
 
 
-def _build_session(cookies: str, user_agent: str, referer: str = None):
-    """Create a session (using cloudscraper if available) with standard headers and cookies."""
-    try:
-        import cloudscraper
-        session = cloudscraper.create_scraper(browser={'browser': 'chrome', 'platform': 'android', 'desktop': False})
-    except ImportError:
-        import requests
-        session = requests.Session()
+_SESSIONS = {}
+
+def _build_session(source_id: str, cookies: str, user_agent: str, referer: str = None):
+    """Create or reuse a session (using cloudscraper if available) with standard headers and cookies."""
+    global _SESSIONS
+    if source_id in _SESSIONS:
+        session = _SESSIONS[source_id]
+    else:
+        try:
+            import cloudscraper
+            session = cloudscraper.create_scraper(browser={'browser': 'chrome', 'platform': 'android', 'desktop': False})
+        except ImportError:
+            import requests
+            session = requests.Session()
+        _SESSIONS[source_id] = session
 
     session.cookies.update(_parse_cookies(cookies))
     session.headers.update({
@@ -107,13 +127,20 @@ def search(source_id: str, query: str, cookies: str, user_agent: str) -> str:
     """
     try:
         source = _get_source(source_id)
-        session = _build_session(cookies, user_agent, source.BASE_URL)
+        session = _build_session(source_id, cookies, user_agent, source.BASE_URL if hasattr(source, 'BASE_URL') else "")
 
-        search_url = source.build_search_url(query)
-        log.info("Searching: %s", search_url)
+        if hasattr(source, "perform_search"):
+            # Check if it's an instance method or module function
+            if hasattr(source.perform_search, '__self__'):
+                results = source.perform_search(query)
+            else:
+                results = source.perform_search(session, query)
+        else:
+            search_url = source.build_search_url(query)
+            log.info("Searching: %s", search_url)
 
-        html = _fetch(session, search_url)
-        results = source.parse_search_results(html)
+            html = _fetch(session, search_url)
+            results = source.parse_search_results(html)
 
         return json.dumps(results, ensure_ascii=False)
 
@@ -137,7 +164,17 @@ def get_novel_details(source_id: str, url: str, cookies: str, user_agent: str) -
     """
     try:
         source = _get_source(source_id)
-        session = _build_session(cookies, user_agent, source.BASE_URL)
+        session = _build_session(source_id, cookies, user_agent, source.BASE_URL if hasattr(source, 'BASE_URL') else "")
+
+        if hasattr(source, "get_novel_details"):
+            details = source.get_novel_details(url)
+            # Re-index chapters globally (0-based)
+            all_chapters = list(details.get("chapters", []))
+            for idx, ch in enumerate(all_chapters):
+                ch["index"] = idx
+            details["chapters"] = all_chapters
+            details["totalChapters"] = len(all_chapters)
+            return json.dumps(details, ensure_ascii=False)
 
         # ── Page 1 ───────────────────────────────────────────────────────
         log.info("Fetching novel details: %s", url)
@@ -150,19 +187,30 @@ def get_novel_details(source_id: str, url: str, cookies: str, user_agent: str) -
         last_page = source.get_last_page_number(html_page1)
         log.info("Novel has %d chapter-list page(s)", last_page)
 
-        for page_num in range(2, last_page + 1):
-            try:
+        if last_page > 1:
+            from concurrent.futures import ThreadPoolExecutor, as_completed
+            page_results = {}
+
+            def fetch_page(page_num):
                 page_url = f"{url.split('?')[0]}?page={page_num}"
                 log.info("Fetching chapter page %d/%d", page_num, last_page)
-                time.sleep(0.5)
-
                 page_html = _fetch(session, page_url)
-                page_chapters = source.parse_chapter_list_page(page_html)
-                all_chapters.extend(page_chapters)
+                return page_num, source.parse_chapter_list_page(page_html)
 
-            except Exception as e:
-                log.warning("Failed to fetch page %d: %s", page_num, e)
-                continue
+            # Use 5 concurrent workers to grab pages fast without triggering anti-bot
+            with ThreadPoolExecutor(max_workers=5) as executor:
+                futures = [executor.submit(fetch_page, p) for p in range(2, last_page + 1)]
+                for future in as_completed(futures):
+                    try:
+                        p_num, p_chapters = future.result()
+                        page_results[p_num] = p_chapters
+                    except Exception as e:
+                        log.warning("Failed to fetch a chapter page: %s", e)
+
+            # Assemble chapters in the correct sequential order
+            for page_num in range(2, last_page + 1):
+                if page_num in page_results:
+                    all_chapters.extend(page_results[page_num])
 
         # Re-index chapters globally (0-based)
         for idx, ch in enumerate(all_chapters):
@@ -202,7 +250,7 @@ def download_chapter_batch(
 
     try:
         source = _get_source(source_id)
-        session = _build_session(cookies, user_agent, source.BASE_URL)
+        session = _build_session(source_id, cookies, user_agent, source.BASE_URL if hasattr(source, 'BASE_URL') else "")
 
         chapters = json.loads(chapters_json) if isinstance(chapters_json, str) else chapters_json
         os.makedirs(output_dir, exist_ok=True)
@@ -222,12 +270,15 @@ def download_chapter_batch(
                     "Downloading chapter %d/%d: %s",
                     i + 1, len(chapters), ch_title,
                 )
-                html = _fetch(session, ch_url)
-                parsed = source.parse_chapter_content(html)
-
-                # Use parsed title if available, fall back to list title
-                final_title = parsed.get("title") or ch_title
-                content = parsed.get("content", "")
+                
+                if hasattr(source, "get_chapter_content"):
+                    content = source.get_chapter_content(ch_url)
+                    final_title = ch_title
+                else:
+                    html = _fetch(session, ch_url)
+                    parsed = source.parse_chapter_content(html)
+                    final_title = parsed.get("title") or ch_title
+                    content = parsed.get("content", "")
 
                 if not content:
                     result["failed"] += 1
