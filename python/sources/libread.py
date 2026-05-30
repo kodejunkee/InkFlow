@@ -41,8 +41,8 @@ class LibReadScraper:
 
                 results.append({
                     "title": title,
-                    "url": novel_url,
-                    "cover_url": cover_url,
+                    "sourceUrl": novel_url,
+                    "coverUrl": cover_url,
                     "author": author,
                     "source": "LibRead"
                 })
@@ -93,7 +93,7 @@ class LibReadScraper:
 
             return {
                 "title": title,
-                "cover_url": cover_url,
+                "coverUrl": cover_url,
                 "author": author,
                 "description": description,
                 "chapters": chapters,

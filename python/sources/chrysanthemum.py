@@ -55,8 +55,8 @@ class ChrysanthemumGardenScraper:
 
                 results.append({
                     "title": title,
-                    "url": novel_url,
-                    "cover_url": cover_url,
+                    "sourceUrl": novel_url,
+                    "coverUrl": cover_url,
                     "author": author,
                     "source": "Chrysanthemum Garden"
                 })
@@ -108,7 +108,7 @@ class ChrysanthemumGardenScraper:
 
             return {
                 "title": title,
-                "cover_url": cover_url,
+                "coverUrl": cover_url,
                 "author": author,
                 "description": description,
                 "chapters": chapters,

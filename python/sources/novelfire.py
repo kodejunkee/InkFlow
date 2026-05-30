@@ -1,7 +1,12 @@
 import re
 from urllib.parse import urljoin
 from bs4 import BeautifulSoup
-from .source_utils import clean_text
+
+def clean_text(text: str) -> str:
+    if not text:
+        return ""
+    text = re.sub(r'<[^>]+>', '', text)
+    return text.strip()
 
 class NovelFireScraper:
     def __init__(self):
@@ -31,15 +36,15 @@ class NovelFireScraper:
                 
                 img_tag = item.select_one('img')
                 cover_url = img_tag['src'] if img_tag else ""
-                if cover_url and not cover_url.startswith('http'):
+                if cover_url and not cover_url.startswith('http') and not cover_url.startswith('data:'):
                     cover_url = self.base_url + cover_url
 
                 author = "Unknown" # Not exposed in search list
 
                 results.append({
                     "title": title,
-                    "url": novel_url,
-                    "cover_url": cover_url,
+                    "sourceUrl": novel_url,
+                    "coverUrl": cover_url,
                     "author": author,
                     "source": "NovelFire"
                 })
@@ -81,7 +86,7 @@ class NovelFireScraper:
 
             return {
                 "title": title,
-                "cover_url": cover_url,
+                "coverUrl": cover_url,
                 "author": author,
                 "description": description,
                 "chapters": chapters,

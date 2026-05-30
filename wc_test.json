@@ -1,0 +1,1846 @@
+{
+  "count": 12,
+  "next": null,
+  "previous": null,
+  "results": [
+    {
+      "name": "Shadow Slave",
+      "image": null,
+      "slug": "shadow-slave",
+      "description": "Growing up in poverty, Sunny never expected anything good from life. However, even he did not anticipate being chosen by the Nightmare Spell and becoming one of the Awakened - an elite group of people gifted with supernatural powers. Transported into a ruined magical world, he found himself facing against terrible monsters - and other Awakened - in a deadly battle of survival.\r\nWhat's worse, the shadow powers he received happened to possess a small, but potentially fatal side effect...",
+      "rating": "5.00",
+      "ranking": 15,
+      "views": "3.2M",
+      "chapters": 3010,
+      "categories": [
+        {
+          "name": "Action",
+          "slug": "action",
+          "title": "A work typically depicting fighting, violence, chaos, and fast paced motion."
+        },
+        {
+          "name": "Fantasy",
+          "slug": "fantasy",
+          "title": "Anything that involves, but not limited to, magic, dream world, and fairy tales."
+        }
+      ],
+      "tags": [
+        {
+          "id": 200,
+          "name": "Antihero Protagonist",
+          "slug": "antihero-protagonist",
+          "title": "This tag is to be used when the main Protagonist is an antihero, an antihero is a protagonist who lacks conventional heroic qualities such as idealism, courage, or morality"
+        },
+        {
+          "id": 106,
+          "name": "Level System",
+          "slug": "level-system",
+          "title": "This tag is used when the characters of the novel improve their abilities/skills/power by leveling up."
+        },
+        {
+          "id": 41,
+          "name": "Transmigration",
+          "slug": "transmigration",
+          "title": "This tag is used if the protagonist inhabits an existing person's body after migrating across worlds. It differs from reincarnation in that the person is not literally born again."
+        },
+        {
+          "id": 91,
+          "name": "Weak to Strong",
+          "slug": "weak-to-strong",
+          "title": "This TAG is used to indicate the stories in which the protagonist starts at a weak power level and becomes gradually strong as the story progresses."
+        }
+      ]
+    },
+    {
+      "name": "Dao Shadow",
+      "image": "https://cdn.wuxiaworld.eu/original/dao-shadow-mtl.jpg",
+      "slug": "dao-shadow-mtl",
+      "description": "All conditioned things are like a dream, an illusion, a bubble, a shadow, a dewdrop, or a flash of lightning. All things in the world are merely specks in the eye, bubbles in the water, the mirage of spring, the dew of the morning, without true form. Even eternity and immortality are merely a return from and to the stars. In countless planes of existence and among billions of beings, the struggle between immortals and mortals is but a dream, a reflection of one's own fading senses. So what is the true existence beyond the limits of time and space, at the end of the immortal path, that transcends all things? In the boundless world and the primordial ocean, a dead cultivator with no sect, no master, and no name suddenly opens his eyes with two lifetimes of memories. Welcome to join our QQ group: 416748032",
+      "rating": "5.00",
+      "ranking": 26148,
+      "views": "1.34K",
+      "chapters": 0,
+      "categories": [
+        {
+          "name": "Adventure",
+          "slug": "adventure",
+          "title": "Exploring new places, environments or situations. This is often associated with people on long journeys to places far away encountering amazing things."
+        },
+        {
+          "name": "Fantasy",
+          "slug": "fantasy",
+          "title": "Anything that involves, but not limited to, magic, dream world, and fairy tales."
+        },
+        {
+          "name": "MTL",
+          "slug": "mtl",
+          "title": ""
+        },
+        {
+          "name": "Supernatural",
+          "slug": "supernatural",
+          "title": "Usually entails amazing and unexplained powers or events which defy the laws of physics."
+        },
+        {
+          "name": "Xianxia",
+          "slug": "xianxia",
+          "title": "Xianxia is fictional martial art stories where the main goal of the population is cultivating to Immortality, seeking eternal life and the pinnacle of strength.\n\nXianxia stories features supernatural elements, influenced heavily by Chinese folklore/mythology. Cultivation path in xianxia involves taoism/daoism elements."
+        }
+      ],
+      "tags": [
+        {
+          "id": 116,
+          "name": "Character Growth",
+          "slug": "character-growth",
+          "title": "This tag should be used when the protagonist grows mentally during the story. The protagonist can grow in various ways like by changing his ideals or by strengthening them but he must grow in a way, such that by the end of the series the protagonist looks like a completely different person. "
+        },
+        {
+          "id": 7,
+          "name": "Cultivation",
+          "slug": "cultivation",
+          "title": "This tag is to be used preferably only for Chinese novels. Cultivation refers to the protagonist trying to acquire immortality and/or supreme power by the accumulation and usage of Qi. This tag is typical of the Xianxia genre."
+        },
+        {
+          "id": 282,
+          "name": "Demons",
+          "slug": "demons",
+          "title": "Beings that possess human like appearance, but are of another race other than human and usually possess strength greater than a regular human. Sometimes shown as an evil or a race that's good at dark arts in fantasy, and others as beast that have surpassed a certain level of cultivation in xiaxia and xuanhuan."
+        },
+        {
+          "id": 286,
+          "name": "Fantasy World",
+          "slug": "fantasy-world",
+          "title": "Any novel that takes place in a world where there is magic, elves, demons, and other common fantasy elements can have this tag listed."
+        },
+        {
+          "id": 17,
+          "name": "Male Protagonist",
+          "slug": "male-protagonist",
+          "title": "If the protagonist of the series is male, then this tag is to be used. By protagonist, it refers to the leading/main character.\n \nNot to be used with: Female Protagonist "
+        },
+        {
+          "id": 233,
+          "name": "Monsters",
+          "slug": "monsters",
+          "title": "Tag is to be used ONLY if the protagonist of the series is a Monster (definition may vary based on novel). If the series has multiple protagonists, only use this tag if being a Monster(s) is a prominent feature of one of them. Can ALSO be used if there being Monster(s) has a big impact on the story."
+        },
+        {
+          "id": 94,
+          "name": "Reincarnation",
+          "slug": "reincarnation",
+          "title": "This tag is used if the protagonist is born again after dying. Contrast with transmigration, where the protagonist inhabits an existing body."
+        },
+        {
+          "id": 196,
+          "name": "Special Abilities",
+          "slug": "special-abilities",
+          "title": "Refers to abilites that a select few have. Doesn't have to include protagonist, but has to be something that the majority of people of the world doen't have.\nE.g Espers in a modern world"
+        },
+        {
+          "id": 41,
+          "name": "Transmigration",
+          "slug": "transmigration",
+          "title": "This tag is used if the protagonist inhabits an existing person's body after migrating across worlds. It differs from reincarnation in that the person is not literally born again."
+        },
+        {
+          "id": 91,
+          "name": "Weak to Strong",
+          "slug": "weak-to-strong",
+          "title": "This TAG is used to indicate the stories in which the protagonist starts at a weak power level and becomes gradually strong as the story progresses."
+        }
+      ]
+    },
+    {
+      "name": "Heaven\u2019s Shadow",
+      "image": "https://cdn.wuxiaworld.eu/original/Tian-Ying.jpg",
+      "slug": "heavens-shadow",
+      "description": "The world is made up of the five elements, and it could be divided into Yin and Yang.\nBeneath the heavens, on the ancient divine center continent, billions of lives thrive in the prosperous era of the cultivation.\nAcross its vast lands, happiness, sadness, reunion, and separation\u00a0played out in the long lives of those seeking immortalhood.\nLight is always accompanied by darkness, and under the radiance of the heavens, there are silent shadows\u00a0moving about\u2026\n",
+      "rating": "5.00",
+      "ranking": 6053,
+      "views": "10.7K",
+      "chapters": 67,
+      "categories": [
+        {
+          "name": "Action",
+          "slug": "action",
+          "title": "A work typically depicting fighting, violence, chaos, and fast paced motion."
+        },
+        {
+          "name": "Adventure",
+          "slug": "adventure",
+          "title": "Exploring new places, environments or situations. This is often associated with people on long journeys to places far away encountering amazing things."
+        },
+        {
+          "name": "Drama",
+          "slug": "drama",
+          "title": "A work meant to bring on an emotional response, such as instilling sadness or tension.\n\nNovels that often show life or characters through conflict and emotions. In general, the different parts of the story tend to form a whole that is greater than the sum of the parts. In other words, the story has a message that is bigger than just the story line itself"
+        },
+        {
+          "name": "Mystery",
+          "slug": "mystery",
+          "title": "Usually an unexplained event occurs, and the main protagonist attempts to find out what caused it."
+        },
+        {
+          "name": "Seinen",
+          "slug": "seinen",
+          "title": "Seinen means 'Young Man.' Novels that specifically targets young adult males around the ages of 18 to 25 are Seinen titles. Typically the story lines deal with the issues of adulthood."
+        },
+        {
+          "name": "Tragedy",
+          "slug": "tragedy",
+          "title": "Contains events resulting in great loss and misfortune that's basically shaped or influence the entire story. "
+        },
+        {
+          "name": "Xianxia",
+          "slug": "xianxia",
+          "title": "Xianxia is fictional martial art stories where the main goal of the population is cultivating to Immortality, seeking eternal life and the pinnacle of strength.\n\nXianxia stories features supernatural elements, influenced heavily by Chinese folklore/mythology. Cultivation path in xianxia involves taoism/daoism elements."
+        }
+      ],
+      "tags": [
+        {
+          "id": 199,
+          "name": "Adapted to Manhua",
+          "slug": "adapted-to-manhua",
+          "title": "This tag is to be used ONLY if a manhua has been released based on the novel. By manhua, it refers to the Chinese equivalent of a comic book, provided it is an official publication. The tag is to be added only AFTER the release of the manhua."
+        },
+        {
+          "id": 373,
+          "name": "Carefree Protagonist",
+          "slug": "carefree-protagonist",
+          "title": "This tag describes the personality of the protagonist, referring to the protagonist being someone who is relaxed and nonchalant. The protagonist is expected to not get stressed or care about little issues, but instead takes them in strides. This type of behavior is expected to be shown by the protagonist for a major part of the story, and not just on a couple of occasions."
+        },
+        {
+          "id": 7,
+          "name": "Cultivation",
+          "slug": "cultivation",
+          "title": "This tag is to be used preferably only for Chinese novels. Cultivation refers to the protagonist trying to acquire immortality and/or supreme power by the accumulation and usage of Qi. This tag is typical of the Xianxia genre."
+        },
+        {
+          "id": 286,
+          "name": "Fantasy World",
+          "slug": "fantasy-world",
+          "title": "Any novel that takes place in a world where there is magic, elves, demons, and other common fantasy elements can have this tag listed."
+        },
+        {
+          "id": 333,
+          "name": "Immortals",
+          "slug": "immortals",
+          "title": "This tag is used if the novel features a character class/group of people/race that are called 'Immortals'. Most importantly, the  'Immortal' term is defined within the context of the novel's world setting, and not ours (for example, the immortals in 'I Shall Seal the Heavens' did not have immortality; they simply has long lifespan and will still die of old age). "
+        },
+        {
+          "id": 497,
+          "name": "Lazy Protagonist",
+          "slug": "lazy-protagonist",
+          "title": "This tag is to be used if the protagonist is lazy by nature and will either take the easy way out, or simply give up easily."
+        },
+        {
+          "id": 232,
+          "name": "Magic",
+          "slug": "magic",
+          "title": "Tag is to be used ONLY if the protagonist of the series can use Magic (definition may vary based on novel). If the series has multiple protagonists, only use this tag if having Magic is a prominent feature of one of them."
+        },
+        {
+          "id": 17,
+          "name": "Male Protagonist",
+          "slug": "male-protagonist",
+          "title": "If the protagonist of the series is male, then this tag is to be used. By protagonist, it refers to the leading/main character.\n \nNot to be used with: Female Protagonist "
+        },
+        {
+          "id": 345,
+          "name": "Mysterious Past",
+          "slug": "mysterious-past",
+          "title": "Where the protagonist has a past that either the readers and protagonist don't know or a past that the protagonist doesn't want to talk about. might or might not play a huge role in the story."
+        },
+        {
+          "id": 709,
+          "name": "Prostit**es",
+          "slug": "prostites",
+          "title": "A person, in particular a woman, who engages in sexual activity for payment."
+        },
+        {
+          "id": 123,
+          "name": "Revenge",
+          "slug": "revenge",
+          "title": "This tag is to be used when revenge by/against the protagonist plays a significant part in the main plot."
+        },
+        {
+          "id": 37,
+          "name": "Secret Identity",
+          "slug": "secret-identity",
+          "title": "Tag is to be used ONLY if the protagonist of the series has a Secret Identity (definition may vary based on novel). If the series has multiple protagonists, only use this tag if having a Secret Identity is a prominent feature of one of them."
+        },
+        {
+          "id": 125,
+          "name": "Shameless Protagonist",
+          "slug": "shameless-protagonist",
+          "title": "Where the main character does actions that are deemed by the reader or characters in the novel to be unbefiting of their status. whether the Main character acts petty or without honor/dignity for gains of some sort."
+        },
+        {
+          "id": 261,
+          "name": "Time Skip",
+          "slug": "time-skip",
+          "title": "Where the story in the novel skips a significant amount of time in the novel. Can be years/months/weeks depending on time of skip. ONLY when the protagonist already is involved with the story."
+        }
+      ]
+    },
+    {
+      "name": "Shadow Hack",
+      "image": "https://cdn.wuxiaworld.eu/original/300ShadowHack.jpg",
+      "slug": "shadow-hack",
+      "description": "By coincidence, Li Yunmu found a super machine from humanity\u2019s age of darkness. From that point onwards, his ordinary life would never be the same! Aptitude? Innate talent? What are these? Could they be eaten?\nI have neither aptitude nor innate skill, but my shadow can level up using hacks. Experience, Ability points, battle prowess\u2026 all of them could be hacked. Even while he is asleep or tired, he could still increase his skills.\n[Ding, your shadow has killed an ant, you have gained experience points and ability points.]\n[Ding, your shadow has successfully killed a dragonfly, it dropped a dimensionality box.]\nCrap, even killing insects can also increase his experience and get him rewards. What else!\n",
+      "rating": "2.67",
+      "ranking": 971,
+      "views": "97.4K",
+      "chapters": 995,
+      "categories": [
+        {
+          "name": "Action",
+          "slug": "action",
+          "title": "A work typically depicting fighting, violence, chaos, and fast paced motion."
+        },
+        {
+          "name": "Adventure",
+          "slug": "adventure",
+          "title": "Exploring new places, environments or situations. This is often associated with people on long journeys to places far away encountering amazing things."
+        },
+        {
+          "name": "Fantasy",
+          "slug": "fantasy",
+          "title": "Anything that involves, but not limited to, magic, dream world, and fairy tales."
+        },
+        {
+          "name": "Harem",
+          "slug": "harem",
+          "title": "A series involving one male character and many female characters (usually attracted to the male character). A Reverse Harem is when the genders are reversed."
+        },
+        {
+          "name": "Martial Arts",
+          "slug": "martial-arts",
+          "title": "The novel has a focus on any of several arts of combat or self-defense. These may include aikido, karate, judo, or tae kwon do, kendo, fencing, and so on and so forth."
+        },
+        {
+          "name": "Sci-fi",
+          "slug": "sci-fi",
+          "title": "Short for science fiction, these works involve twists on technology and other science related phenomena which are contrary or stretches of the modern day scientific world."
+        },
+        {
+          "name": "Xuanhuan",
+          "slug": "xuanhuan",
+          "title": "Similar to xianxia, Xuanhuan may contain immortal cultivation. However, unlike xianxia, which is more focused on becoming immortal and tighter on chinese mythology, Xuanhuan is a broader, more loose genre. Basically, if it's a cultivation-based story, yet it contain elements of western fantasy, such as sci-fi, or magic that's not inherently eastern, then it is a xuanhuan."
+        }
+      ],
+      "tags": [
+        {
+          "id": 199,
+          "name": "Adapted to Manhua",
+          "slug": "adapted-to-manhua",
+          "title": "This tag is to be used ONLY if a manhua has been released based on the novel. By manhua, it refers to the Chinese equivalent of a comic book, provided it is an official publication. The tag is to be added only AFTER the release of the manhua."
+        },
+        {
+          "id": 129,
+          "name": "Archery",
+          "slug": "archery",
+          "title": "This tag is to be used ONLY when one of the protagonist, the antagonist or love interest of the protagonist is involved in archery. This tag was formerly under the bow wielder tag,which has been removed. A prerequisite for the addition of this tag is that who ever uses the bow should have some basic archery skills, and should not depend on some magical powers of the bow to fight.\n"
+        },
+        {
+          "id": 201,
+          "name": "Artifacts",
+          "slug": "artifacts",
+          "title": "This tag should be used when the story features and highly regards artifacts, artifacts usually being weapons and other items of past races, or sometimes just enchanted gear. it varies from story to story."
+        },
+        {
+          "id": 3,
+          "name": "Artificial Intelligence",
+          "slug": "artificial-intelligence",
+          "title": "An artificial intelligence is a form of intelligence created artificially by other races.\nIn general anything created by someone and has intelligence can be referred to as Artificial Intelligence.\nHowever it's mainly used for things like robots.\n"
+        },
+        {
+          "id": 173,
+          "name": "Average-looking Protagonist",
+          "slug": "average-looking-protagonist",
+          "title": "This tag is to be used when the protagonist(s) is/are average-looking. The author MUST describe the protagonist to be average-looking. If no description is given regarding the looks, then no tags regarding the appearance of protagonist is to be added.\n\nNot to be used with:\nUgly Protagonist"
+        },
+        {
+          "id": 243,
+          "name": "Beast Companions",
+          "slug": "beast-companions",
+          "title": "This tag is used when there is beast as a journey partner contracted or summoned"
+        },
+        {
+          "id": 236,
+          "name": "Bloodlines",
+          "slug": "bloodlines",
+          "title": "This tag should be used if either the protagonist or some other relevant character carries some special bloodline, the bloodlines of dragons, phoenixes etc."
+        },
+        {
+          "id": 177,
+          "name": "Body Tempering",
+          "slug": "body-tempering",
+          "title": "A tag that is typically used only for Chinese cultivation novels. Body tempering refers to the protagonist going through some cultivation process to temper/strengthen the body. It is recommended to use this tag only when the physical prowess of the protagonist lets him/her do miraculous things.\n"
+        },
+        {
+          "id": 70,
+          "name": "Calm Protagonist",
+          "slug": "calm-protagonist",
+          "title": "This tag is used when the protagonist is able to remain calm in difficult and dangerous situation."
+        },
+        {
+          "id": 95,
+          "name": "Cheats",
+          "slug": "cheats",
+          "title": "This tag should be used only if the protagonist has something that sets them apart from the other characters, such as special knowledge, a unique item or ability. Common examples are: Knowledge from a past life, Mana Pool 100 times bigger than everyone else's, a unique game item that breaks the system's rules."
+        },
+        {
+          "id": 146,
+          "name": "Clever Protagonist",
+          "slug": "clever-protagonist",
+          "title": "This tag is used to define a protagonist who is very smart, witty, and bright and can easily pick up new things."
+        },
+        {
+          "id": 7,
+          "name": "Cultivation",
+          "slug": "cultivation",
+          "title": "This tag is to be used preferably only for Chinese novels. Cultivation refers to the protagonist trying to acquire immortality and/or supreme power by the accumulation and usage of Qi. This tag is typical of the Xianxia genre."
+        },
+        {
+          "id": 284,
+          "name": "Evolution",
+          "slug": "evolution",
+          "title": "Ability for an entity to metamorphose into another form and acquiring new traits or abilities.\nGenerally requiring conditions or situations to be met."
+        },
+        {
+          "id": 18,
+          "name": "Futuristic Setting",
+          "slug": "futuristic-setting",
+          "title": "The novel's storyline takes part in a high-tech future world, not necessarily our world. "
+        },
+        {
+          "id": 97,
+          "name": "Game Elements",
+          "slug": "game-elements",
+          "title": "Protagonist has a status screen or something similar to it."
+        },
+        {
+          "id": 395,
+          "name": "Game Ranking System",
+          "slug": "game-ranking-system",
+          "title": "This tag is to be used when the story revolves around games and there is a ranking system involved as part of the plot. The protagonist must be actively involved with the ranking system whether by choice or by automatic recordings of achievements."
+        },
+        {
+          "id": 26,
+          "name": "Hard-Working Protagonist",
+          "slug": "hard-working-protagonist",
+          "title": "This tag is to be used to define a protagonist who puts their utmost effort into all tasks, using all their energy and diligence to complete it."
+        },
+        {
+          "id": 192,
+          "name": "Hidden Abilities",
+          "slug": "hidden-abilities",
+          "title": "Where the protagonist of the story hides part of their power or abilities, and the people around them don't know about it(genrally)."
+        },
+        {
+          "id": 107,
+          "name": "Magical Space",
+          "slug": "magical-space",
+          "title": "a seperate dimension/sub-space that the protagonist and others can enter."
+        },
+        {
+          "id": 17,
+          "name": "Male Protagonist",
+          "slug": "male-protagonist",
+          "title": "If the protagonist of the series is male, then this tag is to be used. By protagonist, it refers to the leading/main character.\n \nNot to be used with: Female Protagonist "
+        },
+        {
+          "id": 137,
+          "name": "Money Grubber",
+          "slug": "money-grubber",
+          "title": "This is tag is used when main characters involved in novel are aggressively engaged in or preoccupied with making or saving money."
+        },
+        {
+          "id": 233,
+          "name": "Monsters",
+          "slug": "monsters",
+          "title": "Tag is to be used ONLY if the protagonist of the series is a Monster (definition may vary based on novel). If the series has multiple protagonists, only use this tag if being a Monster(s) is a prominent feature of one of them. Can ALSO be used if there being Monster(s) has a big impact on the story."
+        },
+        {
+          "id": 84,
+          "name": "Multiple Realms",
+          "slug": "multiple-realms",
+          "title": "This tag is used if there exists different realms other than the one which protagonist rises from."
+        },
+        {
+          "id": 239,
+          "name": "Polygamy",
+          "slug": "polygamy",
+          "title": "This tag is to be only used if the male protagonist is married to more than one female at a time. "
+        },
+        {
+          "id": 110,
+          "name": "Poor to Rich",
+          "slug": "poor-to-rich",
+          "title": "This tag is used if the storyline features a monetarily poor main character working his/her way to obtain wealth. The 'Poor Protagonist' tag is usually also applied."
+        },
+        {
+          "id": 23,
+          "name": "Romantic Subplot",
+          "slug": "romantic-subplot",
+          "title": "When the story has some male-female or other similar couple relationships, but not enough to warrant a romance genre tag. Can be used in tandem with Harem. Usually for when relationships are created without any further growth or expansion of said relationship, though this isn't always the case."
+        },
+        {
+          "id": 39,
+          "name": "Skill Assimilation",
+          "slug": "skill-assimilation",
+          "title": "This tag is used if main protagonist(s) learn skills just by coming in contact with them."
+        },
+        {
+          "id": 196,
+          "name": "Special Abilities",
+          "slug": "special-abilities",
+          "title": "Refers to abilites that a select few have. Doesn't have to include protagonist, but has to be something that the majority of people of the world doen't have.\nE.g Espers in a modern world"
+        },
+        {
+          "id": 259,
+          "name": "Strength-based Social Hierarchy",
+          "slug": "strength-based-social-hierarchy",
+          "title": "This tag is to be used for a setting where strength/power determines the place of one's social status in the hierarchy, i.e. the Law of the Jungle."
+        },
+        {
+          "id": 248,
+          "name": "Sudden Strength Gain",
+          "slug": "sudden-strength-gain",
+          "title": "Where the protagonist experiences a massive gain of power. Usually near the start of a novel"
+        },
+        {
+          "id": 187,
+          "name": "Sword Wielder",
+          "slug": "sword-wielder",
+          "title": "Where one either follows the meaning of the sword dao, or have a sword as their main weapon. Whichever it is, ALL ENEMIES SHALL DIE BY SWORD!!!"
+        },
+        {
+          "id": 99,
+          "name": "System Administrator",
+          "slug": "system-administrator",
+          "title": "Where the Main character gains access to an 'admin' system that allows them to have more control/abilities than regular people and people that have the non-admin system.\nAlmost always together with the level system tag."
+        },
+        {
+          "id": 91,
+          "name": "Weak to Strong",
+          "slug": "weak-to-strong",
+          "title": "This TAG is used to indicate the stories in which the protagonist starts at a weak power level and becomes gradually strong as the story progresses."
+        }
+      ]
+    },
+    {
+      "name": "Harem Shadow",
+      "image": "https://cdn.wuxiaworld.eu/original/HaremShadow_2.jpg",
+      "slug": "harem-shadow",
+      "description": "A sequel of sorts to A Queen Disgraced. Follows a ninja bodyguard tasked with protecting a princess in the Orsini-Sabrina Double Kingdom a while after the two kingdoms combined.\n",
+      "rating": "3.00",
+      "ranking": 11919,
+      "views": "4.27K",
+      "chapters": 0,
+      "categories": [
+        {
+          "name": "Adult",
+          "slug": "adult",
+          "title": "Contains mature content that is suitable only for adults. Titles in this category may include prolonged scenes of intense violence and/or graphic sexual content and nudity."
+        },
+        {
+          "name": "Harem",
+          "slug": "harem",
+          "title": "A series involving one male character and many female characters (usually attracted to the male character). A Reverse Harem is when the genders are reversed."
+        }
+      ],
+      "tags": [
+        {
+          "id": 642,
+          "name": "An*l",
+          "slug": "anl",
+          "title": "This tag is to be only used if in the series, instances of anal sex are described."
+        },
+        {
+          "id": 205,
+          "name": "Bodyguards",
+          "slug": "bodyguards",
+          "title": "Tag should only be used if the Profession of 'Bodyguard' is an important part of the story.\n\nA bodyguard is a person or group of persons employed to guard an individual from bodily harm."
+        },
+        {
+          "id": 523,
+          "name": "Childhood Friends",
+          "slug": "childhood-friends",
+          "title": "This tag is ONLY to be used when a prominent character has a relationship (in any form) with someone who they were friends with during their childhood. "
+        },
+        {
+          "id": 495,
+          "name": "C*nnilingus",
+          "slug": "cnnilingus",
+          "title": "This tag is to be used only when the sexual act of cunnilingus is DESCRIBED in the story. Preferably, one of the people taking part in the act should be the protagonist. If you do not know what cunnilingus is, do not bother with this tag.\n"
+        },
+        {
+          "id": 323,
+          "name": "European Ambience",
+          "slug": "european-ambience",
+          "title": "Novels whose setting is set in europe or fictional europe. This novel includes facts, cultures, places, and people that are same or similar to the real life europe in any specific period of time/era."
+        },
+        {
+          "id": 325,
+          "name": "First-time Interc**rse",
+          "slug": "first-time-intercrse",
+          "title": "Loss of virginity, either consensual or not. Mainly used in R18 novels."
+        },
+        {
+          "id": 237,
+          "name": "F*llatio",
+          "slug": "fllatio",
+          "title": "The oral stimulation of a man's penis."
+        },
+        {
+          "id": 17,
+          "name": "Male Protagonist",
+          "slug": "male-protagonist",
+          "title": "If the protagonist of the series is male, then this tag is to be used. By protagonist, it refers to the leading/main character.\n \nNot to be used with: Female Protagonist "
+        },
+        {
+          "id": 459,
+          "name": "Medieval",
+          "slug": "medieval",
+          "title": "The tag is to be used when the story is set in the Middle Ages, which is a period of European history between the 5th and 15th century."
+        },
+        {
+          "id": 568,
+          "name": "Ninjas",
+          "slug": "ninjas",
+          "title": "Tag is to be used if this novel major characters, not necessarily the main character only, has ninja as their occupation. "
+        },
+        {
+          "id": 138,
+          "name": "Older Love Interests",
+          "slug": "older-love-interests",
+          "title": "As it suggests, the love interests of the protagonist have to be older than the protagonist. However, it is only used when the age difference is quite significant, and either the physical/mental aspects of this difference gets some screen time."
+        },
+        {
+          "id": 577,
+          "name": "Or*y",
+          "slug": "ory",
+          "title": "This tag is to be ONLY used in the case of a smut/erotic series if the series contains described instances where a group of men and women take part in sex. Typically, at least 4 people."
+        },
+        {
+          "id": 645,
+          "name": "Paizuri",
+          "slug": "paizuri",
+          "title": "R-18 tag is mandatory. This tag is used if there are sex scenes that involves the 'paizuri' (tit f*ck). "
+        },
+        {
+          "id": 446,
+          "name": "R-18",
+          "slug": "r-18",
+          "title": "To be used when the content of the story is suitable only for individuals who are 18 or older. This may be due to the story having sexual or violent themes repeatedly. Note that it can ONLY be used for a JP or KR* novel. For others the Adult genre will suffice.\n\n* In South Korea, a child is counted as 1 year old the moment they are born. This tag is analogous to the Korean R-19 tag."
+        },
+        {
+          "id": 159,
+          "name": "Royalty",
+          "slug": "royalty",
+          "title": "The highest societal status that marks the protagonist or another character as a person of immense influence whether by blood, marriage or adoption. Usually used to define individuals of the monarchy, or in modern times the most influential person of power."
+        }
+      ]
+    },
+    {
+      "name": "Shadow Queen",
+      "image": "https://cdn.wuxiaworld.eu/original/49829.jpg",
+      "slug": "shadow-queen",
+      "description": "\u201cCould you become my daughter?\u201d\nThanks to the Grand Duke Friedrich\u2019s proposition, Elena became his fake daughter. Yet after marrying the Crown Prince, having his child, and acquiring land to oversee herself, the \u2018late\u2019 Duke\u2019s daughter, Lady Veronica, appeared before her. \nAll along, she had been nothing but a mere puppet for the real thing.  Elena\u2019s son is thus taken from her, and she is murdered.\nIn a twist of events however, she ends up returning to the past.\n\u201cI will crush each and every one of you.\u201d\nShe would never live the life of a puppet again.\nAnd so begins Elena\u2019s second life, swearing vengeance on her enemies.\n",
+      "rating": "3.78",
+      "ranking": 2666,
+      "views": "34K",
+      "chapters": 60,
+      "categories": [
+        {
+          "name": "Drama",
+          "slug": "drama",
+          "title": "A work meant to bring on an emotional response, such as instilling sadness or tension.\n\nNovels that often show life or characters through conflict and emotions. In general, the different parts of the story tend to form a whole that is greater than the sum of the parts. In other words, the story has a message that is bigger than just the story line itself"
+        },
+        {
+          "name": "Fantasy",
+          "slug": "fantasy",
+          "title": "Anything that involves, but not limited to, magic, dream world, and fairy tales."
+        },
+        {
+          "name": "Josei",
+          "slug": "josei",
+          "title": "Literally [Woman]. Targets women 18-30. Female equivalent to seinen. Unlike shoujo the romance is more realistic and less idealized. The storytelling is more explicit and mature."
+        },
+        {
+          "name": "Psychological",
+          "slug": "psychological",
+          "title": "Usually deals with the philosophy of a state of mind, in most cases detailing abnormal psychology."
+        },
+        {
+          "name": "Romance",
+          "slug": "romance",
+          "title": "A story in this genre focus heavily on the romantic relationship between two or more people."
+        },
+        {
+          "name": "School Life",
+          "slug": "school-life",
+          "title": "Having a major setting of the story deal with some type of school."
+        },
+        {
+          "name": "Tragedy",
+          "slug": "tragedy",
+          "title": "Contains events resulting in great loss and misfortune that's basically shaped or influence the entire story. "
+        }
+      ],
+      "tags": [
+        {
+          "id": 127,
+          "name": "Academy",
+          "slug": "academy",
+          "title": "Only to be used when the school is considered to be prestigious in reference to the story. Do not use this for schools famous for battle. Please refer to the [Battle Academy] tag."
+        },
+        {
+          "id": 348,
+          "name": "Acting",
+          "slug": "acting",
+          "title": "This tag is to be used when the protagonist is an actor/actress. This tag can be used to both describe the profession as well as the setting."
+        },
+        {
+          "id": 172,
+          "name": "Adapted to Manhwa",
+          "slug": "adapted-to-manhwa",
+          "title": "This tag is to be used ONLY if a manhwa has been released based on the novel. By manhwa, it refers to the Korean equivalent of a comic book, provided it is an official publication. The tag is to be added only AFTER the official release of the manhwa.\n"
+        },
+        {
+          "id": 558,
+          "name": "Adopted Protagonist",
+          "slug": "adopted-protagonist",
+          "title": "This tag is to be used when the protagonist is known to be an adopted child from the beginning of the story. Or else, the part that he/she is adopted should play a big role in the plot. It is recommended not to use this tag, if the fact that the protagonist is an adopted child is discovered in the later part of the series, as it will become a major spoiler."
+        },
+        {
+          "id": 263,
+          "name": "Age Regression",
+          "slug": "age-regression",
+          "title": "This tag refers to a plot device that causes the protagonist to grow younger instead of getting older. This doesn\u2019t mean he or she goes back to be a child, it just means they have regained their youth."
+        },
+        {
+          "id": 200,
+          "name": "Antihero Protagonist",
+          "slug": "antihero-protagonist",
+          "title": "This tag is to be used when the main Protagonist is an antihero, an antihero is a protagonist who lacks conventional heroic qualities such as idealism, courage, or morality"
+        },
+        {
+          "id": 343,
+          "name": "Aristocracy",
+          "slug": "aristocracy",
+          "title": "Tag is to be used when the novel features an aristocracy, the aristocracy is a social class that a particular social order considers the highest of that society."
+        },
+        {
+          "id": 164,
+          "name": "Arrogant Characters",
+          "slug": "arrogant-characters",
+          "title": "This tag should be used when there is a frequent use of characters that have the Arrogance personality traits. It is recommended to use this tag only if at least some of these characters play a significant role in the plot."
+        },
+        {
+          "id": 6,
+          "name": "Assassins",
+          "slug": "assassins",
+          "title": "Tag should only be used when Assassins are vital parts of the story."
+        },
+        {
+          "id": 8,
+          "name": "Beautiful Female Lead",
+          "slug": "beautiful-female-lead",
+          "title": "This tag is to be used if the female lead of the series is beautiful. \nThe descriptions should be what the author has written, and not what the fans fantasize."
+        },
+        {
+          "id": 322,
+          "name": "Black Belly",
+          "slug": "black-belly",
+          "title": "f\u00f9h\u0113i \u8179\u9ed1 (lit., 'belly black'). Outwardly kind but is actually cruel and a bully. Almost analogous to haraguro, except Chinese works seem to emphasize more on the bullying aspect, especially if it's a guy in a romance (think schoolchildren bullying)."
+        },
+        {
+          "id": 10,
+          "name": "Cautious Protagonist",
+          "slug": "cautious-protagonist",
+          "title": "This tag is used to define a Protagonist who is extremely careful in their actions and often makes a 'plan', a 'backup plan A' and a 'backup plan B' etc."
+        },
+        {
+          "id": 146,
+          "name": "Clever Protagonist",
+          "slug": "clever-protagonist",
+          "title": "This tag is used to define a protagonist who is very smart, witty, and bright and can easily pick up new things."
+        },
+        {
+          "id": 92,
+          "name": "Complex Family Relationships",
+          "slug": "complex-family-relationships",
+          "title": "This novel is used to describe novels in which the family relationships of a prominent character are complex. This character may have abnormal, strange or tangled relationships with his family. Novels with this tag are usually set in a large clan."
+        },
+        {
+          "id": 206,
+          "name": "Confident Protagonist",
+          "slug": "confident-protagonist",
+          "title": "Stories with protagonists who are confident in their own skills or plans. \n"
+        },
+        {
+          "id": 280,
+          "name": "Contracts",
+          "slug": "contracts",
+          "title": "This tag is to be used when binding agreements, be they written, oral or otherwise, hold an important role within the novel."
+        },
+        {
+          "id": 420,
+          "name": "Cruel Characters",
+          "slug": "cruel-characters",
+          "title": "This tag is used when a character causes pain, misery, suffering, etc. on their own will."
+        },
+        {
+          "id": 74,
+          "name": "Cunning Protagonist",
+          "slug": "cunning-protagonist",
+          "title": "This tag is used to describe a protagonist who is very cunning. They often schemes/plots throughout the novel and rarely suffers a loss. Different from the Intelligent/Smart tags, the Cunning tag is to be used when the schemes/plots often cause physical/mental harm to opponents. It is recommended not to use this tag along with the Strategist tag. "
+        },
+        {
+          "id": 281,
+          "name": "Dark",
+          "slug": "dark",
+          "title": "Where the world of the novel is depicted by the author in a negative and cruel light."
+        },
+        {
+          "id": 190,
+          "name": "Depictions of Cruelty",
+          "slug": "depictions-of-cruelty",
+          "title": "This tag suggests the presence of scenes in the story which have descriptions of graphic/gory content, and reader discretion is thus advised. The target of this cruelty is irrelevant,as long as such scenes can be expected on regularly."
+        },
+        {
+          "id": 75,
+          "name": "Depression",
+          "slug": "depression",
+          "title": "This tag is only to be used when depression is a prominent aspect of the story, with either the protagonist themselves or other important characters displaying the symptoms of depression. "
+        },
+        {
+          "id": 165,
+          "name": "Determined Protagonist",
+          "slug": "determined-protagonist",
+          "title": "For protagonist who are resolute"
+        },
+        {
+          "id": 323,
+          "name": "European Ambience",
+          "slug": "european-ambience",
+          "title": "Novels whose setting is set in europe or fictional europe. This novel includes facts, cultures, places, and people that are same or similar to the real life europe in any specific period of time/era."
+        },
+        {
+          "id": 93,
+          "name": "Female Protagonist",
+          "slug": "female-protagonist",
+          "title": "If the protagonist of the series is that of the biological female gender, then this tag is to be used.\n\nNot to be used with: Male Protagonist"
+        },
+        {
+          "id": 26,
+          "name": "Hard-Working Protagonist",
+          "slug": "hard-working-protagonist",
+          "title": "This tag is to be used to define a protagonist who puts their utmost effort into all tasks, using all their energy and diligence to complete it."
+        },
+        {
+          "id": 192,
+          "name": "Hidden Abilities",
+          "slug": "hidden-abilities",
+          "title": "Where the protagonist of the story hides part of their power or abilities, and the people around them don't know about it(genrally)."
+        },
+        {
+          "id": 81,
+          "name": "Hiding True Abilities",
+          "slug": "hiding-true-abilities",
+          "title": "This tag is to be used when the protagonist hides their real abilities/powers. Typically, it is to be used when they act weak when they are actually really badass. This tag is to be added only if the protagonist does it for a significant amount of time."
+        },
+        {
+          "id": 168,
+          "name": "Hiding True Identity",
+          "slug": "hiding-true-identity",
+          "title": "This tag can be used if the protagonist hides their real identity and uses another identity to interact with people. The real identity is actively hidden by the protagonist. Even if the cover is blown later in the story, this tag can be used. The Mistaken Identity tag can be used instead if the misunderstanding was unintentional."
+        },
+        {
+          "id": 360,
+          "name": "Kingdoms",
+          "slug": "kingdoms",
+          "title": "This tag is ONLY to be used if having Kingdoms is an important part of the story(Definition may vary from novel to novel)."
+        },
+        {
+          "id": 266,
+          "name": "Knights",
+          "slug": "knights",
+          "title": "Tag is to be used if the novel features knights prominently in the storyline. The main character is not required to be one. "
+        },
+        {
+          "id": 136,
+          "name": "Late Romance",
+          "slug": "late-romance",
+          "title": "The romance involving the main character starts to develop very late or even after half-way through the story line and sometimes nearing the end, usually after 200-500+ chapters for Chinese novels, or 50-100+ for other novels if its very late or 1000+ chapters for Chinese novels or over 100+ chapters for other novels if the romance starts nearing the end."
+        },
+        {
+          "id": 327,
+          "name": "Maids",
+          "slug": "maids",
+          "title": "Female attendants that wear maid uniform and complete the duties of a maid and has some relevance to the story."
+        },
+        {
+          "id": 216,
+          "name": "Manipulative Characters",
+          "slug": "manipulative-characters",
+          "title": "Tag is to be used ONLY when either the protagonist, or some other plot significant character manipulates people around them. This manipulation is more of a psychological manipulation rather than manipulation by magic or some other such miraculous powers.\n"
+        },
+        {
+          "id": 505,
+          "name": "Murders",
+          "slug": "murders",
+          "title": "To be used when the story deals with one or more murders, either being committed, investigated, solved or being a central plot point in the story."
+        },
+        {
+          "id": 238,
+          "name": "Nobles",
+          "slug": "nobles",
+          "title": "The protagonist or another character has a distinct title given from the highest power, granting one some kind of authority when given. Nobles are usually individuals who have some influence in the government or have bought the title through means of wealth. "
+        },
+        {
+          "id": 34,
+          "name": "Past Plays a Big Role",
+          "slug": "past-plays-a-big-role",
+          "title": "where the past(events before the novel) of the protagonist impacts significant on the plot of novel. Whether for a single arc or throughout the story."
+        },
+        {
+          "id": 453,
+          "name": "Past Trauma",
+          "slug": "past-trauma",
+          "title": "To be used when something traumatic happens to one of the main characters or those of relevance."
+        },
+        {
+          "id": 35,
+          "name": "Proactive Protagonist",
+          "slug": "proactive-protagonist",
+          "title": "The protagonist is active in what they do and controls the situation to some extent. Instead of being reactive and going with the flow."
+        },
+        {
+          "id": 331,
+          "name": "Protagonist Strong from the Start",
+          "slug": "protagonist-strong-from-the-start",
+          "title": "Protagonists who begin the novel as one of the most powerful people.   "
+        },
+        {
+          "id": 94,
+          "name": "Reincarnation",
+          "slug": "reincarnation",
+          "title": "This tag is used if the protagonist is born again after dying. Contrast with transmigration, where the protagonist inhabits an existing body."
+        },
+        {
+          "id": 123,
+          "name": "Revenge",
+          "slug": "revenge",
+          "title": "This tag is to be used when revenge by/against the protagonist plays a significant part in the main plot."
+        },
+        {
+          "id": 159,
+          "name": "Royalty",
+          "slug": "royalty",
+          "title": "The highest societal status that marks the protagonist or another character as a person of immense influence whether by blood, marriage or adoption. Usually used to define individuals of the monarchy, or in modern times the most influential person of power."
+        },
+        {
+          "id": 124,
+          "name": "Schemes And Conspiracies",
+          "slug": "schemes-and-conspiracies",
+          "title": "Only to be used when Schemes, Conspiracies and Strategies are used as an integral part of the plot. These maybe employed by either the protagonist or by other significant characters. Please don't use this tag if only one (or very few) of the battles present in a series involve such intelligence-based methods."
+        },
+        {
+          "id": 160,
+          "name": "Second Chance",
+          "slug": "second-chance",
+          "title": "This tag is used when the protagonist has failed to do something in their first life. The protagonist is given a 'Second Chance' to turn things around by going back to his or her younger self. This can happen once or many times. Do not confuse it with Age Regression or Time Travel for they are used differently from this tag."
+        },
+        {
+          "id": 413,
+          "name": "Shy Characters",
+          "slug": "shy-characters",
+          "title": "The tag is to be used when the book has main character(s) who are introverted, timid, reserved or socially awkward, and it is a significant aspect of the character(s) and their story."
+        },
+        {
+          "id": 795,
+          "name": "Spies",
+          "slug": "spies",
+          "title": "The tag is to be used when the main character(s) that are involved in espionage activities, either as secret agents, undercover operatives, or intelligence officers, or if espionage activities are central to the theme or the plot of the story."
+        },
+        {
+          "id": 226,
+          "name": "Strong to Stronger",
+          "slug": "strong-to-stronger",
+          "title": "No definition found."
+        },
+        {
+          "id": 566,
+          "name": "Torture",
+          "slug": "torture",
+          "title": "This tag is to be used if the novel features torture events prominently in the storyline. The torture events must not be off-screen (has to be depicted to the readers). The main character does not have to be involved, either as a torturer,tortured or spectator. "
+        },
+        {
+          "id": 330,
+          "name": "Tragic Past",
+          "slug": "tragic-past",
+          "title": "The protagonist has experienced extreme loss or a traumatic event in their past. Their past plays a significant role in their current personality, skills, or motivations."
+        },
+        {
+          "id": 378,
+          "name": "Villainess Noble Girls",
+          "slug": "villainess-noble-girls",
+          "title": "Usually found in Japanese otome game reincarnation novels. A normal girl dies and reincarnates into the world of an otome game or a novel as the villainess noble girl, who is usually the love rival of the story or game's MC."
+        },
+        {
+          "id": 43,
+          "name": "Wealthy Characters",
+          "slug": "wealthy-characters",
+          "title": "One or more of the main characters is rich in money, resources, or assets. "
+        }
+      ]
+    },
+    {
+      "name": "Shadow Rogue",
+      "image": "https://cdn.wuxiaworld.eu/original/shadowrogue.png",
+      "slug": "shadow-rogue",
+      "description": "As a promise, he went out into the world as an assassin. 3 years later, after becoming the Supreme Assassin, he gave up on everything he had and returned to the ranks of ordinary people. But one day, Kismet, a mystical game created by the National Research and Development had appeared.\nEnigmatic hands, spectral frame, and one cunning strike just like the swing of the Grim Reaper. The Supreme Assassin takes on the mystical world, and how his legendary tales sets off, progressively ascending the altar to becoming the best.\n",
+      "rating": "3.03",
+      "ranking": 4752,
+      "views": "15.2K",
+      "chapters": 141,
+      "categories": [
+        {
+          "name": "Action",
+          "slug": "action",
+          "title": "A work typically depicting fighting, violence, chaos, and fast paced motion."
+        },
+        {
+          "name": "Adventure",
+          "slug": "adventure",
+          "title": "Exploring new places, environments or situations. This is often associated with people on long journeys to places far away encountering amazing things."
+        },
+        {
+          "name": "Comedy",
+          "slug": "comedy",
+          "title": "A dramatic work that is light and often humorous or satirical in tone and that usually contains a happy resolution of the thematic conflict."
+        },
+        {
+          "name": "Ecchi",
+          "slug": "ecchi",
+          "title": "Possibly the line between hentai and non-hentai, ecchi usually refers to fanservice put in to attract a certain group of fans."
+        },
+        {
+          "name": "Fantasy",
+          "slug": "fantasy",
+          "title": "Anything that involves, but not limited to, magic, dream world, and fairy tales."
+        },
+        {
+          "name": "Harem",
+          "slug": "harem",
+          "title": "A series involving one male character and many female characters (usually attracted to the male character). A Reverse Harem is when the genders are reversed."
+        },
+        {
+          "name": "Martial Arts",
+          "slug": "martial-arts",
+          "title": "The novel has a focus on any of several arts of combat or self-defense. These may include aikido, karate, judo, or tae kwon do, kendo, fencing, and so on and so forth."
+        },
+        {
+          "name": "Mature",
+          "slug": "mature",
+          "title": "Contains subject matter which may be too extreme for a younger audience. Content that deals with mature themes such as gore, sex, or violence."
+        },
+        {
+          "name": "Sci-fi",
+          "slug": "sci-fi",
+          "title": "Short for science fiction, these works involve twists on technology and other science related phenomena which are contrary or stretches of the modern day scientific world."
+        }
+      ],
+      "tags": [
+        {
+          "id": 164,
+          "name": "Arrogant Characters",
+          "slug": "arrogant-characters",
+          "title": "This tag should be used when there is a frequent use of characters that have the Arrogance personality traits. It is recommended to use this tag only if at least some of these characters play a significant role in the plot."
+        },
+        {
+          "id": 6,
+          "name": "Assassins",
+          "slug": "assassins",
+          "title": "Tag should only be used when Assassins are vital parts of the story."
+        },
+        {
+          "id": 303,
+          "name": "Cold Protagonist",
+          "slug": "cold-protagonist",
+          "title": "Locked. Propose a definition here:\nhttp://forum.novelupdates.com/threads/cleaning-up-tags-on-nu-v2-0.40496/"
+        },
+        {
+          "id": 74,
+          "name": "Cunning Protagonist",
+          "slug": "cunning-protagonist",
+          "title": "This tag is used to describe a protagonist who is very cunning. They often schemes/plots throughout the novel and rarely suffers a loss. Different from the Intelligent/Smart tags, the Cunning tag is to be used when the schemes/plots often cause physical/mental harm to opponents. It is recommended not to use this tag along with the Strategist tag. "
+        },
+        {
+          "id": 395,
+          "name": "Game Ranking System",
+          "slug": "game-ranking-system",
+          "title": "This tag is to be used when the story revolves around games and there is a ranking system involved as part of the plot. The protagonist must be actively involved with the ranking system whether by choice or by automatic recordings of achievements."
+        },
+        {
+          "id": 167,
+          "name": "Guilds",
+          "slug": "guilds",
+          "title": "A group of people have come together due to similar interests, often used as a controlling mechanism.   "
+        },
+        {
+          "id": 105,
+          "name": "Handsome Male Lead",
+          "slug": "handsome-male-lead",
+          "title": "This tag is to be used if the male lead is handsome.\nThe descriptions should be what the author has written, and not what the fans fantasize."
+        },
+        {
+          "id": 106,
+          "name": "Level System",
+          "slug": "level-system",
+          "title": "This tag is used when the characters of the novel improve their abilities/skills/power by leveling up."
+        },
+        {
+          "id": 365,
+          "name": "Loli",
+          "slug": "loli",
+          "title": "This tag is to be used ONLY when either the protagonist, or one of the love interests of the protagonist is a loli. It is not recommended to use this tag for other characters, no matter how important their role is. A loli is a short girl who looks like a child, no matter how much her real age is. "
+        },
+        {
+          "id": 337,
+          "name": "Lucky Protagonist",
+          "slug": "lucky-protagonist",
+          "title": "Use ONLY when the Protagonist has unusual amounts of luck, either due to plot armor or a trait."
+        },
+        {
+          "id": 17,
+          "name": "Male Protagonist",
+          "slug": "male-protagonist",
+          "title": "If the protagonist of the series is male, then this tag is to be used. By protagonist, it refers to the leading/main character.\n \nNot to be used with: Female Protagonist "
+        },
+        {
+          "id": 169,
+          "name": "MMORPG",
+          "slug": "mmorpg",
+          "title": "MMORPG stands for Massively Multiplayer Online Role-Playing Game.\nThis tag indicates playing 'online multiplayer game' is an important part of the story elements.\nThis tag SHOULD NOT be used for protagonist who are transported/transmigrated/reincarnated into a game world. (as in the game became 'real life' of the protagonist)"
+        },
+        {
+          "id": 83,
+          "name": "Modern Day",
+          "slug": "modern-day",
+          "title": "This tag is used if the setting of the story is current or near-current Earth. Contrast Futuristic Setting, Ancient Times, Ancient China."
+        },
+        {
+          "id": 138,
+          "name": "Older Love Interests",
+          "slug": "older-love-interests",
+          "title": "As it suggests, the love interests of the protagonist have to be older than the protagonist. However, it is only used when the age difference is quite significant, and either the physical/mental aspects of this difference gets some screen time."
+        },
+        {
+          "id": 21,
+          "name": "Overpowered Protagonist",
+          "slug": "overpowered-protagonist",
+          "title": "Tag is to be used ONLY if the protagonist of the series is Overpowered (definition may vary based on novel). "
+        },
+        {
+          "id": 472,
+          "name": "Perverted Protagonist",
+          "slug": "perverted-protagonist",
+          "title": "This tag is to be used when the protagonist of the story shows signs of perversion. This mainly refers to their sexual behaviour, where in they have abnormal sexual hunger. "
+        },
+        {
+          "id": 239,
+          "name": "Polygamy",
+          "slug": "polygamy",
+          "title": "This tag is to be only used if the male protagonist is married to more than one female at a time. "
+        },
+        {
+          "id": 36,
+          "name": "Racism",
+          "slug": "racism",
+          "title": "This tag is used if there are consistent incidents of racism (as defined in our world's standard) happening within the storyline, either by the main character him/herself or by other characters. "
+        },
+        {
+          "id": 23,
+          "name": "Romantic Subplot",
+          "slug": "romantic-subplot",
+          "title": "When the story has some male-female or other similar couple relationships, but not enough to warrant a romance genre tag. Can be used in tandem with Harem. Usually for when relationships are created without any further growth or expansion of said relationship, though this isn't always the case."
+        },
+        {
+          "id": 240,
+          "name": "R*pe",
+          "slug": "rpe",
+          "title": "This tag is to be used ONLY IF an important/significant-to-the-story character is raped OR doing the raping, at any time during the course of the story. Note that this tag is not to be used if (1) some character is hinted to have raped/been raped before the course of the story, or (2) the occurence is off-screen and doesn't involve any significant character."
+        },
+        {
+          "id": 366,
+          "name": "R*pe Victim Becomes Lover",
+          "slug": "rpe-victim-becomes-lover",
+          "title": "This tag is to be used when a rape victim falls in love with his/her rapist. The same tag is to be used if multiple such events take place. The tag is to be only used if either the rapist or the rape victim is the protagonist. Not to be used together with the tag 'Rape' unless the involved character is not the protagonist or a love interest of the protagonist.'"
+        },
+        {
+          "id": 140,
+          "name": "Ruthless Protagonist",
+          "slug": "ruthless-protagonist",
+          "title": "A protagonist who has no mercy and kills or does similar drastic things without hesitation\n(eg. without hesitating , consigning a company into bankruptcy without caring about what the fired employees will do from now on for their livelihood counts )"
+        },
+        {
+          "id": 260,
+          "name": "Threesome",
+          "slug": "threesome",
+          "title": "Threesome is a sexual activity where three individuals take part simultaneously(maybe extended to four) in sex. This tag is to be used if one of them is the protagonist. Note that this tag is entirely different from Orgy tag. Here, it is typically expected for two of them to be of one gender and the other, the opposite gender."
+        },
+        {
+          "id": 171,
+          "name": "Virtual Reality",
+          "slug": "virtual-reality",
+          "title": "When the five senses of sight, smell, hearing, taste, and touch, as well as physical movement are being used but, the real person is not actually receiving any of these senses or physically moving. Usually used for games that uses virtual reality as a form of entertainment such as VRMMORPG. However Virtual Reality does not always have to be related to games and can be used when the user is not physically present but is actively moving in another world."
+        },
+        {
+          "id": 91,
+          "name": "Weak to Strong",
+          "slug": "weak-to-strong",
+          "title": "This TAG is used to indicate the stories in which the protagonist starts at a weak power level and becomes gradually strong as the story progresses."
+        }
+      ]
+    },
+    {
+      "name": "Shadow Ruler",
+      "image": null,
+      "slug": "shadow-ruler",
+      "description": "I don\u2019t know anything.\nI don\u2019t know anything about the outside world, about human warmth, about my parents\u2019 love, about words, about food, about clothes, about joy, anger, sorrow, and self-expression.\nMy mother left this world due to a difficult childbirth, and as a result, my father never smiled at me, gave me nothing but violence, locked me in a private room, gave me only a small piece of bread that was too hard for me to eat and a glass of water a day, and kept me in confinement.\nThe people of the city only had negative feelings toward me because of my father\u2019s every action as a child of the devil and an abomination.\nThe only ones who were kind to me and taught me many things and fun things were a cat with a long tail and a crow bird with three legs.\nThen one day, through the machinations of the townspeople and my father, I was about to be executed by an assassin by way of some important person.\nAnd the person who appeared in front of me, the cat, and the bird was not an assassin, but a scary-looking, very strong older brother.\nWhy?\nI\u2019m nothing, I\u2019m worthless, I\u2019m \u30fb\u30fb\u30fb\u30fb just a little thing, but why does everyone hate me?\nWhy do people hate me? Should I not have been born in this world?\n",
+      "rating": "3.50",
+      "ranking": 11454,
+      "views": "4.44K",
+      "chapters": 0,
+      "categories": [
+        {
+          "name": "Adventure",
+          "slug": "adventure",
+          "title": "Exploring new places, environments or situations. This is often associated with people on long journeys to places far away encountering amazing things."
+        },
+        {
+          "name": "Drama",
+          "slug": "drama",
+          "title": "A work meant to bring on an emotional response, such as instilling sadness or tension.\n\nNovels that often show life or characters through conflict and emotions. In general, the different parts of the story tend to form a whole that is greater than the sum of the parts. In other words, the story has a message that is bigger than just the story line itself"
+        },
+        {
+          "name": "Fantasy",
+          "slug": "fantasy",
+          "title": "Anything that involves, but not limited to, magic, dream world, and fairy tales."
+        },
+        {
+          "name": "Romance",
+          "slug": "romance",
+          "title": "A story in this genre focus heavily on the romantic relationship between two or more people."
+        },
+        {
+          "name": "School Life",
+          "slug": "school-life",
+          "title": "Having a major setting of the story deal with some type of school."
+        },
+        {
+          "name": "Shoujo",
+          "slug": "shoujo",
+          "title": "A work intended and primarily written for females. Usually the story is from the point of view of a young female protagonist and usually involves romance and drama."
+        }
+      ],
+      "tags": [
+        {
+          "id": 8,
+          "name": "Beautiful Female Lead",
+          "slug": "beautiful-female-lead",
+          "title": "This tag is to be used if the female lead of the series is beautiful. \nThe descriptions should be what the author has written, and not what the fans fantasize."
+        },
+        {
+          "id": 458,
+          "name": "Child Abuse",
+          "slug": "child-abuse",
+          "title": "This tag is to be used when the story shows children getting abused. Preferably this child should be the protagonist or some other significant character. Here, Child Abuse is not to be used when the parent/teacher hits the child during mentoring, but only to a certain extent. Sexual Abuse of a child should also be listed under this tag. It is recommended not to use this tag for Chinese cultivation novels."
+        },
+        {
+          "id": 452,
+          "name": "Child Protagonist",
+          "slug": "child-protagonist",
+          "title": "The protagonist is a child. Only apply this tag if the protagonist is a child for a significant part (chapter-wise) of the novel."
+        },
+        {
+          "id": 282,
+          "name": "Demons",
+          "slug": "demons",
+          "title": "Beings that possess human like appearance, but are of another race other than human and usually possess strength greater than a regular human. Sometimes shown as an evil or a race that's good at dark arts in fantasy, and others as beast that have surpassed a certain level of cultivation in xiaxia and xuanhuan."
+        },
+        {
+          "id": 93,
+          "name": "Female Protagonist",
+          "slug": "female-protagonist",
+          "title": "If the protagonist of the series is that of the biological female gender, then this tag is to be used.\n\nNot to be used with: Male Protagonist"
+        },
+        {
+          "id": 78,
+          "name": "Friendship",
+          "slug": "friendship",
+          "title": "This tag is used when the bond between the protagonist and his companions plays a big role on how the story develops."
+        },
+        {
+          "id": 741,
+          "name": "Mute Character",
+          "slug": "mute-character",
+          "title": "The tag is to be used when the main characters are unable to speak, or they don't speak on their own volition or some other reason throughout the story."
+        },
+        {
+          "id": 170,
+          "name": "Sword And Magic",
+          "slug": "sword-and-magic",
+          "title": "This tag is to only be used if both the use of magic and swords are present within the novel."
+        }
+      ]
+    },
+    {
+      "name": "Shadow Throne",
+      "image": "https://cdn.wuxiaworld.eu/original/shadow-throne-mtl.jpg",
+      "slug": "shadow-throne-mtl",
+      "description": "A novel about a strong male protagonist who might have special abilities, transmigration, cultivation, and possibly revenge. More details needed.",
+      "rating": "5.00",
+      "ranking": 25190,
+      "views": "1.38K",
+      "chapters": 10,
+      "categories": [
+        {
+          "name": "Action",
+          "slug": "action",
+          "title": "A work typically depicting fighting, violence, chaos, and fast paced motion."
+        },
+        {
+          "name": "Adventure",
+          "slug": "adventure",
+          "title": "Exploring new places, environments or situations. This is often associated with people on long journeys to places far away encountering amazing things."
+        },
+        {
+          "name": "Fantasy",
+          "slug": "fantasy",
+          "title": "Anything that involves, but not limited to, magic, dream world, and fairy tales."
+        },
+        {
+          "name": "Martial Arts",
+          "slug": "martial-arts",
+          "title": "The novel has a focus on any of several arts of combat or self-defense. These may include aikido, karate, judo, or tae kwon do, kendo, fencing, and so on and so forth."
+        },
+        {
+          "name": "MTL",
+          "slug": "mtl",
+          "title": ""
+        },
+        {
+          "name": "Xuanhuan",
+          "slug": "xuanhuan",
+          "title": "Similar to xianxia, Xuanhuan may contain immortal cultivation. However, unlike xianxia, which is more focused on becoming immortal and tighter on chinese mythology, Xuanhuan is a broader, more loose genre. Basically, if it's a cultivation-based story, yet it contain elements of western fantasy, such as sci-fi, or magic that's not inherently eastern, then it is a xuanhuan."
+        }
+      ],
+      "tags": [
+        {
+          "id": 7,
+          "name": "Cultivation",
+          "slug": "cultivation",
+          "title": "This tag is to be used preferably only for Chinese novels. Cultivation refers to the protagonist trying to acquire immortality and/or supreme power by the accumulation and usage of Qi. This tag is typical of the Xianxia genre."
+        },
+        {
+          "id": 17,
+          "name": "Male Protagonist",
+          "slug": "male-protagonist",
+          "title": "If the protagonist of the series is male, then this tag is to be used. By protagonist, it refers to the leading/main character.\n \nNot to be used with: Female Protagonist "
+        },
+        {
+          "id": 21,
+          "name": "Overpowered Protagonist",
+          "slug": "overpowered-protagonist",
+          "title": "Tag is to be used ONLY if the protagonist of the series is Overpowered (definition may vary based on novel). "
+        },
+        {
+          "id": 123,
+          "name": "Revenge",
+          "slug": "revenge",
+          "title": "This tag is to be used when revenge by/against the protagonist plays a significant part in the main plot."
+        },
+        {
+          "id": 196,
+          "name": "Special Abilities",
+          "slug": "special-abilities",
+          "title": "Refers to abilites that a select few have. Doesn't have to include protagonist, but has to be something that the majority of people of the world doen't have.\nE.g Espers in a modern world"
+        },
+        {
+          "id": 41,
+          "name": "Transmigration",
+          "slug": "transmigration",
+          "title": "This tag is used if the protagonist inhabits an existing person's body after migrating across worlds. It differs from reincarnation in that the person is not literally born again."
+        }
+      ]
+    },
+    {
+      "name": "Shadow Emperor",
+      "image": "https://cdn.wuxiaworld.eu/original/Shadow-Emperor.jpg",
+      "slug": "shadow-emperor",
+      "description": "An ominous child born on Shadow Day.\nA mad prince who wields his sword against the emperor while keeping his younger brother in line.\u00a0\nEzelle, who had cloaked herself in a man\u2019s shell, caught his eye.\n\u201cYour Majesty, the person I vowed my loyalty to is not you.\u201d\nAs those blue eyes deeper than the abyss headed towards Leonard, the unbreakable Ezelle stimulated his desire to possess her.\n\u00a0\n\u201cIsn\u2019t your vow pointless? You\u2019re now in my hands. I can have it whenever I want.\u201d\nThe fascination for the rebellious woman ignited Leonard. His obsession with unquenchable thirst began to writhe.\n\u201cFor as long as you are still breathing, I have no intention of letting you go.\u201d\nLeonard has no intention to give up Ezelle. Then there\u2019s only one way, make her surrender.\n\u201cThere are two choices you can pick. Be loyal to me. Dedicate your whole self to me. But if you can\u2019t do those, then die.\u201d\n",
+      "rating": "4.00",
+      "ranking": 10110,
+      "views": "5.1K",
+      "chapters": 2,
+      "categories": [
+        {
+          "name": "Mature",
+          "slug": "mature",
+          "title": "Contains subject matter which may be too extreme for a younger audience. Content that deals with mature themes such as gore, sex, or violence."
+        },
+        {
+          "name": "Mystery",
+          "slug": "mystery",
+          "title": "Usually an unexplained event occurs, and the main protagonist attempts to find out what caused it."
+        },
+        {
+          "name": "Psychological",
+          "slug": "psychological",
+          "title": "Usually deals with the philosophy of a state of mind, in most cases detailing abnormal psychology."
+        },
+        {
+          "name": "Romance",
+          "slug": "romance",
+          "title": "A story in this genre focus heavily on the romantic relationship between two or more people."
+        }
+      ],
+      "tags": [
+        {
+          "id": 343,
+          "name": "Aristocracy",
+          "slug": "aristocracy",
+          "title": "Tag is to be used when the novel features an aristocracy, the aristocracy is a social class that a particular social order considers the highest of that society."
+        },
+        {
+          "id": 8,
+          "name": "Beautiful Female Lead",
+          "slug": "beautiful-female-lead",
+          "title": "This tag is to be used if the female lead of the series is beautiful. \nThe descriptions should be what the author has written, and not what the fans fantasize."
+        },
+        {
+          "id": 119,
+          "name": "Cross-dressing",
+          "slug": "cross-dressing",
+          "title": "This tag is to be used when the protagonist dresses as one of the opposite gender to act like someone of the opposite gender. At heart, the protagonist is imitating the opposite gender. The body of the protagonist does not become that of the opposite gender, but the protagonist is acting like the opposite gender."
+        },
+        {
+          "id": 323,
+          "name": "European Ambience",
+          "slug": "european-ambience",
+          "title": "Novels whose setting is set in europe or fictional europe. This novel includes facts, cultures, places, and people that are same or similar to the real life europe in any specific period of time/era."
+        },
+        {
+          "id": 93,
+          "name": "Female Protagonist",
+          "slug": "female-protagonist",
+          "title": "If the protagonist of the series is that of the biological female gender, then this tag is to be used.\n\nNot to be used with: Male Protagonist"
+        },
+        {
+          "id": 105,
+          "name": "Handsome Male Lead",
+          "slug": "handsome-male-lead",
+          "title": "This tag is to be used if the male lead is handsome.\nThe descriptions should be what the author has written, and not what the fans fantasize."
+        },
+        {
+          "id": 266,
+          "name": "Knights",
+          "slug": "knights",
+          "title": "Tag is to be used if the novel features knights prominently in the storyline. The main character is not required to be one. "
+        },
+        {
+          "id": 238,
+          "name": "Nobles",
+          "slug": "nobles",
+          "title": "The protagonist or another character has a distinct title given from the highest power, granting one some kind of authority when given. Nobles are usually individuals who have some influence in the government or have bought the title through means of wealth. "
+        },
+        {
+          "id": 444,
+          "name": "Obsessive Love",
+          "slug": "obsessive-love",
+          "title": "Extreme love to the point of insanity  "
+        },
+        {
+          "id": 139,
+          "name": "Possessive Characters",
+          "slug": "possessive-characters",
+          "title": "This tag is used if the novel features characters that, in the context of romance, want to exert control of other person/people. The main character is not required to be one for this tag to be used. "
+        },
+        {
+          "id": 159,
+          "name": "Royalty",
+          "slug": "royalty",
+          "title": "The highest societal status that marks the protagonist or another character as a person of immense influence whether by blood, marriage or adoption. Usually used to define individuals of the monarchy, or in modern times the most influential person of power."
+        }
+      ]
+    },
+    {
+      "name": "Shadow Covenant",
+      "image": "https://cdn.wuxiaworld.eu/original/shadow-covenant-mtl.jpg",
+      "slug": "shadow-covenant-mtl",
+      "description": "In a tumultuous era, as the ancient walls of fate crumble, saints and demons walk the earth, and the planes share a common sorrow. When the chaotic waves engulf every corner of the multiverse, what will become of all living beings? A veteran gamer is reborn far from the shining light of the gods. His primary goal is to survive the coming awakening of ancient evils, and then escape this plane! His only reliance is the knowledge and experience of a gamer etched into his soul, and that deep blue curtain...",
+      "rating": "5.00",
+      "ranking": 22663,
+      "views": "1.51K",
+      "chapters": 0,
+      "categories": [
+        {
+          "name": "Action",
+          "slug": "action",
+          "title": "A work typically depicting fighting, violence, chaos, and fast paced motion."
+        },
+        {
+          "name": "Adventure",
+          "slug": "adventure",
+          "title": "Exploring new places, environments or situations. This is often associated with people on long journeys to places far away encountering amazing things."
+        },
+        {
+          "name": "Fantasy",
+          "slug": "fantasy",
+          "title": "Anything that involves, but not limited to, magic, dream world, and fairy tales."
+        },
+        {
+          "name": "MTL",
+          "slug": "mtl",
+          "title": ""
+        },
+        {
+          "name": "Supernatural",
+          "slug": "supernatural",
+          "title": "Usually entails amazing and unexplained powers or events which defy the laws of physics."
+        },
+        {
+          "name": "Xuanhuan",
+          "slug": "xuanhuan",
+          "title": "Similar to xianxia, Xuanhuan may contain immortal cultivation. However, unlike xianxia, which is more focused on becoming immortal and tighter on chinese mythology, Xuanhuan is a broader, more loose genre. Basically, if it's a cultivation-based story, yet it contain elements of western fantasy, such as sci-fi, or magic that's not inherently eastern, then it is a xuanhuan."
+        }
+      ],
+      "tags": [
+        {
+          "id": 282,
+          "name": "Demons",
+          "slug": "demons",
+          "title": "Beings that possess human like appearance, but are of another race other than human and usually possess strength greater than a regular human. Sometimes shown as an evil or a race that's good at dark arts in fantasy, and others as beast that have surpassed a certain level of cultivation in xiaxia and xuanhuan."
+        },
+        {
+          "id": 286,
+          "name": "Fantasy World",
+          "slug": "fantasy-world",
+          "title": "Any novel that takes place in a world where there is magic, elves, demons, and other common fantasy elements can have this tag listed."
+        },
+        {
+          "id": 97,
+          "name": "Game Elements",
+          "slug": "game-elements",
+          "title": "Protagonist has a status screen or something similar to it."
+        },
+        {
+          "id": 232,
+          "name": "Magic",
+          "slug": "magic",
+          "title": "Tag is to be used ONLY if the protagonist of the series can use Magic (definition may vary based on novel). If the series has multiple protagonists, only use this tag if having Magic is a prominent feature of one of them."
+        },
+        {
+          "id": 17,
+          "name": "Male Protagonist",
+          "slug": "male-protagonist",
+          "title": "If the protagonist of the series is male, then this tag is to be used. By protagonist, it refers to the leading/main character.\n \nNot to be used with: Female Protagonist "
+        },
+        {
+          "id": 233,
+          "name": "Monsters",
+          "slug": "monsters",
+          "title": "Tag is to be used ONLY if the protagonist of the series is a Monster (definition may vary based on novel). If the series has multiple protagonists, only use this tag if being a Monster(s) is a prominent feature of one of them. Can ALSO be used if there being Monster(s) has a big impact on the story."
+        },
+        {
+          "id": 331,
+          "name": "Protagonist Strong from the Start",
+          "slug": "protagonist-strong-from-the-start",
+          "title": "Protagonists who begin the novel as one of the most powerful people.   "
+        },
+        {
+          "id": 94,
+          "name": "Reincarnation",
+          "slug": "reincarnation",
+          "title": "This tag is used if the protagonist is born again after dying. Contrast with transmigration, where the protagonist inhabits an existing body."
+        },
+        {
+          "id": 196,
+          "name": "Special Abilities",
+          "slug": "special-abilities",
+          "title": "Refers to abilites that a select few have. Doesn't have to include protagonist, but has to be something that the majority of people of the world doen't have.\nE.g Espers in a modern world"
+        },
+        {
+          "id": 170,
+          "name": "Sword And Magic",
+          "slug": "sword-and-magic",
+          "title": "This tag is to only be used if both the use of magic and swords are present within the novel."
+        },
+        {
+          "id": 41,
+          "name": "Transmigration",
+          "slug": "transmigration",
+          "title": "This tag is used if the protagonist inhabits an existing person's body after migrating across worlds. It differs from reincarnation in that the person is not literally born again."
+        },
+        {
+          "id": 176,
+          "name": "Transported to Another World",
+          "slug": "transported-to-another-world",
+          "title": "The protagonist of the story starts in one world until they are sent to another, often through reincarnation or summoning. "
+        },
+        {
+          "id": 91,
+          "name": "Weak to Strong",
+          "slug": "weak-to-strong",
+          "title": "This TAG is used to indicate the stories in which the protagonist starts at a weak power level and becomes gradually strong as the story progresses."
+        }
+      ]
+    },
+    {
+      "name": "Light and Shadow",
+      "image": "https://cdn.wuxiaworld.eu/original/Light-and-Shadow.png",
+      "slug": "light-and-shadow",
+      "description": "It\u2019s a rude insult when lowly and headstrong servant Edna comes to marry Duke Eli, instead of the noble daughter he expected. But the ambitious maid hides an even bigger secret behind her obvious ruse \u2013 one that could change the kingdom\u2019s very history. Can the two find freedom, redemption \u2013 and love \u2013 without drawing their swords on each other?\n",
+      "rating": "4.44",
+      "ranking": 7228,
+      "views": "8.09K",
+      "chapters": 6,
+      "categories": [
+        {
+          "name": "Adult",
+          "slug": "adult",
+          "title": "Contains mature content that is suitable only for adults. Titles in this category may include prolonged scenes of intense violence and/or graphic sexual content and nudity."
+        },
+        {
+          "name": "Drama",
+          "slug": "drama",
+          "title": "A work meant to bring on an emotional response, such as instilling sadness or tension.\n\nNovels that often show life or characters through conflict and emotions. In general, the different parts of the story tend to form a whole that is greater than the sum of the parts. In other words, the story has a message that is bigger than just the story line itself"
+        },
+        {
+          "name": "Fantasy",
+          "slug": "fantasy",
+          "title": "Anything that involves, but not limited to, magic, dream world, and fairy tales."
+        },
+        {
+          "name": "Gender Bender",
+          "slug": "gender-bender",
+          "title": "Girls dressing up as guys, guys dressing up as girls. Guys turning into girls, girls turning into guys."
+        },
+        {
+          "name": "Josei",
+          "slug": "josei",
+          "title": "Literally [Woman]. Targets women 18-30. Female equivalent to seinen. Unlike shoujo the romance is more realistic and less idealized. The storytelling is more explicit and mature."
+        },
+        {
+          "name": "Mature",
+          "slug": "mature",
+          "title": "Contains subject matter which may be too extreme for a younger audience. Content that deals with mature themes such as gore, sex, or violence."
+        },
+        {
+          "name": "Romance",
+          "slug": "romance",
+          "title": "A story in this genre focus heavily on the romantic relationship between two or more people."
+        },
+        {
+          "name": "Smut",
+          "slug": "smut",
+          "title": "Erotic work of fiction that's mainly targeted toward females. Smut stories often gives heavy focus on love and relationships between the main characters."
+        }
+      ],
+      "tags": [
+        {
+          "id": 172,
+          "name": "Adapted to Manhwa",
+          "slug": "adapted-to-manhwa",
+          "title": "This tag is to be used ONLY if a manhwa has been released based on the novel. By manhwa, it refers to the Korean equivalent of a comic book, provided it is an official publication. The tag is to be added only AFTER the official release of the manhwa.\n"
+        },
+        {
+          "id": 343,
+          "name": "Aristocracy",
+          "slug": "aristocracy",
+          "title": "Tag is to be used when the novel features an aristocracy, the aristocracy is a social class that a particular social order considers the highest of that society."
+        },
+        {
+          "id": 408,
+          "name": "Bickering Couple",
+          "slug": "bickering-couple",
+          "title": "This tag signifies that the main couple (protagonist and love interest) are always bickering. This doesn\u2019t signify disharmony between them, but shows the way their relationship looks for the outside eye."
+        },
+        {
+          "id": 70,
+          "name": "Calm Protagonist",
+          "slug": "calm-protagonist",
+          "title": "This tag is used when the protagonist is able to remain calm in difficult and dangerous situation."
+        },
+        {
+          "id": 116,
+          "name": "Character Growth",
+          "slug": "character-growth",
+          "title": "This tag should be used when the protagonist grows mentally during the story. The protagonist can grow in various ways like by changing his ideals or by strengthening them but he must grow in a way, such that by the end of the series the protagonist looks like a completely different person. "
+        },
+        {
+          "id": 146,
+          "name": "Clever Protagonist",
+          "slug": "clever-protagonist",
+          "title": "This tag is used to define a protagonist who is very smart, witty, and bright and can easily pick up new things."
+        },
+        {
+          "id": 130,
+          "name": "Couple Growth",
+          "slug": "couple-growth",
+          "title": "Used when the the main protagonist and his/her significant other grow into their relationship together and their love grows stronger as time progresses. Not used to describe growth in strength."
+        },
+        {
+          "id": 119,
+          "name": "Cross-dressing",
+          "slug": "cross-dressing",
+          "title": "This tag is to be used when the protagonist dresses as one of the opposite gender to act like someone of the opposite gender. At heart, the protagonist is imitating the opposite gender. The body of the protagonist does not become that of the opposite gender, but the protagonist is acting like the opposite gender."
+        },
+        {
+          "id": 323,
+          "name": "European Ambience",
+          "slug": "european-ambience",
+          "title": "Novels whose setting is set in europe or fictional europe. This novel includes facts, cultures, places, and people that are same or similar to the real life europe in any specific period of time/era."
+        },
+        {
+          "id": 93,
+          "name": "Female Protagonist",
+          "slug": "female-protagonist",
+          "title": "If the protagonist of the series is that of the biological female gender, then this tag is to be used.\n\nNot to be used with: Male Protagonist"
+        },
+        {
+          "id": 439,
+          "name": "First Love",
+          "slug": "first-love",
+          "title": "This tag refers to either the main character or the main love interest being either one\u2019s first love. This only applies if it is a reoccurring statement throughout the story. "
+        },
+        {
+          "id": 325,
+          "name": "First-time Interc**rse",
+          "slug": "first-time-intercrse",
+          "title": "Loss of virginity, either consensual or not. Mainly used in R18 novels."
+        },
+        {
+          "id": 81,
+          "name": "Hiding True Abilities",
+          "slug": "hiding-true-abilities",
+          "title": "This tag is to be used when the protagonist hides their real abilities/powers. Typically, it is to be used when they act weak when they are actually really badass. This tag is to be added only if the protagonist does it for a significant amount of time."
+        },
+        {
+          "id": 168,
+          "name": "Hiding True Identity",
+          "slug": "hiding-true-identity",
+          "title": "This tag can be used if the protagonist hides their real identity and uses another identity to interact with people. The real identity is actively hidden by the protagonist. Even if the cover is blown later in the story, this tag can be used. The Mistaken Identity tag can be used instead if the misunderstanding was unintentional."
+        },
+        {
+          "id": 266,
+          "name": "Knights",
+          "slug": "knights",
+          "title": "Tag is to be used if the novel features knights prominently in the storyline. The main character is not required to be one. "
+        },
+        {
+          "id": 82,
+          "name": "Leadership",
+          "slug": "leadership",
+          "title": "This tag is used if the main character is someone who consistently show leadership qualities in the storyline. Main character being in an official leadership position is not required. "
+        },
+        {
+          "id": 194,
+          "name": "Loyal Subordinates",
+          "slug": "loyal-subordinates",
+          "title": "Where the protagonist has underlings that have a strong sense faith/devotion to the protagonist."
+        },
+        {
+          "id": 459,
+          "name": "Medieval",
+          "slug": "medieval",
+          "title": "The tag is to be used when the story is set in the Middle Ages, which is a period of European history between the 5th and 15th century."
+        },
+        {
+          "id": 304,
+          "name": "Mysterious Family Background",
+          "slug": "mysterious-family-background",
+          "title": "Where the protagonist has parents/family that play a major role in the story, but the protagonist doesn't know about it yet or is trying to find out."
+        },
+        {
+          "id": 345,
+          "name": "Mysterious Past",
+          "slug": "mysterious-past",
+          "title": "Where the protagonist has a past that either the readers and protagonist don't know or a past that the protagonist doesn't want to talk about. might or might not play a huge role in the story."
+        },
+        {
+          "id": 238,
+          "name": "Nobles",
+          "slug": "nobles",
+          "title": "The protagonist or another character has a distinct title given from the highest power, granting one some kind of authority when given. Nobles are usually individuals who have some influence in the government or have bought the title through means of wealth. "
+        },
+        {
+          "id": 34,
+          "name": "Past Plays a Big Role",
+          "slug": "past-plays-a-big-role",
+          "title": "where the past(events before the novel) of the protagonist impacts significant on the plot of novel. Whether for a single arc or throughout the story."
+        },
+        {
+          "id": 453,
+          "name": "Past Trauma",
+          "slug": "past-trauma",
+          "title": "To be used when something traumatic happens to one of the main characters or those of relevance."
+        },
+        {
+          "id": 122,
+          "name": "Power Couple",
+          "slug": "power-couple",
+          "title": "This tag is to be used if the main couple of the story (The protagonist and the love interest) has both the partners being powerful by the standards of the world/setting they live in, for a major part of the story. This tag is not recommended when a harem is involved. This power may be physical/financial/political. Please note that this is different from the Strong Love Interests tag."
+        },
+        {
+          "id": 258,
+          "name": "Pregnancy",
+          "slug": "pregnancy",
+          "title": "This tag is to be used when either the protagonist, or one or more than one of the sexual partners of the protagonist gets pregnant during the course of the story. This may lead to the usage of the Childcare tag in the future."
+        },
+        {
+          "id": 446,
+          "name": "R-18",
+          "slug": "r-18",
+          "title": "To be used when the content of the story is suitable only for individuals who are 18 or older. This may be due to the story having sexual or violent themes repeatedly. Note that it can ONLY be used for a JP or KR* novel. For others the Adult genre will suffice.\n\n* In South Korea, a child is counted as 1 year old the moment they are born. This tag is analogous to the Korean R-19 tag."
+        },
+        {
+          "id": 159,
+          "name": "Royalty",
+          "slug": "royalty",
+          "title": "The highest societal status that marks the protagonist or another character as a person of immense influence whether by blood, marriage or adoption. Usually used to define individuals of the monarchy, or in modern times the most influential person of power."
+        },
+        {
+          "id": 37,
+          "name": "Secret Identity",
+          "slug": "secret-identity",
+          "title": "Tag is to be used ONLY if the protagonist of the series has a Secret Identity (definition may vary based on novel). If the series has multiple protagonists, only use this tag if having a Secret Identity is a prominent feature of one of them."
+        },
+        {
+          "id": 518,
+          "name": "Secrets",
+          "slug": "secrets",
+          "title": "No definition found."
+        },
+        {
+          "id": 187,
+          "name": "Sword Wielder",
+          "slug": "sword-wielder",
+          "title": "Where one either follows the meaning of the sword dao, or have a sword as their main weapon. Whichever it is, ALL ENEMIES SHALL DIE BY SWORD!!!"
+        },
+        {
+          "id": 330,
+          "name": "Tragic Past",
+          "slug": "tragic-past",
+          "title": "The protagonist has experienced extreme loss or a traumatic event in their past. Their past plays a significant role in their current personality, skills, or motivations."
+        }
+      ]
+    }
+  ]
+}
