@@ -20,7 +20,8 @@ interface NovelCardProps {
   title: string;
   author: string;
   coverUrl: string;
-  status: string;
+  sourceName?: string;
+  status?: string;
   latestChapter: string;
   onPress: () => void;
 }
@@ -29,6 +30,7 @@ export default function NovelCard({
   title,
   author,
   coverUrl,
+  sourceName,
   status,
   latestChapter,
   onPress,
@@ -55,7 +57,10 @@ export default function NovelCard({
     }).start();
   };
 
-  const isOngoing = status?.toLowerCase() === 'ongoing';
+  const badgeText = sourceName || status || 'Unknown';
+  // If it's a known source, let's just make the badge a subtle primary color
+  const isSourceBadge = !!sourceName;
+  const isOngoing = !isSourceBadge && status?.toLowerCase() === 'ongoing';
 
   return (
     <Pressable
@@ -104,35 +109,36 @@ export default function NovelCard({
             {author || 'Unknown Author'}
           </Text>
 
-          {/* Status Badge */}
+          {/* Status/Source Badge */}
           <View style={styles.badgeRow}>
             <View
               style={[
                 styles.badge,
                 {
-                  backgroundColor: isOngoing
+                  backgroundColor: isSourceBadge
+                    ? `${theme.primary}20` // 20% opacity primary color
+                    : isOngoing
                     ? 'rgba(76, 175, 80, 0.15)'
                     : 'rgba(158, 158, 158, 0.15)',
                 },
               ]}
             >
-              <View
-                style={[
-                  styles.statusDot,
-                  { backgroundColor: isOngoing ? '#4CAF50' : '#9E9E9E' },
-                ]}
+              <Ionicons 
+                name={isSourceBadge ? "library-outline" : "ellipse"} 
+                size={isSourceBadge ? 10 : 5} 
+                color={isSourceBadge ? theme.primary : isOngoing ? '#4CAF50' : '#9E9E9E'} 
               />
               <Text
                 style={[
                   textStyles.caption,
                   {
-                    color: isOngoing ? '#4CAF50' : '#9E9E9E',
+                    color: isSourceBadge ? theme.primary : isOngoing ? '#4CAF50' : '#9E9E9E',
                     fontSize: 10,
                     fontWeight: '600',
                   },
                 ]}
               >
-                {status || 'Unknown'}
+                {badgeText}
               </Text>
             </View>
           </View>

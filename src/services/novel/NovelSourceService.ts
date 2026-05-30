@@ -28,6 +28,14 @@ export async function searchNovels(
   if (parsed.error) {
     throw new Error(parsed.error);
   }
+  
+  // Inject sourceId into every result so UI knows where it came from
+  if (Array.isArray(parsed)) {
+    parsed.forEach((item: NovelSearchResult) => {
+      item.sourceId = sourceId;
+    });
+  }
+  
   return parsed;
 }
 

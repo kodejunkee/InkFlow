@@ -5,18 +5,18 @@
  * Uses a hidden WebView to bypass Cloudflare, then searches via Python scraper.
  */
 
-import React, { useCallback, useState, useRef } from 'react';
+import React, { useState, useCallback, useRef, useEffect, useMemo } from 'react';
 import {
   View,
   Text,
   TextInput,
   StyleSheet,
-  FlatList,
   ActivityIndicator,
   Pressable,
   Keyboard,
   Platform,
   Alert,
+  FlatList,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
@@ -24,30 +24,46 @@ import { Ionicons } from '@expo/vector-icons';
 import { useSettingsStore } from '../../src/stores/settingsStore';
 import { getTheme } from '../../src/theme/themes';
 import { textStyles } from '../../src/theme/typography';
-import { CookieProvider, useCookies } from '../../src/contexts/CookieContext';
+import { useCookieStore, DEFAULT_USER_AGENT } from '../../src/stores/cookieStore';
 import { useNovelStore } from '../../src/stores/novelStore';
 import { searchNovels } from '../../src/services/novel/NovelSourceService';
-import { getEnabledSources } from '../../src/services/novel/ExtensionManager';
+import { getEnabledSources, getSource } from '../../src/services/novel/ExtensionManager';
 import NovelCard from '../../src/components/novel/NovelCard';
-import type { NovelSearchResult } from '../../src/types/novel';
+import HorizontalNovelCard from '../../src/components/novel/HorizontalNovelCard';
+import CloudflareBypasser from '../../src/components/novel/CloudflareBypasser';
+import type { NovelSearchResult, NovelSource } from '../../src/types/novel';
 
-// ─── Inner Screen (uses CookieContext) ───────────────────────────────────────
+// ─── Inner Screen ───────────────────────────────────────
 
-function BrowseScreen() {
+export default function BrowseScreen() {
   const router = useRouter();
   const theme = getTheme(useSettingsStore((s) => s.theme));
-  const { cookies, userAgent, status: cookieStatus, refreshCookies } = useCookies();
+  
+  const getCookies = useCookieStore((s) => s.getCookies);
+  const setCookies = useCookieStore((s) => s.setCookies);
 
   const searchResults = useNovelStore((s) => s.searchResults);
-  const isSearching = useNovelStore((s) => s.isSearching);
   const searchQuery = useNovelStore((s) => s.searchQuery);
-  const setSearchResults = useNovelStore((s) => s.setSearchResults);
-  const setSearching = useNovelStore((s) => s.setSearching);
   const setSearchQuery = useNovelStore((s) => s.setSearchQuery);
+  const setSearchResults = useNovelStore((s) => s.setSearchResults);
 
+  const [isSearching, setSearching] = useState(false);
   const [localQuery, setLocalQuery] = useState(searchQuery);
   const [searchError, setSearchError] = useState<string | null>(null);
+  const [sourceErrors, setSourceErrors] = useState<Record<string, boolean>>({});
+  const [bypassingSource, setBypassingSource] = useState<NovelSource | null>(null);
+  
   const inputRef = useRef<TextInput>(null);
+
+  // Group results by source
+  const groupedResults = useMemo(() => {
+    if (!searchQuery && searchResults.length === 0) return [];
+    const sources = getEnabledSources();
+    return sources.map((source) => ({
+      source,
+      results: searchResults.filter((r) => r.sourceId === source.id),
+    }));
+  }, [searchResults, searchQuery]);
 
   const handleSearch = useCallback(async () => {
     const query = localQuery.trim();
@@ -57,6 +73,7 @@ function BrowseScreen() {
     setSearchQuery(query);
     setSearching(true);
     setSearchError(null);
+    setSourceErrors({});
 
     try {
       const sources = getEnabledSources();
@@ -64,12 +81,21 @@ function BrowseScreen() {
         throw new Error('No enabled sources');
       }
 
-      const results = await searchNovels(
-        sources[0].id,
-        query,
-        cookies,
-        userAgent,
-      );
+      // Search all enabled sources in parallel
+      const searchPromises = sources.map((source) => {
+        const cookieData = getCookies(source.baseUrl);
+        const cookies = cookieData?.cookies || '';
+        const userAgent = cookieData?.userAgent || DEFAULT_USER_AGENT;
+        
+        return searchNovels(source.id, query, cookies, userAgent).catch((e) => {
+          console.log(`[Browse] Search failed for source ${source.id} (likely Cloudflare):`, e);
+          setSourceErrors((prev) => ({ ...prev, [source.id]: true }));
+          return []; // Return empty array on failure for a specific source
+        });
+      });
+      
+      const resultsArray = await Promise.all(searchPromises);
+      const results = resultsArray.flat();
       setSearchResults(results);
     } catch (e) {
       const msg = e instanceof Error ? e.message : String(e);
@@ -80,7 +106,7 @@ function BrowseScreen() {
     } finally {
       setSearching(false);
     }
-  }, [localQuery, cookies, userAgent, setSearchQuery, setSearching, setSearchResults]);
+  }, [localQuery, getCookies, setSearchQuery, setSearching, setSearchResults]);
 
   const handleNovelPress = useCallback(
     (result: NovelSearchResult) => {
@@ -89,57 +115,67 @@ function BrowseScreen() {
     [router],
   );
 
-  const renderItem = useCallback(
-    ({ item }: { item: NovelSearchResult }) => (
-      <NovelCard
-        title={item.title}
-        author={item.author}
-        coverUrl={item.coverUrl}
-        status={item.status}
-        latestChapter={item.latestChapter}
-        onPress={() => handleNovelPress(item)}
-      />
+  const renderSourceGroup = useCallback(
+    ({ item }: { item: { source: NovelSource; results: NovelSearchResult[] } }) => (
+      <View style={{ marginBottom: 24 }}>
+        <Pressable style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, marginBottom: 12 }}>
+          <Text style={[textStyles.heading, { color: theme.textPrimary, fontSize: 18 }]}>
+            {item.source.name}
+          </Text>
+          <Ionicons name="chevron-forward" size={18} color={theme.textTertiary} />
+        </Pressable>
+        {item.results.length > 0 ? (
+          <FlatList
+            data={item.results}
+            renderItem={({ item: novel }) => (
+              <HorizontalNovelCard
+                title={novel.title}
+                coverUrl={novel.coverUrl}
+                onPress={() => handleNovelPress(novel)}
+              />
+            )}
+            keyExtractor={(novel, idx) => `${novel.sourceUrl}-${idx}`}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={{ paddingHorizontal: 16 }}
+          />
+        ) : sourceErrors[item.source.id] ? (
+          <View style={{ paddingHorizontal: 16 }}>
+            <Pressable
+              onPress={() => setBypassingSource(item.source)}
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                backgroundColor: theme.surfaceElevated,
+                borderColor: theme.border,
+                borderWidth: StyleSheet.hairlineWidth,
+                padding: 12,
+                borderRadius: 8,
+              }}
+            >
+              <Ionicons name="shield-checkmark-outline" size={20} color={theme.primary} style={{ marginRight: 8 }} />
+              <Text style={[textStyles.caption, { color: theme.primary, fontWeight: '600' }]}>
+                Solve Captcha
+              </Text>
+            </Pressable>
+          </View>
+        ) : (
+          <View style={{ paddingHorizontal: 16, paddingVertical: 12, opacity: 0.5 }}>
+            <Text style={[textStyles.caption, { color: theme.textSecondary }]}>No results found.</Text>
+          </View>
+        )}
+      </View>
     ),
-    [handleNovelPress],
+    [handleNovelPress, theme, sourceErrors]
   );
 
-  // ── Connection status indicator ────────────────────────────────────
-  const renderConnectionBadge = () => {
-    let color = theme.textTertiary;
-    let label = 'Connecting…';
-    let icon: 'cloud-outline' | 'cloud-done-outline' | 'cloud-offline-outline' = 'cloud-outline';
-
-    if (cookieStatus === 'ready') {
-      color = '#4CAF50';
-      label = 'Connected';
-      icon = 'cloud-done-outline';
-    } else if (cookieStatus === 'error') {
-      color = '#EF5350';
-      label = 'Connection failed';
-      icon = 'cloud-offline-outline';
-    }
-
-    return (
-      <Pressable
-        style={styles.connectionBadge}
-        onPress={cookieStatus === 'error' ? refreshCookies : undefined}
-      >
-        <Ionicons name={icon} size={14} color={color} />
-        <Text style={[textStyles.caption, { color, fontSize: 11, marginLeft: 4 }]}>
-          {label}
-        </Text>
-      </Pressable>
-    );
-  };
-
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]} edges={['top']}>
+    <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
       {/* Header */}
       <View style={styles.header}>
         <Text style={[textStyles.heading, { color: theme.textPrimary, fontSize: 28 }]}>
           Browse
         </Text>
-        {renderConnectionBadge()}
       </View>
 
       {/* Search Bar */}
@@ -193,10 +229,10 @@ function BrowseScreen() {
         </View>
       ) : searchResults.length > 0 ? (
         <FlatList
-          data={searchResults}
-          renderItem={renderItem}
-          keyExtractor={(item, idx) => `${item.sourceUrl}-${idx}`}
-          contentContainerStyle={{ paddingVertical: 8, paddingBottom: 100 }}
+          data={groupedResults}
+          renderItem={renderSourceGroup}
+          keyExtractor={(item) => item.source.id}
+          contentContainerStyle={{ paddingVertical: 16, paddingBottom: 100 }}
           showsVerticalScrollIndicator={false}
         />
       ) : searchQuery ? (
@@ -244,17 +280,21 @@ function BrowseScreen() {
           </Text>
         </View>
       )}
+      
+      {/* Cloudflare Bypasser Modal */}
+      {bypassingSource && (
+        <CloudflareBypasser
+          url={bypassingSource.baseUrl}
+          visible={!!bypassingSource}
+          onClose={() => setBypassingSource(null)}
+          onCookiesReady={(cookies, userAgent) => {
+            setCookies(bypassingSource.baseUrl, cookies, userAgent);
+            setBypassingSource(null);
+            handleSearch(); // Automatically re-search!
+          }}
+        />
+      )}
     </SafeAreaView>
-  );
-}
-
-// ─── Wrapper with CookieProvider ─────────────────────────────────────────────
-
-export default function BrowseScreenWrapper() {
-  return (
-    <CookieProvider sourceUrl="https://allnovel.org">
-      <BrowseScreen />
-    </CookieProvider>
   );
 }
 

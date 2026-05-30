@@ -65,13 +65,17 @@ def _parse_cookies(cookie_str: str) -> dict:
 
 
 def _build_session(cookies: str, user_agent: str, referer: str = None):
-    """Create a requests.Session with standard headers and cookies."""
-    import requests
+    """Create a session (using cloudscraper if available) with standard headers and cookies."""
+    try:
+        import cloudscraper
+        session = cloudscraper.create_scraper(browser={'browser': 'chrome', 'platform': 'android', 'desktop': False})
+    except ImportError:
+        import requests
+        session = requests.Session()
 
-    session = requests.Session()
     session.cookies.update(_parse_cookies(cookies))
     session.headers.update({
-        "User-Agent": user_agent or "Mozilla/5.0 (Linux; Android 13) AppleWebKit/537.36",
+        "User-Agent": user_agent or "Mozilla/5.0 (Linux; Android 13; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36",
         "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
         "Accept-Language": "en-US,en;q=0.9",
         "Referer": referer or "",
