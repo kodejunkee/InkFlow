@@ -39,6 +39,9 @@ interface NovelStoreState {
   updateDownloadProgress: (sourceUrl: string, current: number, total: number) => void;
   updateDownloadStatus: (sourceUrl: string, status: DownloadStatus, error?: string) => void;
   removeDownload: (sourceUrl: string) => void;
+  pauseDownload: (sourceUrl: string) => void;
+  resumeDownload: (sourceUrl: string) => void;
+  cancelDownload: (sourceUrl: string) => void;
 }
 
 export const useNovelStore = create<NovelStoreState>((set) => ({
@@ -92,5 +95,38 @@ export const useNovelStore = create<NovelStoreState>((set) => ({
     set((state) => {
       const { [sourceUrl]: _, ...rest } = state.activeDownloads;
       return { activeDownloads: rest };
+    }),
+  pauseDownload: (sourceUrl) =>
+    set((state) => {
+      const existing = state.activeDownloads[sourceUrl];
+      if (!existing || existing.status !== 'downloading') return state;
+      return {
+        activeDownloads: {
+          ...state.activeDownloads,
+          [sourceUrl]: { ...existing, status: 'paused' },
+        },
+      };
+    }),
+  resumeDownload: (sourceUrl) =>
+    set((state) => {
+      const existing = state.activeDownloads[sourceUrl];
+      if (!existing || existing.status !== 'paused') return state;
+      return {
+        activeDownloads: {
+          ...state.activeDownloads,
+          [sourceUrl]: { ...existing, status: 'downloading' },
+        },
+      };
+    }),
+  cancelDownload: (sourceUrl) =>
+    set((state) => {
+      const existing = state.activeDownloads[sourceUrl];
+      if (!existing) return state;
+      return {
+        activeDownloads: {
+          ...state.activeDownloads,
+          [sourceUrl]: { ...existing, status: 'cancelled' },
+        },
+      };
     }),
 }));

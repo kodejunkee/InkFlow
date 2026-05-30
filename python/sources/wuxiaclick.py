@@ -1,4 +1,3 @@
-import cloudscraper
 import json
 from bs4 import BeautifulSoup
 import re
@@ -14,17 +13,11 @@ class WuxiaClickScraper:
     def __init__(self):
         self.base_url = "https://wuxia.click"
         self.api_url = "https://wuxia.click/api"
-        # Uses standard cloudscraper with browser emulation
-        self.scraper = cloudscraper.create_scraper(browser={
-            'browser': 'chrome',
-            'platform': 'windows',
-            'desktop': True
-        })
 
-    def perform_search(self, query):
+    def perform_search(self, session, query):
         search_url = f"{self.api_url}/search/?search={query}"
         try:
-            response = self.scraper.get(search_url, headers={'Accept': 'application/json'}, timeout=15)
+            response = session.get(search_url, headers={'Accept': 'application/json'}, timeout=15)
             response.raise_for_status()
             data = response.json()
             
@@ -60,12 +53,12 @@ class WuxiaClickScraper:
             print(f"Error fetching from WuxiaClick: {e}")
             return []
 
-    def get_novel_details(self, novel_url):
+    def get_novel_details(self, session, novel_url):
         try:
             slug = novel_url.rstrip('/').split('/')[-1]
             api_novel_url = f"{self.api_url}/novels/{slug}/"
             
-            response = self.scraper.get(api_novel_url, headers={'Accept': 'application/json'}, timeout=15)
+            response = session.get(api_novel_url, headers={'Accept': 'application/json'}, timeout=15)
             response.raise_for_status()
             data = response.json()
 
@@ -105,9 +98,9 @@ class WuxiaClickScraper:
             print(f"Error fetching novel details from WuxiaClick: {e}")
             return None
 
-    def get_chapter_content(self, chapter_url):
+    def get_chapter_content(self, session, chapter_url):
         try:
-            response = self.scraper.get(chapter_url, timeout=15)
+            response = session.get(chapter_url, timeout=15)
             response.raise_for_status()
             soup = BeautifulSoup(response.text, 'lxml')
             

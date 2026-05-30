@@ -1,4 +1,4 @@
-import cloudscraper
+import json
 from bs4 import BeautifulSoup
 import re
 
@@ -11,18 +11,12 @@ def clean_text(text: str) -> str:
 class LibReadScraper:
     def __init__(self):
         self.base_url = "https://libread.com"
-        # Uses standard cloudscraper with browser emulation
-        self.scraper = cloudscraper.create_scraper(browser={
-            'browser': 'chrome',
-            'platform': 'windows',
-            'desktop': True
-        })
 
-    def perform_search(self, query):
+    def perform_search(self, session, query):
         search_url = f"{self.base_url}/search"
         data = {"searchkey": query}
         try:
-            response = self.scraper.post(search_url, data=data, timeout=15)
+            response = session.post(search_url, data=data, timeout=15)
             response.raise_for_status()
             soup = BeautifulSoup(response.text, 'lxml')
             
@@ -59,9 +53,9 @@ class LibReadScraper:
             print(f"Error fetching from LibRead: {e}")
             return []
 
-    def get_novel_details(self, novel_url):
+    def get_novel_details(self, session, novel_url):
         try:
-            response = self.scraper.get(novel_url, timeout=15)
+            response = session.get(novel_url, timeout=15)
             response.raise_for_status()
             soup = BeautifulSoup(response.text, 'lxml')
 
@@ -109,9 +103,9 @@ class LibReadScraper:
             print(f"Error fetching novel details from LibRead: {e}")
             return None
 
-    def get_chapter_content(self, chapter_url):
+    def get_chapter_content(self, session, chapter_url):
         try:
-            response = self.scraper.get(chapter_url, timeout=15)
+            response = session.get(chapter_url, timeout=15)
             response.raise_for_status()
             soup = BeautifulSoup(response.text, 'lxml')
             

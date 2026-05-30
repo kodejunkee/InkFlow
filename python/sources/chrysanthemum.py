@@ -1,4 +1,3 @@
-import cloudscraper
 from bs4 import BeautifulSoup
 import re
 
@@ -11,17 +10,12 @@ def clean_text(text: str) -> str:
 class ChrysanthemumGardenScraper:
     def __init__(self):
         self.base_url = "https://chrysanthemumgarden.com"
-        self.scraper = cloudscraper.create_scraper(browser={
-            'browser': 'chrome',
-            'platform': 'windows',
-            'desktop': True
-        })
 
-    def perform_search(self, query):
+    def perform_search(self, session, query):
         search_url = f"{self.base_url}/"
         params = {"s": query}
         try:
-            response = self.scraper.get(search_url, params=params, timeout=15)
+            response = session.get(search_url, params=params, timeout=15)
             response.raise_for_status()
             soup = BeautifulSoup(response.text, 'lxml')
             
@@ -73,9 +67,9 @@ class ChrysanthemumGardenScraper:
             print(f"Error fetching from Chrysanthemum Garden: {e}")
             return []
 
-    def get_novel_details(self, novel_url):
+    def get_novel_details(self, session, novel_url):
         try:
-            response = self.scraper.get(novel_url, timeout=15)
+            response = session.get(novel_url, timeout=15)
             response.raise_for_status()
             soup = BeautifulSoup(response.text, 'lxml')
 
@@ -124,9 +118,9 @@ class ChrysanthemumGardenScraper:
             print(f"Error fetching novel details from Chrysanthemum Garden: {e}")
             return None
 
-    def get_chapter_content(self, chapter_url):
+    def get_chapter_content(self, session, chapter_url):
         try:
-            response = self.scraper.get(chapter_url, timeout=15)
+            response = session.get(chapter_url, timeout=15)
             response.raise_for_status()
             soup = BeautifulSoup(response.text, 'lxml')
             

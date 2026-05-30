@@ -132,7 +132,7 @@ def search(source_id: str, query: str, cookies: str, user_agent: str) -> str:
         if hasattr(source, "perform_search"):
             # Check if it's an instance method or module function
             if hasattr(source.perform_search, '__self__'):
-                results = source.perform_search(query)
+                results = source.perform_search(session, query)
             else:
                 results = source.perform_search(session, query)
         else:
@@ -167,7 +167,7 @@ def get_novel_details(source_id: str, url: str, cookies: str, user_agent: str) -
         session = _build_session(source_id, cookies, user_agent, source.BASE_URL if hasattr(source, 'BASE_URL') else "")
 
         if hasattr(source, "get_novel_details"):
-            details = source.get_novel_details(url)
+            details = source.get_novel_details(session, url)
             # Re-index chapters globally (0-based)
             all_chapters = list(details.get("chapters", []))
             for idx, ch in enumerate(all_chapters):
@@ -272,7 +272,7 @@ def download_chapter_batch(
                 )
                 
                 if hasattr(source, "get_chapter_content"):
-                    content = source.get_chapter_content(ch_url)
+                    content = source.get_chapter_content(session, ch_url)
                     final_title = ch_title
                 else:
                     html = _fetch(session, ch_url)

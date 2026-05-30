@@ -144,6 +144,61 @@ def parse_novel_details(html: str, url: str) -> dict:
 
     return details
 
+def get_novel_details(session, url: str) -> dict:
+    """
+    Custom fetcher for NovelBin that fetches chapters from the AJAX endpoint.
+    """
+    import json
+    
+    # Fetch main novel page
+    try:
+        response = session.get(url, timeout=30)
+        response.raise_for_status()
+        html = response.text
+    except Exception as e:
+        import logging
+        logging.getLogger("novel_scraper").error(f"Error fetching NovelBin novel: {e}")
+        return {}
+
+    details = parse_novel_details(html, url)
+    
+    # Try to fetch chapters via AJAX
+    slug = url.rstrip("/").split("/")[-1]
+    ajax_url = f"{BASE_URL}/ajax/chapter-archive?novelId={slug}"
+    try:
+        ajax_res = session.get(ajax_url, timeout=30)
+        ajax_res.raise_for_status()
+        
+        try:
+            from bs4 import BeautifulSoup
+            ajax_soup = BeautifulSoup(ajax_res.text, "lxml")
+        except Exception:
+            from bs4 import BeautifulSoup
+            ajax_soup = BeautifulSoup(ajax_res.text, "html.parser")
+            
+        links = ajax_soup.select("template li a") or ajax_soup.select("li a")
+        
+        if links:
+            chapters = []
+            for idx, link in enumerate(links):
+                title = link.get("title") or link.get_text(strip=True)
+                href = link.get("href", "")
+                if href and title:
+                    chapters.append({
+                        "index": idx,
+                        "title": title,
+                        "url": urljoin(BASE_URL, href),
+                    })
+            
+            if chapters:
+                details["chapters"] = chapters
+                details["totalChapters"] = len(chapters)
+    except Exception as e:
+        import logging
+        logging.getLogger("novel_scraper").error(f"Error fetching NovelBin AJAX chapters: {e}")
+
+    return details
+
 def parse_chapter_list_page(html: str) -> list[dict]:
     chapters = []
     try:

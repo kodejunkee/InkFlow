@@ -1,23 +1,17 @@
 import re
 from urllib.parse import urljoin
-import cloudscraper
 from bs4 import BeautifulSoup
 from .source_utils import clean_text
 
 class NovelFireScraper:
     def __init__(self):
         self.base_url = "https://novelfire.net"
-        self.scraper = cloudscraper.create_scraper(browser={
-            'browser': 'chrome',
-            'platform': 'windows',
-            'desktop': True
-        })
 
-    def perform_search(self, query):
+    def perform_search(self, session, query):
         search_url = f"{self.base_url}/search"
         params = {"keyword": query}
         try:
-            response = self.scraper.get(search_url, params=params, timeout=15)
+            response = session.get(search_url, params=params, timeout=15)
             response.raise_for_status()
             soup = BeautifulSoup(response.text, 'lxml')
             
@@ -56,9 +50,9 @@ class NovelFireScraper:
             print(f"Error fetching from NovelFire: {e}")
             return []
 
-    def get_novel_details(self, novel_url):
+    def get_novel_details(self, session, novel_url):
         try:
-            response = self.scraper.get(novel_url, timeout=15)
+            response = session.get(novel_url, timeout=15)
             response.raise_for_status()
             soup = BeautifulSoup(response.text, 'lxml')
 
@@ -83,7 +77,7 @@ class NovelFireScraper:
             # NovelFire paginates chapters at /chapters
             chapters_url = novel_url + "/chapters" if not novel_url.endswith("/chapters") else novel_url
             
-            chapters = self._fetch_all_chapters(chapters_url)
+            chapters = self._fetch_all_chapters(session, chapters_url)
 
             return {
                 "title": title,
@@ -97,10 +91,10 @@ class NovelFireScraper:
             print(f"Error fetching novel details from NovelFire: {e}")
             return None
 
-    def _fetch_all_chapters(self, chapters_url):
+    def _fetch_all_chapters(self, session, chapters_url):
         chapters = []
         try:
-            response = self.scraper.get(chapters_url, timeout=15)
+            response = session.get(chapters_url, timeout=15)
             response.raise_for_status()
             soup = BeautifulSoup(response.text, 'lxml')
             
@@ -126,7 +120,7 @@ class NovelFireScraper:
                 
                 def fetch_page(page):
                     url = f"{chapters_url}?page={page}"
-                    res = self.scraper.get(url, timeout=15)
+                    res = session.get(url, timeout=15)
                     s = BeautifulSoup(res.text, 'lxml')
                     return page, self._extract_chapters_from_soup(s)
                 
@@ -165,9 +159,9 @@ class NovelFireScraper:
             })
         return chapters
 
-    def get_chapter_content(self, chapter_url):
+    def get_chapter_content(self, session, chapter_url):
         try:
-            response = self.scraper.get(chapter_url, timeout=15)
+            response = session.get(chapter_url, timeout=15)
             response.raise_for_status()
             soup = BeautifulSoup(response.text, 'lxml')
             

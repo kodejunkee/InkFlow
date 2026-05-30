@@ -85,11 +85,14 @@ export async function generateNovelEpub(
   coverImagePath: string,
   outputPath: string,
 ): Promise<EpubGenerationResult> {
-  const json = await NovelSource.generateNovelEpub(
-    chaptersDir,
-    metadataJson,
-    coverImagePath,
-    outputPath,
-  );
+  const json = await NovelSource.generateNovelEpub(chaptersDir, metadataJson, coverImagePath, outputPath);
   return JSON.parse(json);
+}
+
+export function showDownloadNotification(id: number, title: string, progress: number, total: number, status: string) {
+  NovelSource.showDownloadNotification(id, title, progress, total, status);
+}
+
+export function cancelDownloadNotification(id: number) {
+  NovelSource.cancelDownloadNotification(id);
 }

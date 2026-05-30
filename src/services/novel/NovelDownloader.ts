@@ -5,6 +5,7 @@
  * Designed to be called from the Novel Details screen after the user taps Download.
  */
 
+import { Platform, PermissionsAndroid } from 'react-native';
 import type * as SQLite from 'expo-sqlite';
 import * as FileSystem from 'expo-file-system/legacy';
 import type { NovelDetails, NovelChapter, DownloadProgress } from '../../types/novel';
@@ -12,6 +13,8 @@ import type { NewBook } from '../../types/book';
 import {
   downloadChapterBatch,
   generateNovelEpub,
+  showDownloadNotification,
+  cancelDownloadNotification,
 } from './NovelSourceService';
 import {
   insertNovelDownload,
@@ -28,6 +31,14 @@ import { useNovelStore } from '../../stores/novelStore';
 
 /** Number of chapters to download per batch call to Python. Keep small for smooth progress updates. */
 const BATCH_SIZE = 5;
+
+function getNotificationId(sourceUrl: string): number {
+  let hash = 0;
+  for (let i = 0; i < sourceUrl.length; i++) {
+    hash = Math.imul(31, hash) + sourceUrl.charCodeAt(i) | 0;
+  }
+  return Math.abs(hash);
+}
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -112,11 +123,43 @@ export async function downloadNovel(options: DownloadOptions): Promise<number | 
     progress.status = 'downloading';
     onProgress?.(progress);
 
+    if (Platform.OS === 'android' && Platform.Version >= 33) {
+      try {
+        await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS);
+      } catch (e) {
+        // Ignore
+      }
+    }
+    const notifId = getNotificationId(novel.sourceUrl);
+
     const chaptersToDownload = novel.chapters.filter((ch) => ch.index >= startFromChapter);
     const totalToDownload = chaptersToDownload.length;
     let downloaded = 0;
 
     for (let i = 0; i < totalToDownload; i += BATCH_SIZE) {
+      // Check pause / cancel status before processing batch
+      let state = useNovelStore.getState().activeDownloads[novel.sourceUrl];
+      if (state?.status === 'cancelled') {
+        throw new Error('Download cancelled');
+      }
+
+      while (state?.status === 'paused') {
+        showDownloadNotification(notifId, novel.title, progress.currentChapter, progress.totalChapters, 'Paused');
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        state = useNovelStore.getState().activeDownloads[novel.sourceUrl];
+        if (state?.status === 'cancelled') {
+          throw new Error('Download cancelled');
+        }
+      }
+
+      showDownloadNotification(
+        notifId,
+        novel.title,
+        progress.currentChapter,
+        progress.totalChapters,
+        `Downloading chapter ${progress.currentChapter} of ${progress.totalChapters}`
+      );
+
       const batch = chaptersToDownload.slice(i, i + BATCH_SIZE);
 
       const result = await downloadChapterBatch(
@@ -263,6 +306,8 @@ export async function downloadNovel(options: DownloadOptions): Promise<number | 
     progress.status = 'completed';
     onProgress?.(progress);
 
+    cancelDownloadNotification(notifId);
+
     // Remove from active downloads queue after a short delay so UI shows completion
     setTimeout(() => {
       removeDownload(novel.sourceUrl);
@@ -272,6 +317,17 @@ export async function downloadNovel(options: DownloadOptions): Promise<number | 
   } catch (error) {
     console.error('[NovelDownloader] Error downloading novel:', error);
     const errorMsg = error instanceof Error ? error.message : 'Unknown error';
+    
+    cancelDownloadNotification(getNotificationId(novel.sourceUrl));
+
+    if (errorMsg === 'Download cancelled') {
+      try {
+        db.runSync(`DELETE FROM novel_downloads WHERE id = ?`, [downloadRecord.id]);
+      } catch (e) {}
+      removeDownload(novel.sourceUrl);
+      return null;
+    }
+
     updateDownloadStatus(novel.sourceUrl, 'failed', errorMsg);
     progress.status = 'failed';
     progress.error = errorMsg;

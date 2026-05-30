@@ -52,10 +52,14 @@ export default function LibraryScreen() {
   const isLoading = useLibraryStore((s) => s.isLoading);
   const loadBooksAction = useLibraryStore((s) => s.loadBooks);
   const loadDownloadsAction = useLibraryStore((s) => s.loadDownloads);
+  const setBooksAction = useLibraryStore((s) => s.setBooks);
   const removeBooksAction = useLibraryStore((s) => s.removeBook);
   const setLoading = useLibraryStore((s) => s.setLoading);
 
   const activeDownloads = useNovelStore((s) => s.activeDownloads);
+  const pauseDownload = useNovelStore((s) => s.pauseDownload);
+  const resumeDownload = useNovelStore((s) => s.resumeDownload);
+  const cancelDownload = useNovelStore((s) => s.cancelDownload);
 
   const [activeFilter, setActiveFilter] = useState<'All' | 'Local' | 'Downloaded' | 'Downloading' | 'Reading' | 'Finished'>('All');
 
@@ -346,6 +350,41 @@ export default function LibraryScreen() {
                         ]}
                       />
                     </View>
+                  </View>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', marginLeft: 12 }}>
+                    {download.status === 'downloading' && (
+                      <Pressable
+                        style={({ pressed }) => [{ opacity: pressed ? 0.7 : 1, padding: 8 }]}
+                        onPress={() => pauseDownload(download.sourceUrl)}
+                      >
+                        <Ionicons name="pause" size={20} color={theme.textPrimary} />
+                      </Pressable>
+                    )}
+                    {download.status === 'paused' && (
+                      <Pressable
+                        style={({ pressed }) => [{ opacity: pressed ? 0.7 : 1, padding: 8 }]}
+                        onPress={() => resumeDownload(download.sourceUrl)}
+                      >
+                        <Ionicons name="play" size={20} color={theme.textPrimary} />
+                      </Pressable>
+                    )}
+                    {(download.status === 'downloading' || download.status === 'paused' || download.status === 'failed') && (
+                      <Pressable
+                        style={({ pressed }) => [{ opacity: pressed ? 0.7 : 1, padding: 8 }]}
+                        onPress={() => {
+                          Alert.alert(
+                            "Cancel Download",
+                            "Are you sure you want to cancel this download?",
+                            [
+                              { text: "No", style: "cancel" },
+                              { text: "Yes", style: "destructive", onPress: () => cancelDownload(download.sourceUrl) }
+                            ]
+                          );
+                        }}
+                      >
+                        <Ionicons name="close" size={20} color="#EF5350" />
+                      </Pressable>
+                    )}
                   </View>
                 </View>
               );

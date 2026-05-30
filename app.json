@@ -25,7 +25,8 @@
         "READ_EXTERNAL_STORAGE",
         "android.permission.READ_EXTERNAL_STORAGE",
         "android.permission.WRITE_EXTERNAL_STORAGE",
-        "android.permission.INTERNET"
+        "android.permission.INTERNET",
+        "android.permission.POST_NOTIFICATIONS"
       ],
       "minSdkVersion": 26
     },
@@ -41,7 +42,10 @@
       "typedRoutes": true
     },
     "extra": {
-      "router": {}
+      "router": {},
+      "eas": {
+        "projectId": "ea130f23-6b2a-4499-a897-dc86f21a2ebe"
+      }
     }
   }
 }

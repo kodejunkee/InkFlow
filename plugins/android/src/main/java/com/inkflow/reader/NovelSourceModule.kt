@@ -6,6 +6,12 @@ import com.facebook.react.bridge.ReactMethod
 import com.facebook.react.bridge.Promise
 import com.chaquo.python.Python
 import com.chaquo.python.android.AndroidPlatform
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.os.Build
+import android.content.Context
 
 /**
  * React Native Native Module bridging JavaScript to Python via Chaquopy.
@@ -25,6 +31,40 @@ class NovelSourceModule(reactContext: ReactApplicationContext) :
         if (!Python.isStarted()) {
             Python.start(AndroidPlatform(reactApplicationContext))
         }
+    }
+
+    @ReactMethod
+    fun showDownloadNotification(id: Int, title: String, progress: Int, total: Int, status: String) {
+        val channelId = "novel_downloads"
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel = NotificationChannel(channelId, "Downloads", NotificationManager.IMPORTANCE_LOW)
+            val manager = reactApplicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            manager.createNotificationChannel(channel)
+        }
+
+        val builder = NotificationCompat.Builder(reactApplicationContext, channelId)
+            .setSmallIcon(reactApplicationContext.resources.getIdentifier("ic_launcher", "mipmap", reactApplicationContext.packageName))
+            .setContentTitle(title)
+            .setContentText(status)
+            .setPriority(NotificationCompat.PRIORITY_LOW)
+            .setOngoing(true)
+
+        if (total > 0) {
+            builder.setProgress(total, progress, false)
+        } else {
+            builder.setProgress(0, 0, true)
+        }
+
+        try {
+            NotificationManagerCompat.from(reactApplicationContext).notify(id, builder.build())
+        } catch (e: SecurityException) {
+            // Missing POST_NOTIFICATIONS permission
+        }
+    }
+
+    @ReactMethod
+    fun cancelDownloadNotification(id: Int) {
+        NotificationManagerCompat.from(reactApplicationContext).cancel(id)
     }
 
     /**
