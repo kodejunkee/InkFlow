@@ -133,7 +133,13 @@ export function ConfirmationModal({
               activeOpacity={0.7}
             >
               <Ionicons name={iconName} size={20} color="#FFFFFF" />
-              <Text style={styles.deleteButtonText}>{confirmText}</Text>
+              <Text 
+                style={[styles.deleteButtonText, { flexShrink: 1 }]} 
+                numberOfLines={1} 
+                adjustsFontSizeToFit
+              >
+                {confirmText}
+              </Text>
             </TouchableOpacity>
           </View>
         </Animated.View>
