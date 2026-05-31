@@ -29,6 +29,7 @@ interface ConfirmationModalProps {
   iconColor: string;
   iconBgColor?: string;
   confirmText: string;
+  cancelText?: string;
   confirmButtonColor: string;
   onCancel: () => void;
   onConfirm: () => void;
@@ -44,6 +45,7 @@ export function ConfirmationModal({
   iconColor,
   iconBgColor,
   confirmText,
+  cancelText = 'Cancel',
   confirmButtonColor,
   onCancel,
   onConfirm,
@@ -121,7 +123,7 @@ export function ConfirmationModal({
               onPress={handleClose}
               activeOpacity={0.7}
             >
-              <Text style={[styles.buttonText, { color: theme.textPrimary }]}>Cancel</Text>
+              <Text style={[styles.buttonText, { color: theme.textPrimary }]}>{cancelText}</Text>
             </TouchableOpacity>
 
             <TouchableOpacity

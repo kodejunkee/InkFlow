@@ -479,7 +479,8 @@ export default function LibraryScreen() {
           iconName="close-circle-outline"
           iconColor="#EF5350"
           iconBgColor="rgba(239, 83, 80, 0.15)"
-          confirmText="Cancel Download"
+          confirmText="Yes"
+          cancelText="No"
           confirmButtonColor="#EF5350"
           onCancel={() => setDownloadToCancel(null)}
           onConfirm={() => {
