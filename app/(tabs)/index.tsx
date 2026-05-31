@@ -31,7 +31,7 @@ import { getBooks, getAllNovelDownloads, deleteBook, deleteNovelDownloadByBookId
 import { deleteBookFiles } from '../../src/services/fileManager';
 import { getTheme } from '../../src/theme/themes';
 import { updateNovel } from '../../src/services/novel/NovelDownloader';
-import NovelSource from '../../src/native/NovelSource';
+import { getNovelDetails } from '../../src/services/novel/NovelSourceService';
 import { textStyles } from '../../src/theme/typography';
 import { spacing } from '../../src/theme/spacing';
 import { Ionicons } from '@expo/vector-icons';
@@ -54,7 +54,6 @@ export default function LibraryScreen() {
   const isLoading = useLibraryStore((s) => s.isLoading);
   const loadBooksAction = useLibraryStore((s) => s.loadBooks);
   const loadDownloadsAction = useLibraryStore((s) => s.loadDownloads);
-  const setBooksAction = useLibraryStore((s) => s.setBooks);
   const removeBooksAction = useLibraryStore((s) => s.removeBook);
   const setLoading = useLibraryStore((s) => s.setLoading);
 
@@ -71,6 +70,22 @@ export default function LibraryScreen() {
   const [bookToDelete, setBookToDelete] = useState<Book | null>(null);
   const [syncingBooks, setSyncingBooks] = useState<Record<number, boolean>>({});
 
+  // Load books and downloads from database
+  const refreshBooks = useCallback(() => {
+    if (!db) return;
+    setLoading(true);
+    try {
+      const allBooks = getBooks(db);
+      const allDownloads = getAllNovelDownloads(db);
+      loadBooksAction(allBooks);
+      loadDownloadsAction(allDownloads);
+    } catch (e) {
+      console.error('[Library] Failed to load books:', e);
+      loadBooksAction([]);
+      loadDownloadsAction([]);
+    }
+  }, [db, loadBooksAction, loadDownloadsAction, setLoading]);
+
   const handleSyncBook = useCallback(async (bookId: number) => {
     if (!db || syncingBooks[bookId]) return;
     
@@ -84,14 +99,13 @@ export default function LibraryScreen() {
       const cookies = '';
       const userAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36';
       
-      const detailsJson = await NovelSource.getNovelDetails(
+      const details = await getNovelDetails(
         downloadRecord.sourceId, 
         downloadRecord.sourceUrl, 
         cookies, 
         userAgent
       );
-      const details = JSON.parse(detailsJson);
-      if (details.error) throw new Error(details.error);
+      if ((details as any).error) throw new Error((details as any).error);
 
       // Attempt update
       const updated = await updateNovel(db, bookId, details, cookies, userAgent);
@@ -109,22 +123,6 @@ export default function LibraryScreen() {
       setSyncingBooks(prev => ({ ...prev, [bookId]: false }));
     }
   }, [db, downloads, syncingBooks, refreshBooks]);
-
-  // Load books and downloads from database
-  const refreshBooks = useCallback(() => {
-    if (!db) return;
-    setLoading(true);
-    try {
-      const allBooks = getBooks(db);
-      const allDownloads = getAllNovelDownloads(db);
-      loadBooksAction(allBooks);
-      loadDownloadsAction(allDownloads);
-    } catch (e) {
-      console.error('[Library] Failed to load books:', e);
-      loadBooksAction([]);
-      loadDownloadsAction([]);
-    }
-  }, [db, loadBooksAction, loadDownloadsAction, setLoading]);
 
   // Refresh books every time this screen gains focus (e.g. returning from reader)
   useFocusEffect(
@@ -340,7 +338,7 @@ export default function LibraryScreen() {
         style={[styles.container, { backgroundColor: theme.background }]}
       >
         <FlatList
-          data={listData}
+          data={listData as any[]}
           keyExtractor={(item, index) => item.type === 'download' ? item.data.sourceUrl : `row-${index}`}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ paddingHorizontal: GRID_PADDING, paddingTop: spacing.sm, paddingBottom: spacing['5xl'] }}
@@ -431,9 +429,10 @@ export default function LibraryScreen() {
                 </View>
               );
             } else {
+              const rowBooks = item.data as Book[];
               return (
                 <View style={{ flexDirection: 'row', justifyContent: 'flex-start', gap: CARD_MARGIN, marginBottom: CARD_MARGIN }}>
-                  {item.data.map((book) => (
+                  {rowBooks.map((book) => (
                     <View key={book.id} style={{ width: CARD_WIDTH }}>
                       <BookCard
                         id={book.id}

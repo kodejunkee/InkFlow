@@ -32,7 +32,7 @@ import { useNovelStore } from '../../stores/novelStore';
 // ─── Constants ───────────────────────────────────────────────────────────────
 
 /** Number of chapters to download per batch call to Python. Keep small for smooth progress updates. */
-const BATCH_SIZE = 5;
+const BATCH_SIZE = 50;
 
 function getNotificationId(sourceUrl: string): number {
   let hash = 0;
@@ -359,10 +359,10 @@ export async function updateNovel(
     throw new Error('Novel not found in library');
   }
 
-  const { addDownload, updateDownloadProgress, updateDownloadStatus, removeDownload, getDownloadState } = useNovelStore.getState();
+  const { addDownload, updateDownloadProgress, updateDownloadStatus, removeDownload, activeDownloads } = useNovelStore.getState();
 
   // If already downloading/updating
-  if (getDownloadState(novelDetails.sourceUrl)) {
+  if (activeDownloads[novelDetails.sourceUrl]) {
     throw new Error('Already updating');
   }
 
@@ -394,14 +394,14 @@ export async function updateNovel(
 
     let downloadedCount = 0;
     for (let i = 0; i < newChapters.length; i += BATCH_SIZE) {
-      const state = getDownloadState(novelDetails.sourceUrl);
+      const state = useNovelStore.getState().activeDownloads[novelDetails.sourceUrl];
       if (!state) {
          throw new Error('Download cancelled');
       }
       
-      while (useNovelStore.getState().downloads[novelDetails.sourceUrl]?.status === 'paused') {
+      while (useNovelStore.getState().activeDownloads[novelDetails.sourceUrl]?.status === 'paused') {
         await new Promise(r => setTimeout(r, 1000));
-        const checkState = useNovelStore.getState().downloads[novelDetails.sourceUrl];
+        const checkState = useNovelStore.getState().activeDownloads[novelDetails.sourceUrl];
         if (!checkState) throw new Error('Download cancelled');
       }
 
@@ -421,7 +421,7 @@ export async function updateNovel(
       downloadedCount += batchResult.success;
       progress.currentChapter = downloadRecord.totalChapters + downloadedCount;
       progress.status = 'downloading';
-      updateDownloadProgress(novelDetails.sourceUrl, progress);
+      updateDownloadProgress(novelDetails.sourceUrl, progress.currentChapter, progress.totalChapters);
       onProgress?.(progress);
       
       showDownloadNotification(

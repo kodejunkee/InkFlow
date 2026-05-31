@@ -255,22 +255,17 @@ def download_chapter_batch(
         chapters = json.loads(chapters_json) if isinstance(chapters_json, str) else chapters_json
         os.makedirs(output_dir, exist_ok=True)
 
-        for i, ch in enumerate(chapters):
+        from concurrent.futures import ThreadPoolExecutor, as_completed
+
+        def fetch_chapter(i, ch):
             ch_index = ch.get("index", i)
             ch_title = ch.get("title", f"Chapter {ch_index + 1}")
             ch_url = ch.get("url", "")
 
             if not ch_url:
-                result["failed"] += 1
-                result["errors"].append(f"Chapter {ch_index}: missing URL")
-                continue
+                return ch_index, False, f"Chapter {ch_index}: missing URL"
 
             try:
-                log.info(
-                    "Downloading chapter %d/%d: %s",
-                    i + 1, len(chapters), ch_title,
-                )
-                
                 if hasattr(source, "get_chapter_content"):
                     content = source.get_chapter_content(session, ch_url)
                     final_title = ch_title
@@ -281,11 +276,8 @@ def download_chapter_batch(
                     content = parsed.get("content", "")
 
                 if not content:
-                    result["failed"] += 1
-                    result["errors"].append(f"Chapter {ch_index}: empty content")
-                    continue
+                    return ch_index, False, f"Chapter {ch_index}: empty content"
 
-                # Write chapter file
                 out_file = os.path.join(output_dir, f"chapter_{ch_index:04d}.json")
                 with open(out_file, "w", encoding="utf-8") as f:
                     json.dump(
@@ -294,16 +286,26 @@ def download_chapter_batch(
                         ensure_ascii=False,
                     )
 
-                result["success"] += 1
+                return ch_index, True, None
 
             except Exception as e:
-                result["failed"] += 1
-                result["errors"].append(f"Chapter {ch_index}: {e}")
                 log.warning("Chapter %d failed: %s", ch_index, e)
+                return ch_index, False, f"Chapter {ch_index}: {e}"
 
-            # Rate-limit: 0.5 – 1.0 s between requests
-            if i < len(chapters) - 1:
-                time.sleep(0.5)
+        # Use 10 concurrent workers to significantly boost speed
+        with ThreadPoolExecutor(max_workers=10) as executor:
+            futures = [executor.submit(fetch_chapter, i, ch) for i, ch in enumerate(chapters)]
+            for future in as_completed(futures):
+                try:
+                    ch_index, success, error = future.result()
+                    if success:
+                        result["success"] += 1
+                    else:
+                        result["failed"] += 1
+                        result["errors"].append(error)
+                except Exception as e:
+                    result["failed"] += 1
+                    result["errors"].append(f"Future error: {e}")
 
     except Exception as e:
         log.error("download_chapter_batch failed: %s", e, exc_info=True)
