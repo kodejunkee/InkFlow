@@ -31,6 +31,7 @@ interface ConfirmationModalProps {
   confirmText: string;
   cancelText?: string;
   confirmButtonColor: string;
+  showConfirmIcon?: boolean;
   onCancel: () => void;
   onConfirm: () => void;
 }
@@ -47,6 +48,7 @@ export function ConfirmationModal({
   confirmText,
   cancelText = 'Cancel',
   confirmButtonColor,
+  showConfirmIcon = true,
   onCancel,
   onConfirm,
 }: ConfirmationModalProps) {
@@ -130,11 +132,10 @@ export function ConfirmationModal({
               style={[styles.button, { backgroundColor: confirmButtonColor }]}
               onPress={() => {
                 onConfirm();
-                // We don't call handleClose here because the parent usually closes the modal immediately
               }}
               activeOpacity={0.7}
             >
-              <Ionicons name={iconName} size={20} color="#FFFFFF" />
+              {showConfirmIcon && <Ionicons name={iconName} size={20} color="#FFFFFF" />}
               <Text 
                 style={[styles.deleteButtonText, { flexShrink: 1 }]} 
                 numberOfLines={1} 

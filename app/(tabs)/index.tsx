@@ -482,6 +482,7 @@ export default function LibraryScreen() {
           confirmText="Yes"
           cancelText="No"
           confirmButtonColor="#EF5350"
+          showConfirmIcon={false}
           onCancel={() => setDownloadToCancel(null)}
           onConfirm={() => {
             if (downloadToCancel) {
