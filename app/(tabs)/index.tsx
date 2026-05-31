@@ -30,6 +30,8 @@ import { useBookImport } from '../../src/hooks/useBookImport';
 import { getBooks, getAllNovelDownloads, deleteBook, deleteNovelDownloadByBookId } from '../../src/database/queries';
 import { deleteBookFiles } from '../../src/services/fileManager';
 import { getTheme } from '../../src/theme/themes';
+import { updateNovel } from '../../src/services/novel/NovelDownloader';
+import NovelSource from '../../src/native/NovelSource';
 import { textStyles } from '../../src/theme/typography';
 import { spacing } from '../../src/theme/spacing';
 import { Ionicons } from '@expo/vector-icons';
@@ -67,6 +69,46 @@ export default function LibraryScreen() {
     useBookImport(db);
     
   const [bookToDelete, setBookToDelete] = useState<Book | null>(null);
+  const [syncingBooks, setSyncingBooks] = useState<Record<number, boolean>>({});
+
+  const handleSyncBook = useCallback(async (bookId: number) => {
+    if (!db || syncingBooks[bookId]) return;
+    
+    try {
+      setSyncingBooks(prev => ({ ...prev, [bookId]: true }));
+      
+      const downloadRecord = downloads.find(d => d.bookId === bookId);
+      if (!downloadRecord) throw new Error('Not a downloaded book');
+
+      // Fetch latest novel details
+      const cookies = '';
+      const userAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36';
+      
+      const detailsJson = await NovelSource.getNovelDetails(
+        downloadRecord.sourceId, 
+        downloadRecord.sourceUrl, 
+        cookies, 
+        userAgent
+      );
+      const details = JSON.parse(detailsJson);
+      if (details.error) throw new Error(details.error);
+
+      // Attempt update
+      const updated = await updateNovel(db, bookId, details, cookies, userAgent);
+      
+      if (updated) {
+        Alert.alert('Update Complete', 'New chapters have been downloaded.');
+        refreshBooks();
+      } else {
+        Alert.alert('No Updates', 'This book is already up to date.');
+      }
+    } catch (e) {
+      console.error('[Library] Sync failed:', e);
+      Alert.alert('Update Failed', e instanceof Error ? e.message : 'Unknown error');
+    } finally {
+      setSyncingBooks(prev => ({ ...prev, [bookId]: false }));
+    }
+  }, [db, downloads, syncingBooks, refreshBooks]);
 
   // Load books and downloads from database
   const refreshBooks = useCallback(() => {
@@ -401,6 +443,8 @@ export default function LibraryScreen() {
                         progress={book.progress}
                         onPress={handleBookPress}
                         onLongPress={handleBookLongPress}
+                        onSync={downloads.some(d => d.bookId === book.id) ? handleSyncBook : undefined}
+                        isSyncing={syncingBooks[book.id]}
                       />
                     </View>
                   ))}

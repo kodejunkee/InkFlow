@@ -13,6 +13,7 @@ import type { NewBook } from '../../types/book';
 import {
   downloadChapterBatch,
   generateNovelEpub,
+  updateNovelEpub,
   showDownloadNotification,
   cancelDownloadNotification,
 } from './NovelSourceService';
@@ -20,8 +21,9 @@ import {
   insertNovelDownload,
   updateNovelDownload,
   getNovelDownloadBySourceUrl,
+  getNovelDownloadByBookId,
 } from '../../database/queries';
-import { insertBook } from '../../database/queries';
+import { insertBook, getBookById } from '../../database/queries';
 import { copyCoverToStorage } from '../fileManager';
 import { processEpub } from '../epubProcessor';
 import { useLibraryStore } from '../../stores/libraryStore';
@@ -341,3 +343,163 @@ export async function downloadNovel(options: DownloadOptions): Promise<number | 
     return null;
   }
 }
+
+export async function updateNovel(
+  db: SQLite.SQLiteDatabase,
+  bookId: number,
+  novelDetails: NovelDetails,
+  cookies: string,
+  userAgent: string,
+  onProgress?: (progress: DownloadProgress) => void
+): Promise<boolean> {
+  const downloadRecord = getNovelDownloadByBookId(db, bookId);
+  const book = getBookById(db, bookId);
+  
+  if (!downloadRecord || !book) {
+    throw new Error('Novel not found in library');
+  }
+
+  const { addDownload, updateDownloadProgress, updateDownloadStatus, removeDownload, getDownloadState } = useNovelStore.getState();
+
+  // If already downloading/updating
+  if (getDownloadState(novelDetails.sourceUrl)) {
+    throw new Error('Already updating');
+  }
+
+  const newChaptersCount = novelDetails.totalChapters - downloadRecord.totalChapters;
+  if (newChaptersCount <= 0) {
+    return false; // Nothing to update
+  }
+
+  const newChapters = novelDetails.chapters.slice(downloadRecord.totalChapters);
+
+  const progress: DownloadProgress = {
+    novelTitle: novelDetails.title,
+    sourceUrl: novelDetails.sourceUrl,
+    currentChapter: downloadRecord.totalChapters,
+    totalChapters: novelDetails.totalChapters,
+    status: 'pending',
+    coverUrl: novelDetails.coverUrl,
+  };
+  addDownload(novelDetails.sourceUrl, progress);
+  onProgress?.(progress);
+  updateNovelDownload(db, downloadRecord.id, { status: 'downloading', lastCheckedAt: new Date().toISOString() });
+
+  const notifId = getNotificationId(novelDetails.sourceUrl);
+  showDownloadNotification(notifId, novelDetails.title, 0, newChaptersCount, 'Downloading new chapters...');
+
+  try {
+    const tempDir = `${FileSystem.documentDirectory}temp_${Date.now()}/`;
+    await FileSystem.makeDirectoryAsync(tempDir, { intermediates: true });
+
+    let downloadedCount = 0;
+    for (let i = 0; i < newChapters.length; i += BATCH_SIZE) {
+      const state = getDownloadState(novelDetails.sourceUrl);
+      if (!state) {
+         throw new Error('Download cancelled');
+      }
+      
+      while (useNovelStore.getState().downloads[novelDetails.sourceUrl]?.status === 'paused') {
+        await new Promise(r => setTimeout(r, 1000));
+        const checkState = useNovelStore.getState().downloads[novelDetails.sourceUrl];
+        if (!checkState) throw new Error('Download cancelled');
+      }
+
+      const batch = newChapters.slice(i, i + BATCH_SIZE);
+      const batchResult = await downloadChapterBatch(
+        novelDetails.sourceId,
+        JSON.stringify(batch),
+        cookies,
+        userAgent,
+        tempDir
+      );
+
+      if (batchResult.errors?.length) {
+        console.warn(`[Updater] Batch errors:`, batchResult.errors);
+      }
+
+      downloadedCount += batchResult.success;
+      progress.currentChapter = downloadRecord.totalChapters + downloadedCount;
+      progress.status = 'downloading';
+      updateDownloadProgress(novelDetails.sourceUrl, progress);
+      onProgress?.(progress);
+      
+      showDownloadNotification(
+        notifId, 
+        novelDetails.title, 
+        downloadedCount, 
+        newChaptersCount, 
+        `Downloading new chapters...`
+      );
+      
+      updateNovelDownload(db, downloadRecord.id, {
+        lastChapterDownloaded: progress.currentChapter,
+      });
+    }
+
+    showDownloadNotification(notifId, novelDetails.title, newChaptersCount, newChaptersCount, 'Appending to EPUB...');
+
+    const tempEpubPath = `${FileSystem.documentDirectory}updated_${Date.now()}.epub`;
+    const updateResult = await updateNovelEpub(book.filePath, tempDir, tempEpubPath);
+    
+    if (!updateResult.success) {
+      throw new Error(updateResult.error || 'Failed to append chapters to EPUB');
+    }
+
+    // Replace original EPUB with the new one
+    await FileSystem.deleteAsync(book.filePath, { idempotent: true });
+    await FileSystem.moveAsync({
+      from: tempEpubPath,
+      to: book.filePath
+    });
+
+    try {
+      await FileSystem.deleteAsync(tempDir, { idempotent: true });
+    } catch (e) {}
+
+    // Update Book chapter count in DB
+    db.runSync(
+      `UPDATE books SET chapter_count = ?, updated_at = datetime('now') WHERE id = ?`,
+      [novelDetails.totalChapters, book.id]
+    );
+
+    updateNovelDownload(db, downloadRecord.id, {
+      totalChapters: novelDetails.totalChapters,
+      lastChapterDownloaded: novelDetails.totalChapters,
+      status: 'completed'
+    });
+
+    updateDownloadStatus(novelDetails.sourceUrl, 'completed');
+    progress.status = 'completed';
+    progress.currentChapter = novelDetails.totalChapters;
+    onProgress?.(progress);
+
+    cancelDownloadNotification(notifId);
+    setTimeout(() => {
+      removeDownload(novelDetails.sourceUrl);
+    }, 2000);
+
+    return true;
+
+  } catch (error) {
+    console.error('[NovelDownloader] Error updating novel:', error);
+    const errorMsg = error instanceof Error ? error.message : 'Unknown error';
+    
+    cancelDownloadNotification(notifId);
+
+    if (errorMsg === 'Download cancelled') {
+      updateNovelDownload(db, downloadRecord.id, { status: 'paused' });
+      removeDownload(novelDetails.sourceUrl);
+      return false;
+    }
+
+    updateDownloadStatus(novelDetails.sourceUrl, 'failed', errorMsg);
+    progress.status = 'failed';
+    progress.error = errorMsg;
+    onProgress?.(progress);
+
+    updateNovelDownload(db, downloadRecord.id, { status: 'failed' });
+    return false;
+  }
+}
+

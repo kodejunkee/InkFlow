@@ -93,6 +93,22 @@ export function showDownloadNotification(id: number, title: string, progress: nu
   NovelSource.showDownloadNotification(id, title, progress, total, status);
 }
 
-export function cancelDownloadNotification(id: number) {
+export function cancelDownloadNotification(id: number): void {
   NovelSource.cancelDownloadNotification(id);
+}
+
+/**
+ * Update an existing EPUB with new chapter files.
+ */
+export async function updateNovelEpub(
+  existingEpubPath: string,
+  newChaptersDir: string,
+  outputEpubPath: string,
+): Promise<{ success: boolean; path?: string; error?: string; appendedCount?: number }> {
+  const json = await NovelSource.updateNovelEpub(
+    existingEpubPath,
+    newChaptersDir,
+    outputEpubPath,
+  );
+  return JSON.parse(json);
 }

@@ -36,6 +36,8 @@ interface BookCardProps {
   progress: number;
   onPress: (id: number) => void;
   onLongPress?: (id: number) => void;
+  onSync?: (id: number) => void;
+  isSyncing?: boolean;
 }
 
 export function BookCard({
@@ -46,6 +48,8 @@ export function BookCard({
   progress,
   onPress,
   onLongPress,
+  onSync,
+  isSyncing,
 }: BookCardProps) {
   const themeName = useSettingsStore((s) => s.theme);
   const theme = getTheme(themeName);
@@ -138,6 +142,19 @@ export function BookCard({
               {progressPercent}%
             </Text>
           )}
+          {onSync && (
+            <Pressable
+              onPress={() => onSync(id)}
+              style={styles.syncButton}
+              hitSlop={10}
+            >
+              <Ionicons 
+                name={isSyncing ? "sync-circle" : "sync"} 
+                size={16} 
+                color={isSyncing ? theme.primary : theme.textSecondary} 
+              />
+            </Pressable>
+          )}
         </View>
       </Pressable>
     </Animated.View>
@@ -189,7 +206,6 @@ const styles = StyleSheet.create({
   info: {
     padding: spacing.md,
     height: 90,
-    justifyContent: 'space-between',
   },
   title: {
     fontWeight: '600',
@@ -197,5 +213,10 @@ const styles = StyleSheet.create({
   },
   progressText: {
     marginTop: 4,
+  },
+  syncButton: {
+    position: 'absolute',
+    bottom: spacing.md,
+    right: spacing.md,
   },
 });

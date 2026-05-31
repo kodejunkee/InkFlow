@@ -163,4 +163,27 @@ class NovelSourceModule(reactContext: ReactApplicationContext) :
             }
         }.start()
     }
+
+    /**
+     * Update an existing EPUB file with new downloaded chapters.
+     *
+     * @param existingEpubPath Path to the current EPUB file
+     * @param newChaptersDir   Directory containing the newly downloaded chapter files
+     * @param outputEpubPath   Where to save the updated EPUB file
+     * @param promise          Resolves with the output EPUB path
+     */
+    @ReactMethod
+    fun updateNovelEpub(existingEpubPath: String, newChaptersDir: String, outputEpubPath: String, promise: Promise) {
+        Thread {
+            try {
+                ensurePython()
+                val py = Python.getInstance()
+                val module = py.getModule("novel_epub_updater")
+                val result = module.callAttr("update_epub", existingEpubPath, newChaptersDir, outputEpubPath)
+                promise.resolve(result.toString())
+            } catch (e: Exception) {
+                promise.reject("NOVEL_EPUB_UPDATE_ERROR", e.message, e)
+            }
+        }.start()
+    }
 }

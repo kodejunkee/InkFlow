@@ -18,6 +18,8 @@ interface BookGridProps {
   ListEmptyComponent?: React.ReactElement;
   refreshing?: boolean;
   onRefresh?: () => void;
+  onSync?: (bookId: number) => void;
+  syncingBooks?: Record<number, boolean>;
 }
 
 export function BookGrid({
@@ -28,6 +30,8 @@ export function BookGrid({
   ListEmptyComponent,
   refreshing,
   onRefresh,
+  onSync,
+  syncingBooks,
 }: BookGridProps) {
   const renderItem = ({ item }: { item: Book }) => {
     return (
@@ -40,6 +44,8 @@ export function BookGrid({
           progress={item.progress}
           onPress={onBookPress}
           onLongPress={onBookLongPress}
+          onSync={onSync}
+          isSyncing={syncingBooks?.[item.id]}
         />
       </View>
     );
