@@ -12,7 +12,6 @@ import { useSettingsStore } from '../../stores/settingsStore';
 import { getTheme } from '../../theme/themes';
 import { textStyles } from '../../theme/typography';
 import { spacing } from '../../theme/spacing';
-import { Book } from '../../types/book';
 import { Ionicons } from '@expo/vector-icons';
 import Animated, {
   useSharedValue,
@@ -22,21 +21,33 @@ import Animated, {
   runOnJS,
 } from 'react-native-reanimated';
 
-interface ConfirmDeleteModalProps {
+interface ConfirmationModalProps {
   visible: boolean;
-  book: Book | null;
+  title: string;
+  message: React.ReactNode;
+  iconName: keyof typeof Ionicons.glyphMap;
+  iconColor: string;
+  iconBgColor?: string;
+  confirmText: string;
+  confirmButtonColor: string;
   onCancel: () => void;
   onConfirm: () => void;
 }
 
 const { width } = Dimensions.get('window');
 
-export function ConfirmDeleteModal({
+export function ConfirmationModal({
   visible,
-  book,
+  title,
+  message,
+  iconName,
+  iconColor,
+  iconBgColor,
+  confirmText,
+  confirmButtonColor,
   onCancel,
   onConfirm,
-}: ConfirmDeleteModalProps) {
+}: ConfirmationModalProps) {
   const themeName = useSettingsStore((s) => s.theme);
   const theme = getTheme(themeName);
 
@@ -92,16 +103,16 @@ export function ConfirmDeleteModal({
           ]}
         >
           <View style={styles.iconContainer}>
-            <View style={[styles.iconCircle, { backgroundColor: 'rgba(239, 68, 68, 0.15)' }]}>
-              <Ionicons name="trash-outline" size={32} color="#EF4444" />
+            <View style={[styles.iconCircle, { backgroundColor: iconBgColor || theme.surfaceHighlight }]}>
+              <Ionicons name={iconName} size={32} color={iconColor} />
             </View>
           </View>
 
           <Text style={[styles.title, textStyles.title, { color: theme.textPrimary }]}>
-            Remove from Library?
+            {title}
           </Text>
           <Text style={[styles.message, textStyles.body, { color: theme.textSecondary }]}>
-            Are you sure you want to delete <Text style={{ color: theme.textPrimary, fontWeight: 'bold' }}>"{book?.title}"</Text>? This will permanently remove the file and all your highlights and bookmarks.
+            {message}
           </Text>
 
           <View style={styles.actions}>
@@ -114,15 +125,15 @@ export function ConfirmDeleteModal({
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={[styles.button, styles.deleteButton]}
+              style={[styles.button, { backgroundColor: confirmButtonColor }]}
               onPress={() => {
                 onConfirm();
                 // We don't call handleClose here because the parent usually closes the modal immediately
               }}
               activeOpacity={0.7}
             >
-              <Ionicons name="trash" size={20} color="#FFFFFF" />
-              <Text style={styles.deleteButtonText}>Delete</Text>
+              <Ionicons name={iconName} size={20} color="#FFFFFF" />
+              <Text style={styles.deleteButtonText}>{confirmText}</Text>
             </TouchableOpacity>
           </View>
         </Animated.View>
@@ -193,9 +204,6 @@ const styles = StyleSheet.create({
   },
   cancelButton: {
     // Background color set via style prop
-  },
-  deleteButton: {
-    backgroundColor: '#EF4444',
   },
   buttonText: {
     fontSize: 16,

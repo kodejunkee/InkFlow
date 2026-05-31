@@ -317,18 +317,20 @@ export async function downloadNovel(options: DownloadOptions): Promise<number | 
 
     return insertedBook.id;
   } catch (error) {
-    console.error('[NovelDownloader] Error downloading novel:', error);
     const errorMsg = error instanceof Error ? error.message : 'Unknown error';
     
     cancelDownloadNotification(getNotificationId(novel.sourceUrl));
 
     if (errorMsg === 'Download cancelled') {
+      console.log('[NovelDownloader] Download cancelled by user');
       try {
         db.runSync(`DELETE FROM novel_downloads WHERE id = ?`, [downloadRecord.id]);
       } catch (e) {}
       removeDownload(novel.sourceUrl);
       return null;
     }
+
+    console.error('[NovelDownloader] Error downloading novel:', error);
 
     updateDownloadStatus(novel.sourceUrl, 'failed', errorMsg);
     progress.status = 'failed';
@@ -482,16 +484,18 @@ export async function updateNovel(
     return true;
 
   } catch (error) {
-    console.error('[NovelDownloader] Error updating novel:', error);
     const errorMsg = error instanceof Error ? error.message : 'Unknown error';
     
     cancelDownloadNotification(notifId);
 
     if (errorMsg === 'Download cancelled') {
+      console.log('[NovelDownloader] Update cancelled by user');
       updateNovelDownload(db, downloadRecord.id, { status: 'paused' });
       removeDownload(novelDetails.sourceUrl);
       return false;
     }
+
+    console.error('[NovelDownloader] Error updating novel:', error);
 
     updateDownloadStatus(novelDetails.sourceUrl, 'failed', errorMsg);
     progress.status = 'failed';

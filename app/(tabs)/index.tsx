@@ -40,8 +40,9 @@ import { ContinueReading } from '../../src/components/library/ContinueReading';
 import { ImportButton } from '../../src/components/library/ImportButton';
 import { EmptyState } from '../../src/components/common/EmptyState';
 import { ErrorBoundary } from '../../src/components/common/ErrorBoundary';
-import { ConfirmDeleteModal } from '../../src/components/library/ConfirmDeleteModal';
+import { ConfirmationModal } from '../../src/components/library/ConfirmationModal';
 import { Book } from '../../src/types/book';
+import { DownloadProgress } from '../../src/types/novel';
 
 export default function LibraryScreen() {
   const router = useRouter();
@@ -68,6 +69,7 @@ export default function LibraryScreen() {
     useBookImport(db);
     
   const [bookToDelete, setBookToDelete] = useState<Book | null>(null);
+  const [downloadToCancel, setDownloadToCancel] = useState<DownloadProgress | null>(null);
   const [syncingBooks, setSyncingBooks] = useState<Record<number, boolean>>({});
 
   // Load books and downloads from database
@@ -411,16 +413,7 @@ export default function LibraryScreen() {
                     {(download.status === 'downloading' || download.status === 'paused' || download.status === 'failed') && (
                       <Pressable
                         style={({ pressed }) => [{ opacity: pressed ? 0.7 : 1, padding: 8 }]}
-                        onPress={() => {
-                          Alert.alert(
-                            "Cancel Download",
-                            "Are you sure you want to cancel this download?",
-                            [
-                              { text: "No", style: "cancel" },
-                              { text: "Yes", style: "destructive", onPress: () => cancelDownload(download.sourceUrl) }
-                            ]
-                          );
-                        }}
+                        onPress={() => setDownloadToCancel(download)}
                       >
                         <Ionicons name="close" size={20} color="#EF5350" />
                       </Pressable>
@@ -459,11 +452,42 @@ export default function LibraryScreen() {
           importProgress={progressText}
           importError={importError?.message ?? null}
         />
-        <ConfirmDeleteModal
-          visible={!!bookToDelete}
-          book={bookToDelete}
+        <ConfirmationModal
+          visible={bookToDelete !== null}
+          title="Remove from Library?"
+          message={
+            <>
+              Are you sure you want to delete <Text style={{ color: theme.textPrimary, fontWeight: 'bold' }}>"{bookToDelete?.title}"</Text>? This will permanently remove the file and all your highlights and bookmarks.
+            </>
+          }
+          iconName="trash-outline"
+          iconColor="#EF4444"
+          iconBgColor="rgba(239, 68, 68, 0.15)"
+          confirmText="Delete"
+          confirmButtonColor="#EF4444"
           onCancel={() => setBookToDelete(null)}
           onConfirm={confirmDelete}
+        />
+        <ConfirmationModal
+          visible={downloadToCancel !== null}
+          title="Cancel Download?"
+          message={
+            <>
+              Are you sure you want to cancel the download for <Text style={{ color: theme.textPrimary, fontWeight: 'bold' }}>"{downloadToCancel?.novelTitle}"</Text>? This action cannot be undone.
+            </>
+          }
+          iconName="close-circle-outline"
+          iconColor="#EF5350"
+          iconBgColor="rgba(239, 83, 80, 0.15)"
+          confirmText="Cancel Download"
+          confirmButtonColor="#EF5350"
+          onCancel={() => setDownloadToCancel(null)}
+          onConfirm={() => {
+            if (downloadToCancel) {
+              cancelDownload(downloadToCancel.sourceUrl);
+              setDownloadToCancel(null);
+            }
+          }}
         />
       </SafeAreaView>
     </ErrorBoundary>
